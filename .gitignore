@@ -1,0 +1,12 @@
+auto-save-list/
+backups/
+elpa/
+slime/
+snippets/
+swank/
+nrepl.el/
+games/
+eshell/
+.*
+*~
+#~

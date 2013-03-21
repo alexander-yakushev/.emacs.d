@@ -1,0 +1,213 @@
+;; Object gh/gh-gist-api/alexander-yakushev
+;; EIEIO PERSISTENT OBJECT
+(gh-cache "gh/gh-gist-api/alexander-yakushev"
+  :file "alexander-yakushev"
+  :entries #s(hash-table size 65 test equal rehash-size 1.5 rehash-threshold 0.8 data (("/users/alexander-yakushev/gists" "GET" "518961b9e53cab492b8a913ae8ba7382d4306545") [object pcache-entry "pcache-entry" 1360158577.0995061 nil ([object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "debugger-wannabe.lisp" 3661 "https://gist.github.com/raw/4722460/24a6ebbf24d0eb0e8b1bea203a12f97843404f98/debugger-wannabe.lisp" "(declaim (optimize (debug 2)))
+
+;; Part one.
+
+(defun line-number (fname code-loc)
+  (let* ((all-offsets (sb-di::debug-source-start-positions code-loc))
+         ;; Get last item from the array, I haven't found anything
+         ;; like 'pop' to do it better.
+         (offset (aref all-offsets (- (length all-offsets) 1))))
+    (with-open-file (f fname)
+                    (1+
+                     ;; Since SBCL gives us only character offset, we
+                     ;; have to manually walk through the file char
+                     ;; by char and count newlines.
+                     (loop repeat offset
+                           count (eql (read-char f) #\\Newline))))))
+
+(defun meaningful-print-frame (frame print-locals?)
+  (let* ((code-loc (sb-di::code-location-debug-source (sb-di::frame-code-location frame)))
+         (filename (sb-di::debug-source-namestring code-loc)))
+   (multiple-value-bind (fn-name args) (sb-debug::frame-call frame)
+     (format *debug-io* \"~&~a:~4t(~a~{ ~_~S~})~&~4tat ~a\"
+             (sb-di:frame-number frame)
+             fn-name
+             args
+             (if filename
+                 (format nil \"~a:~d\" filename (line-number filename code-loc))
+               \"<no file>:0\"))
+     (when print-locals?
+       ;; Copypasted from SBCL's PRINT-LOCALS command, so I guess it
+       ;; is good. Copypasted (not reused) because I wanted some
+       ;; additional formatting, otherwise I'd just call
+       ;; (sb-debug::list-locals-debug-command).
+       (dolist (v (sb-di:ambiguous-debug-vars (sb-di:frame-debug-fun frame) \"\"))
+         (format *debug-io* \"~&~8t~S~:[#~W~;~*~]  =  ~S\"
+                      (sb-di:debug-var-symbol v)
+                      (zerop (sb-di:debug-var-id v))
+                      (sb-di:debug-var-id v)
+                      (sb-di:debug-var-value v frame)))))))
+
+(defun meaningful-backtrace (&key (count nil) (locals nil) (skip 0))
+  ;; skip-ctr is used to suppress the output of our backtrace frames
+  ;; when the backtrace is called not from the debugger. This solution
+  ;; is dirty as hell but I don't want to rewrite
+  ;; sb-debug::map-backtrace. Also it would be much better to
+  ;; determine if the frame is somehow failed (it raised a condition)
+  ;; and start printing from the first failed frame, but I don't know
+  ;; how to do that and I'm already too late for lunch:).
+  (let ((skip-ctr 0))
+    (sb-debug::map-backtrace (lambda (frame)
+                               (incf skip-ctr)
+                               (if (> skip-ctr skip)
+                                   (meaningful-print-frame frame locals)))
+                             :count (if count
+                                        (+ count skip)
+                                      most-positive-fixnum))))
+
+;; Part two.
+
+(defmacro vigilantly (&rest body)
+  `(handler-bind ((error
+                   #'(lambda (_) (meaningful-backtrace :skip 2))))
+                 ,@body))
+
+;; Testcases. Primitive testcase. Run (foo) to test.
+;; Call (meaningful-backtrace) from the debugger, or
+;; (meaningful-backtrace :locals t) to see the locals as well.
+
+(defun foo ()
+  (bar \"foo\" 3))
+
+(defun bar (a b)
+  (+ a b))
+
+#+nil
+(foo) ; To enter the debugger
+
+#+nil
+(meaningful-backtrace)
+
+#+nil
+(meaningful-backtrace :locals t)
+
+;; Testcases for part two.
+
+(define-condition fubar (error)
+  ((text :initarg :text)))
+
+(defun tarfu ()
+  (error 'fubar :text \"TARFU\"))
+
+(defun snafu ()
+  (vigilantly
+   (tarfu)))
+
+#+nil
+(snafu) ; prints the backtrace and crashes into the debugger
+
+#+nil
+(handler-case (snafu)
+              (fubar () (princ \"FIDO\")))
+;; Prints the backtrace and lets higher-level handler process the
+;; error.
+"]) t "Debugging functions for SBCL" "2013-02-06T13:22:38Z" "2013-02-06T13:47:15Z" "https://gist.github.com/4722460.git" "https://gist.github.com/4722460.git" "https://gist.github.com/4722460" 0 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "4722460" "https://api.github.com/gists/4722460" (((url . "https://api.github.com/gists/4722460/ed9978144f087e15bb0ede01b4656033d4901a12") (change_status (deletions . 0) (additions . 103) (total . 103)) (committed_at . "2013-02-06T13:22:38Z") (version . "ed9978144f087e15bb0ede01b4656033d4901a12") (user (type . "User") (received_events_url . "https://api.github.com/users/alexander-yakushev/received_events") (events_url . "https://api.github.com/users/alexander-yakushev/events{/privacy}") (repos_url . "https://api.github.com/users/alexander-yakushev/repos") (organizations_url . "https://api.github.com/users/alexander-yakushev/orgs") (subscriptions_url . "https://api.github.com/users/alexander-yakushev/subscriptions") (starred_url . "https://api.github.com/users/alexander-yakushev/starred{/owner}{/repo}") (gists_url . "https://api.github.com/users/alexander-yakushev/gists{/gist_id}") (following_url . "https://api.github.com/users/alexander-yakushev/following") (followers_url . "https://api.github.com/users/alexander-yakushev/followers") (url . "https://api.github.com/users/alexander-yakushev") (gravatar_id . "5fd0c71f571a993bb703e49d287fc706") (avatar_url . "https://secure.gravatar.com/avatar/5fd0c71f571a993bb703e49d287fc706?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png") (id . 468477) (login . "alexander-yakushev")))) nil] [object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "patch.lua" 862 "https://gist.github.com/raw/2910397/ba7aa0b48c23913fc5d58e1a5b6c6acabf3291a7/patch.lua" nil]) t "Fix move_to_screen in AwesomeWM" "2012-06-11T14:41:37Z" "2012-06-15T07:34:33Z" "https://gist.github.com/2910397.git" "https://gist.github.com/2910397.git" "https://gist.github.com/2910397" 0 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "2910397" "https://api.github.com/gists/2910397" nil nil] [object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "clojure-trivial-dialer.clj" 2572 "https://gist.github.com/raw/2907442/180e7c3edb2503dabcfa03b68d76da6ca0d193fd/clojure-trivial-dialer.clj" nil]) t "A simple demostration of neko.ui toolkit for building Android UI in Clojure" "2012-06-10T21:42:18Z" "2012-06-10T21:42:18Z" "https://gist.github.com/2907442.git" "https://gist.github.com/2907442.git" "https://gist.github.com/2907442" 0 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "2907442" "https://api.github.com/gists/2907442" nil nil] [object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "asyncshell.lua" 2297 "https://gist.github.com/raw/1466863/ccb8fcc5b990d22438ad55e4f67b39d6ec2f5e7f/asyncshell.lua" nil]) t "Asyncronous io.popen replacement for Awesome" "2011-12-12T12:11:05Z" "2011-12-12T12:11:05Z" "https://gist.github.com/1466863.git" "https://gist.github.com/1466863.git" "https://gist.github.com/1466863" 0 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "1466863" "https://api.github.com/gists/1466863" nil nil] [object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "tetris.clj" 7913 "https://gist.github.com/raw/1207703/4639eac8ff11aa2fbbf435fc049bf3ec51d58161/tetris.clj" nil]) t "Tetris implementation in Clojure" "2011-09-10T00:28:56Z" "2011-09-10T00:28:56Z" "https://gist.github.com/1207703.git" "https://gist.github.com/1207703.git" "https://gist.github.com/1207703" 1 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "1207703" "https://api.github.com/gists/1207703" nil nil])] ("/gists/4722460" "GET" "b0813daf46e267088a65cd99500b1e8d386d89c3") [object pcache-entry "pcache-entry" 1360158634.4009702 nil [object gh-gist-gist "gh-gist-gist" ([object gh-gist-gist-file "gh-gist-gist-file" "debugger-wannabe.lisp" 3661 "https://gist.github.com/raw/4722460/24a6ebbf24d0eb0e8b1bea203a12f97843404f98/debugger-wannabe.lisp" "(declaim (optimize (debug 2)))
+
+;; Part one.
+
+(defun line-number (fname code-loc)
+  (let* ((all-offsets (sb-di::debug-source-start-positions code-loc))
+         ;; Get last item from the array, I haven't found anything
+         ;; like 'pop' to do it better.
+         (offset (aref all-offsets (- (length all-offsets) 1))))
+    (with-open-file (f fname)
+                    (1+
+                     ;; Since SBCL gives us only character offset, we
+                     ;; have to manually walk through the file char
+                     ;; by char and count newlines.
+                     (loop repeat offset
+                           count (eql (read-char f) #\\Newline))))))
+
+(defun meaningful-print-frame (frame print-locals?)
+  (let* ((code-loc (sb-di::code-location-debug-source (sb-di::frame-code-location frame)))
+         (filename (sb-di::debug-source-namestring code-loc)))
+   (multiple-value-bind (fn-name args) (sb-debug::frame-call frame)
+     (format *debug-io* \"~&~a:~4t(~a~{ ~_~S~})~&~4tat ~a\"
+             (sb-di:frame-number frame)
+             fn-name
+             args
+             (if filename
+                 (format nil \"~a:~d\" filename (line-number filename code-loc))
+               \"<no file>:0\"))
+     (when print-locals?
+       ;; Copypasted from SBCL's PRINT-LOCALS command, so I guess it
+       ;; is good. Copypasted (not reused) because I wanted some
+       ;; additional formatting, otherwise I'd just call
+       ;; (sb-debug::list-locals-debug-command).
+       (dolist (v (sb-di:ambiguous-debug-vars (sb-di:frame-debug-fun frame) \"\"))
+         (format *debug-io* \"~&~8t~S~:[#~W~;~*~]  =  ~S\"
+                      (sb-di:debug-var-symbol v)
+                      (zerop (sb-di:debug-var-id v))
+                      (sb-di:debug-var-id v)
+                      (sb-di:debug-var-value v frame)))))))
+
+(defun meaningful-backtrace (&key (count nil) (locals nil) (skip 0))
+  ;; skip-ctr is used to suppress the output of our backtrace frames
+  ;; when the backtrace is called not from the debugger. This solution
+  ;; is dirty as hell but I don't want to rewrite
+  ;; sb-debug::map-backtrace. Also it would be much better to
+  ;; determine if the frame is somehow failed (it raised a condition)
+  ;; and start printing from the first failed frame, but I don't know
+  ;; how to do that and I'm already too late for lunch:).
+  (let ((skip-ctr 0))
+    (sb-debug::map-backtrace (lambda (frame)
+                               (incf skip-ctr)
+                               (if (> skip-ctr skip)
+                                   (meaningful-print-frame frame locals)))
+                             :count (if count
+                                        (+ count skip)
+                                      most-positive-fixnum))))
+
+;; Part two.
+
+(defmacro vigilantly (&rest body)
+  `(handler-bind ((error
+                   #'(lambda (_) (meaningful-backtrace :skip 2))))
+                 ,@body))
+
+;; Testcases. Primitive testcase. Run (foo) to test.
+;; Call (meaningful-backtrace) from the debugger, or
+;; (meaningful-backtrace :locals t) to see the locals as well.
+
+(defun foo ()
+  (bar \"foo\" 3))
+
+(defun bar (a b)
+  (+ a b))
+
+#+nil
+(foo) ; To enter the debugger
+
+#+nil
+(meaningful-backtrace)
+
+#+nil
+(meaningful-backtrace :locals t)
+
+;; Testcases for part two.
+
+(define-condition fubar (error)
+  ((text :initarg :text)))
+
+(defun tarfu ()
+  (error 'fubar :text \"TARFU\"))
+
+(defun snafu ()
+  (vigilantly
+   (tarfu)))
+
+#+nil
+(snafu) ; prints the backtrace and crashes into the debugger
+
+#+nil
+(handler-case (snafu)
+              (fubar () (princ \"FIDO\")))
+;; Prints the backtrace and lets higher-level handler process the
+;; error.
+"]) t "Debugging functions for SBCL" "2013-02-06T13:22:38Z" "2013-02-06T13:47:15Z" "https://gist.github.com/4722460.git" "https://gist.github.com/4722460.git" "https://gist.github.com/4722460" 0 [object gh-user "gh-user" "alexander-yakushev" 468477 nil "https://api.github.com/users/alexander-yakushev"] "4722460" "https://api.github.com/gists/4722460" (((url . "https://api.github.com/gists/4722460/ed9978144f087e15bb0ede01b4656033d4901a12") (change_status (deletions . 0) (additions . 103) (total . 103)) (committed_at . "2013-02-06T13:22:38Z") (version . "ed9978144f087e15bb0ede01b4656033d4901a12") (user (type . "User") (received_events_url . "https://api.github.com/users/alexander-yakushev/received_events") (events_url . "https://api.github.com/users/alexander-yakushev/events{/privacy}") (repos_url . "https://api.github.com/users/alexander-yakushev/repos") (organizations_url . "https://api.github.com/users/alexander-yakushev/orgs") (subscriptions_url . "https://api.github.com/users/alexander-yakushev/subscriptions") (starred_url . "https://api.github.com/users/alexander-yakushev/starred{/owner}{/repo}") (gists_url . "https://api.github.com/users/alexander-yakushev/gists{/gist_id}") (following_url . "https://api.github.com/users/alexander-yakushev/following") (followers_url . "https://api.github.com/users/alexander-yakushev/followers") (url . "https://api.github.com/users/alexander-yakushev") (gravatar_id . "5fd0c71f571a993bb703e49d287fc706") (avatar_url . "https://secure.gravatar.com/avatar/5fd0c71f571a993bb703e49d287fc706?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png") (id . 468477) (login . "alexander-yakushev")))) nil]]))
+  :timestamp 1360158634.4010408
+  )
