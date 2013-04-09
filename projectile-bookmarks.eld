@@ -1,1 +1,0 @@
-("~/clojure/fornastya/" "~/clojure/android/lein-droid/")
