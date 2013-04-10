@@ -299,6 +299,72 @@ Display the results in a hyperlinked *compilation* buffer."
               scroll-up-aggressively 0.01
               scroll-down-aggressively 0.01)
 
+;; Configure main-line
+
+(defun center-format (str c)
+  (let* ((l (length str)))
+    (if (< l c)
+        (let ((p (/ (- c l) 2)))
+          (concat (make-string p 32) str (make-string (- c p l) 32)))
+      str)))
+(/ 1 2.0)
+
+(defun my/percentage-from-top (padding)
+  (let ((p (round (/ (* 100.0 (point)) (point-max)))))
+    (replace-regexp-in-string "|" "%%"
+     (format (concat "%" (number-to-string padding) "s")
+             (cond ((= p 0) "Top")
+                   ((> p 98) "Bot")
+                   (t (concat (number-to-string p) "|")))))))
+
+(load "~/.emacs.d/mainline.el")
+(require 'mainline)
+(setq mainline-arrow-shape 'arrow)
+(setq mainline-color1 "#444444")
+(setq mainline-color2 "#222222")
+(setq mainline-color3 "#293B3A")
+;; 075E5D
+(set-face-attribute 'mode-line nil
+                    :background "#444444"
+                    :box nil)
+;; (propertize " %* " 'face '(:foreground "#ffffff" :background
+;; "#293B3A"))
+
+(defun get-interesting-minor-modes ()
+  (replace-regexp-in-string
+   " $" ""
+   (replace-regexp-in-string
+    "^ " ""
+    (replace-regexp-in-string
+     " +" " "
+     (reduce (lambda (s mode)
+               (replace-regexp-in-string mode "" s))
+             '("Undo-Tree" "Projectile" "WS" "Fill" "hs")
+             :initial-value
+             (format-mode-line minor-mode-alist))))))
+
+(setq-default mode-line-format
+      '("%e" (:eval (concat
+                     (mainline-rmw 'left mainline-color3)
+                     (mainline-make 'left (center-format (buffer-name) 20) mainline-color3 mainline-color1)
+                     (mainline-make 'left (my/percentage-from-top 4) mainline-color1)
+                     (mainline-make (quote left) "(%4l : %3c)" mainline-color1 mainline-color2)
+                     (mainline-make 'left mode-name mainline-color2)
+                     (let* ((magic 25)
+                            (vcskip (if vc-mode
+                                        (length vc-mode)
+                                      -1))
+                            (mms (get-interesting-minor-modes))
+                            (skip (- (window-width) (length mms) (length mode-name)
+                                     vcskip (max (length (buffer-name)) 20) magic 12)))
+                       (concat
+                        (mainline-make 'center (make-string skip 32) mainline-color2)
+                        (mainline-make 'right mms mainline-color2)
+                        (mainline-vc 'right mainline-color1 mainline-color2)))
+                     (mainline-make 'right (or current-input-method-title "EN") mainline-color3 mainline-color1)
+                     (mainline-make 'right "%z     " mainline-color3)
+                     ))))
+
 ;; bs-show for mouse
 
 (require 'bs)
