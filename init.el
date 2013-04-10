@@ -452,3 +452,19 @@ and selects that window."
 	 (if (framep window) (frame-selected-window window)
 	   window))
 	(switch-to-buffer buf)))))
+(put 'ido-exit-minibuffer 'disabled nil)
+
+(setq backup-by-copying t      ; don't clobber symlinks
+      backup-directory-alist
+      '(("." . "~/.local/share/emacs-saves"))    ; don't litter my fs tree
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)       ; use versioned backups
+
+(require 'saveplace)
+(setq-default save-place t)
+
+(require 'legalese)
+
+(require 'multiple-cursors)

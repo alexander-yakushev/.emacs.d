@@ -99,3 +99,7 @@
 (global-set-key (kbd "C-x C-l") 'bs-show)
 (add-hook 'bs-mode-hook (lambda () (define-key bs-mode-map (kbd ";") 'next-line)))
 (global-set-key (kbd "<C-down-mouse-1>") 'mouse-bs-show)
+
+;; Multiple cursors
+(global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click)
+(global-set-key (kbd "<C-down>") 'mc/mark-next-like-this)
