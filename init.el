@@ -250,6 +250,15 @@ Display the results in a hyperlinked *compilation* buffer."
   (interactive)
   (shell-command (concat "urxvt -cd " (expand-file-name (sr-choose-cd-target)) " -e zsh")))
 
+(defun ido-sunrise ()
+  "Call `sunrise' the ido way.
+    The directory is selected interactively by typing a substring.
+    For details on keybindings, see `ido-find-file'."
+  (interactive)
+  (let ((ido-report-no-match nil)
+        (ido-auto-merge-work-directories-length -1))
+    (ido-file-internal 'sr-dired 'sr-dired nil "Sunrise: " 'dir)))
+
 ;; Auto refresh buffers
 (global-auto-revert-mode 1)
 
@@ -468,3 +477,27 @@ and selects that window."
 (require 'legalese)
 
 (require 'multiple-cursors)
+
+(global-linum-mode t)
+(require 'linum-relative)
+(setq lua-indent-level 4)
+
+(require 'key-chord)
+(key-chord-mode 1)
+(key-chord-define-global "';" 'goto-last-change)
+
+;; Advice yanking to auto-indent yank content
+(dolist (command '(yank yank-pop))
+  (eval `(defadvice ,command (after indent-region activate)
+           (and (not current-prefix-arg)
+                (member major-mode '(emacs-lisp-mode lisp-mode
+                                                     clojure-mode    scheme-mode
+                                                     haskell-mode    ruby-mode
+                                                     rspec-mode      python-mode
+                                                     c-mode          c++-mode
+                                                     objc-mode       latex-mode
+                                                     plain-tex-mode))
+                (let ((mark-even-if-inactive transient-mark-mode))
+                  (indent-region (region-beginning) (region-end) nil))))))
+
+

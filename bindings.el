@@ -51,6 +51,7 @@
                           (define-key sr-mode-map (kbd ";") 'dired-next-line)
                           (define-key sr-tabs-mode-map (kbd "C-h") (lambda () (interactive) (sr-goto-dir "~/")))
                           (define-key sr-tabs-mode-map (kbd "C-j") 'sr-cycle-bookmark)
+                          (define-key sr-tabs-mode-map (kbd "j") 'ido-sunrise)
                           (define-key sr-tabs-mode-map (kbd "C-p") 'sr-dired-prev-subdir)
                           (define-key sr-tabs-mode-map (kbd "C-.") 'sr-tabs-next)
                           (define-key sr-tabs-mode-map (kbd "C-,") 'sr-tabs-prev)
