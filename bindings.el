@@ -40,6 +40,7 @@
 (global-set-key (kbd "C-c M-r") 'query-replace)
 (global-set-key (kbd "<f5>") 'minimap-toggle)
 (global-set-key (kbd "<f8>") 'stupid-encoding)
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; Local bindings
 ;;; Sunrise
@@ -87,9 +88,11 @@
 (global-set-key (kbd "C-S-h") 'hs-show-all)
 (global-set-key (kbd "<C-tab>") 'hs-toggle-hiding)
 
+;; Magit mode
+(add-hook 'magit-mode-hook (lambda () (define-key magit-mode-map (kbd ";") 'magit-goto-next-section)))
+(add-hook 'magit-log-mode-hook (lambda () (define-key magit-log-mode-map (kbd "p") 'previous-line)))
+
 ;; Read-only modes
-(add-hook 'magit-mode-hook (lambda () (define-key magit-mode-map (kbd ";") 'next-line)))
-(add-hook 'magit-mode-hook (lambda () (define-key magit-log-mode-map (kbd "p") 'previous-line)))
 (add-hook 'buffer-menu-mode-hook (lambda () (define-key Buffer-menu-mode-map (kbd ";") 'next-line)))
 (add-hook 'occur-mode-hook (lambda ()
                              (define-key occur-mode-map (kbd ";") 'next-line)
