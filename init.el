@@ -52,16 +52,15 @@
    (or (package-installed-p package)
        (if (y-or-n-p (format "Package %s is missing. Install it? " package))
            (package-install package))))
- (list auto-complete clojure-mode color-theme-sanityinc-tomorrow
-       expand-region gist helm htmlize javap-mode lua-mode
-       magit-gh-pulls gh logito magithub markdown-mode minimap
-       mo-git-blame multiple-cursors openwith org pcache
-       projectile dash refheap s starter-kit-bindings
-       starter-kit-eshell starter-kit-lisp elisp-slime-nav
-       starter-kit magit ido-ubiquitous smex idle-highlight-mode
-       paredit sunrise-x-checkpoints sunrise-x-loop
-       sunrise-x-mirror sunrise-commander undo-tree xmlgen
-       yasnippet-bundle))
+ '(s auto-complete clojure-mode color-theme-sanityinc-tomorrow
+     expand-region gist helm htmlize javap-mode lua-mode
+     magit-gh-pulls gh logito magithub markdown-mode minimap
+     mo-git-blame multiple-cursors openwith org pcache projectile
+     dash refheap starter-kit-bindings starter-kit-eshell
+     starter-kit-lisp elisp-slime-nav starter-kit magit
+     ido-ubiquitous smex idle-highlight-mode paredit
+     sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror
+     sunrise-commander undo-tree xmlgen yasnippet-bundle))
 
 (load-file "~/.emacs.d/bindings.el")
 
