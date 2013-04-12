@@ -16,6 +16,7 @@
 (global-set-key (kbd "M-q") 'backward-sentence)
 
 (global-set-key (kbd "M-o") 'occur-at-point)
+(global-set-key (kbd "C-o") 'recenter-top-bottom)
 
 ;;; Editing
 (global-set-key (kbd "C-z") 'undo)
