@@ -92,7 +92,9 @@
 
 ;; Magit mode
 (add-hook 'magit-mode-hook (lambda () (define-key magit-mode-map (kbd ";") 'magit-goto-next-section)))
-(add-hook 'magit-log-mode-hook (lambda () (define-key magit-log-mode-map (kbd "p") 'previous-line)))
+(add-hook 'magit-log-mode-hook (lambda ()
+                                 (define-key magit-log-mode-map (kbd "p") 'previous-line)
+                                 (define-key magit-log-mode-map (kbd ";") 'next-line)))
 
 ;; Read-only modes
 (add-hook 'buffer-menu-mode-hook (lambda () (define-key Buffer-menu-mode-map (kbd ";") 'next-line)))
