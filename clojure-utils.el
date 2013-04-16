@@ -1,6 +1,6 @@
 (defun clj-ns ()
   (let ((fname (buffer-file-name)))
-    (string-match (concat (eproject-root) "src/\\(.+\\)\\\.clj") fname)
+    (string-match (concat (projectile-project-p) "src/\\(.+\\)\\\.clj") fname)
     (replace-regexp-in-string "/" "." (match-string 1 fname))))
 
 (defun curr-sexp-fn ()
