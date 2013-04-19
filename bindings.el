@@ -32,7 +32,7 @@
 
 ;;; Buffer manipulation
 (global-set-key (kbd "C-x <C-return>") 'other-window)
-(global-set-key (kbd "C-a") 'mark-whole-buffer)
+(global-set-key (kbd "C-c a") 'mark-whole-buffer)
 (global-set-key (kbd "C-w") 'kill-buffer-and-its-windows)
 
 ;;; Miscellaneous
@@ -71,7 +71,7 @@
                                (define-key paredit-mode-map (kbd "M-;") 'paredit-forward-down)
                                (define-key paredit-mode-map (kbd "C-M-p") 'paredit-backward-up)
                                (define-key paredit-mode-map (kbd "C-M-;") 'paredit-forward-up)
-                               (define-key paredit-mode-map (kbd "C-k") 'kill-line)
+                               (define-key paredit-mode-map (kbd "M-k") 'kill-line)
                                (define-key paredit-mode-map (kbd "M-d") 'kill-region)))
 
 ;; Flyspell mode
