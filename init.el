@@ -54,10 +54,9 @@
            (package-install package))))
  '(s auto-complete clojure-mode color-theme-sanityinc-tomorrow
      expand-region gist helm htmlize javap-mode lua-mode
-     magit-gh-pulls gh logito magithub markdown-mode minimap
-     mo-git-blame multiple-cursors openwith org pcache projectile
-     dash refheap starter-kit-bindings starter-kit-eshell
-     starter-kit-lisp elisp-slime-nav starter-kit magit
+     gh logito markdown-mode minimap mo-git-blame multiple-cursors
+     openwith org pcache projectile dash refheap starter-kit-bindings
+     starter-kit-eshell starter-kit-lisp elisp-slime-nav starter-kit magit
      ido-ubiquitous smex idle-highlight-mode paredit
      sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror
      sunrise-commander undo-tree xmlgen yasnippet-bundle))
@@ -158,7 +157,7 @@ BUFFER may be either a buffer or its name (a string)."
 ;; Teach compile the syntax of the kibit output
 (require 'compile)
 (add-to-list 'compilation-error-regexp-alist-alist
-         '(kibit "At \\([^:]+\\):\\([[:digit:]]+\\):" 1 2 nil 0))
+             '(kibit "At \\([^:]+\\):\\([[:digit:]]+\\):" 1 2 nil 0))
 (add-to-list 'compilation-error-regexp-alist 'kibit)
 
 ;; A convenient command to run "lein kibit" in the project to which
@@ -191,7 +190,7 @@ Display the results in a hyperlinked *compilation* buffer."
       (right-meaningful-word)
       (let ((pe (point)))
         (goto-char ip)
-        (occur (filter-buffer-substring p pe))))))
+        (occur (filter-buffer-substring p pe) 1)))))
 
 ;; Open files with stupid cp1251
 
@@ -203,9 +202,9 @@ Display the results in a hyperlinked *compilation* buffer."
 
 (defun count-words--message (str start end)
   (let* ((lines (count-lines start end))
-	(words (count-words start end))
-	(chars (- end start))
-        (yegges (/ (+ (/ words 4000.0) (/ chars 25000.0)) 2)))
+         (words (count-words start end))
+         (chars (- end start))
+         (yegges (/ (+ (/ words 4000.0) (/ chars 25000.0)) 2)))
     (message "%s has %d line%s, %d word%s, %f Yegge%s and %d character%s."
 	     str
 	     lines (if (= lines 1) "" "s")
@@ -248,7 +247,7 @@ Display the results in a hyperlinked *compilation* buffer."
 
 (defun sr-open-custom-terminal ()
   (interactive)
-  (shell-command (concat "urxvt -cd " (expand-file-name (sr-choose-cd-target)) " -e zsh")))
+  (shell-command (concat "urxvt -cd \"" (expand-file-name (sr-choose-cd-target)) "\" -e zsh")))
 
 (defun ido-sunrise ()
   "Call `sunrise' the ido way.
@@ -321,10 +320,10 @@ Display the results in a hyperlinked *compilation* buffer."
 (defun my/percentage-from-top (padding)
   (let ((p (round (/ (* 100.0 (point)) (point-max)))))
     (replace-regexp-in-string "|" "%%"
-     (format (concat "%" (number-to-string padding) "s")
-             (cond ((= p 0) "Top")
-                   ((> p 98) "Bot")
-                   (t (concat (number-to-string p) "|")))))))
+                              (format (concat "%" (number-to-string padding) "s")
+                                      (cond ((= p 0) "Top")
+                                            ((> p 98) "Bot")
+                                            (t (concat (number-to-string p) "|")))))))
 
 (load "~/.emacs.d/mainline.el")
 (require 'mainline)
@@ -353,26 +352,26 @@ Display the results in a hyperlinked *compilation* buffer."
              (format-mode-line minor-mode-alist))))))
 
 (setq-default mode-line-format
-      '("%e" (:eval (concat
-                     (mainline-rmw 'left mainline-color3)
-                     (mainline-make 'left (center-format (buffer-name) 20) mainline-color3 mainline-color1)
-                     (mainline-make 'left (my/percentage-from-top 4) mainline-color1)
-                     (mainline-make (quote left) "(%4l : %3c)" mainline-color1 mainline-color2)
-                     (mainline-make 'left mode-name mainline-color2)
-                     (let* ((magic 25)
-                            (vcskip (if vc-mode
-                                        (length vc-mode)
-                                      -1))
-                            (mms (get-interesting-minor-modes))
-                            (skip (- (window-width) (length mms) (length mode-name)
-                                     vcskip (max (length (buffer-name)) 20) magic 12)))
-                       (concat
-                        (mainline-make 'center (make-string skip 32) mainline-color2)
-                        (mainline-make 'right mms mainline-color2)
-                        (mainline-vc 'right mainline-color1 mainline-color2)))
-                     (mainline-make 'right (or current-input-method-title "EN") mainline-color3 mainline-color1)
-                     (mainline-make 'right "%z     " mainline-color3)
-                     ))))
+              '("%e" (:eval (concat
+                             (mainline-rmw 'left mainline-color3)
+                             (mainline-make 'left (center-format (buffer-name) 20) mainline-color3 mainline-color1)
+                             (mainline-make 'left (my/percentage-from-top 4) mainline-color1)
+                             (mainline-make (quote left) "(%4l : %3c)" mainline-color1 mainline-color2)
+                             (mainline-make 'left mode-name mainline-color2)
+                             (let* ((magic 25)
+                                    (vcskip (if vc-mode
+                                                (length vc-mode)
+                                              -1))
+                                    (mms (get-interesting-minor-modes))
+                                    (skip (- (window-width) (length mms) (length mode-name)
+                                             vcskip (max (length (buffer-name)) 20) magic 12)))
+                               (concat
+                                (mainline-make 'center (make-string skip 32) mainline-color2)
+                                (mainline-make 'right mms mainline-color2)
+                                (mainline-vc 'right mainline-color1 mainline-color2)))
+                             (mainline-make 'right (or current-input-method-title "EN") mainline-color3 mainline-color1)
+                             (mainline-make 'right "%z     " mainline-color3)
+                             ))))
 
 ;; bs-show for mouse
 
@@ -471,6 +470,11 @@ and selects that window."
       kept-old-versions 2
       version-control t)       ; use versioned backups
 
+(defun indent-buffer ()
+  "indent whole buffer"
+  (interactive)
+  (indent-region (point-min) (point-max) nil))
+
 (require 'saveplace)
 (setq-default save-place t)
 
@@ -500,4 +504,13 @@ and selects that window."
                 (let ((mark-even-if-inactive transient-mark-mode))
                   (indent-region (region-beginning) (region-end) nil))))))
 
+;; Configure helm
+(defun helm-do-projectile-grep ()
+  (interactive)
+  (helm-do-grep-1 (list (projectile-project-p))
+                  t nil '("*.*")))
 
+;; Configure magit
+;;; Add magit-gh-pulls plugin
+(load "~/.emacs.d/magit-gh-pulls.el")
+(add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)

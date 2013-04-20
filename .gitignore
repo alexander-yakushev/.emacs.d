@@ -8,6 +8,7 @@ nrepl.el/
 games/
 eshell/
 url/
+var/
 ac-comphist.dat
 places
 tramp
