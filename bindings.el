@@ -16,6 +16,8 @@
 (global-set-key (kbd "M-q") 'backward-sentence)
 
 (global-set-key (kbd "M-o") 'occur-at-point)
+(global-set-key (kbd "M-q") 'highlight-symbol-prev)
+(global-set-key (kbd "M-e") 'highlight-symbol-next)
 (global-set-key (kbd "C-o") 'recenter-top-bottom)
 
 ;;; Editing

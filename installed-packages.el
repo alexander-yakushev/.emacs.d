@@ -15,6 +15,7 @@
     idle-highlight-mode
     ido-ubiquitous
     javap-mode
+    highlight-symbol
     key-chord
     legalese
     linum-relative
