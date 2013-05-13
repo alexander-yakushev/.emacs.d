@@ -30,6 +30,7 @@
                                      (reindent-then-newline-and-indent)))
 (global-set-key (kbd "M-\\") 'indent-region)
 (global-set-key (kbd "C-M-\\") 'indent-buffer)
+(global-set-key (kbd "C-c c") 'clone-and-comment-line)
 ;; (global-set-key (kbd "<tab>") 'indent-for-tab-command)
 
 ;;; Buffer manipulation

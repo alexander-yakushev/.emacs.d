@@ -508,3 +508,20 @@ and selects that window."
 ;;; Add magit-gh-pulls plugin
 (load "~/.emacs.d/magit-gh-pulls.el")
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+
+(defun clone-and-comment-line (beg end)
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list nil nil)))
+  (let ((p (point))
+        (beg (or beg (progn
+                       (move-beginning-of-line 1)
+                       (point))))
+        (end (or end (progn
+                       (move-end-of-line 1)
+                       (point)))))
+    (copy-region-as-kill beg end)
+    (comment-region beg end)
+    (goto-char beg)
+    (open-line 1)
+    (yank)))
