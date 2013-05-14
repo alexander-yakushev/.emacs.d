@@ -1,134 +1,164 @@
-;; Global bindings
-;;; Navigation
-(global-set-key (kbd "C-l") 'backward-char)
-(global-set-key (kbd "C-'") 'forward-char)
-(global-set-key (kbd "C-p") 'previous-line)
-(global-set-key (kbd "C-;") 'next-line)
-(global-set-key (kbd "C-M-o") 'er/expand-region)
+(require 'cl)
+(require 'dash)
 
-(global-set-key (kbd "M-l") 'backward-word)
-(global-set-key (kbd "M-'") 'forward-word)
+(defun define-keys (global-map args)
+  ;; (-partition-by-header #'keywordp args)
+  (lexical-let ((defkeys (lambda (map args)
+                           (-map (lambda (x)
+                                   (define-key map (kbd (car x)) (cadr x)))
+                                 (-partition 2 args)))))
+   (-map (lambda (modelist)
+           (if (eq (car modelist) :global)
+               (funcall defkeys global-map (cdr modelist))
+             (lexical-let ((modelist modelist))
+               (add-hook (caddr modelist)
+                         (lambda ()
+                           (funcall defkeys (eval (cadr modelist)) (cdddr modelist)))))))
+         (-partition-by-header #'keywordp args))))
 
-(global-set-key (kbd "C-M-'") 'forward-list)
-(global-set-key (kbd "C-M-l") 'backward-list)
+(define-minor-mode custom-keys-mode
+  "Get your foos in the right places."
+  :lighter "CustomKeys"
+  :keymap (make-sparse-keymap))
 
-(global-set-key (kbd "C-q") 'move-beginning-of-line)
-(global-set-key (kbd "M-q") 'backward-sentence)
+(define-globalized-minor-mode global-custom-keys-mode
+  custom-keys-mode (lambda () (custom-keys-mode 1)))
 
-(global-set-key (kbd "M-o") 'occur-at-point)
-(global-set-key (kbd "M-q") 'highlight-symbol-prev)
-(global-set-key (kbd "M-e") 'highlight-symbol-next)
-(global-set-key (kbd "C-o") 'recenter-top-bottom)
+(global-custom-keys-mode)
 
-;;; Editing
-(global-set-key (kbd "C-z") 'undo)
-(global-set-key (kbd "M-d") 'kill-region)
-(global-set-key (kbd "C-c C-q") 'join-line)
-(global-set-key (kbd "C-=") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-f") 'fill-paragraph)
-(global-set-key (kbd "<f6>") 'whitespace-cleanup)
-(global-set-key (kbd "C-c C-e") 'eval-and-replace)
-(global-set-key (kbd "<C-return>") (lambda () (interactive) (move-end-of-line 1)
-                                     (reindent-then-newline-and-indent)))
-(global-set-key (kbd "M-\\") 'indent-region)
-(global-set-key (kbd "C-M-\\") 'indent-buffer)
-(global-set-key (kbd "C-c c") 'clone-and-comment-line)
-;; (global-set-key (kbd "<tab>") 'indent-for-tab-command)
+(define-keys custom-keys-mode-map
+  '(:global
+    ;; Global bindings
+    ;;; Navigation
+    "C-l" backward-char
+    "C-'" forward-char
+    "C-p" previous-line
+    "C-;" next-line
 
-;;; Buffer manipulation
-(global-set-key (kbd "C-x <C-return>") 'other-window)
-(global-set-key (kbd "C-c a") 'mark-whole-buffer)
-(global-set-key (kbd "C-w") 'kill-buffer-and-its-windows)
+    "M-l" backward-word
+    "M-'" forward-word
 
-;;; Miscellaneous
-(global-set-key (kbd "C-/") 'toggle-input-method)
-(global-set-key (kbd "M-m") 'helm-mini)
-(global-set-key (kbd "C-c M-r") 'query-replace)
-(global-set-key (kbd "<f5>") 'minimap-toggle)
-(global-set-key (kbd "<f8>") 'stupid-encoding)
-(global-set-key (kbd "C-x g") 'magit-status)
+    "C-M-'" forward-list
+    "C-M-l" backward-list
 
-;; Local bindings
-;;; Sunrise
-(global-set-key (kbd "<f7>") 'sunrise)
-(global-set-key (kbd "<C-f7>") 'sunrise-cd)
-(add-hook 'sr-mode-hook
-          (lambda ()
-            (define-key sr-mode-map (kbd "C-;") 'sr-advertised-find-file)
-            (define-key sr-mode-map (kbd ";") 'dired-next-line)
-            (define-key sr-tabs-mode-map (kbd "C-h") (lambda () (interactive) (sr-goto-dir "~/")))
-            (define-key sr-tabs-mode-map (kbd "C-j") 'sr-cycle-bookmark)
-            (define-key sr-tabs-mode-map (kbd "j") 'ido-sunrise)
-            (define-key sr-tabs-mode-map (kbd "C-p") 'sr-dired-prev-subdir)
-            (define-key sr-tabs-mode-map (kbd "C-.") 'sr-tabs-next)
-            (define-key sr-tabs-mode-map (kbd "C-,") 'sr-tabs-prev)
-            (define-key sr-tabs-mode-map (kbd "<f9>") 'sr-open-custom-terminal)))
+    "C-q" move-beginning-of-line
 
-;;; Undo-tree mode
-(global-set-key (kbd "C-\\") 'undo-tree-undo)
-(global-set-key (kbd "C-]") 'undo-tree-redo)
-(eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))
+    "M-o" occur-at-point
+    "M-q" highlight-symbol-prev
+    "M-e" highlight-symbol-next
+    "C-o" recenter-top-bottom
+    "C-M-o" er/expand-region
 
-;; Paredit mode
-(add-hook 'paredit-mode-hook
-          (lambda ()
-            (define-key paredit-mode-map (kbd "M-[") 'paredit-wrap-square)
-            (define-key paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
-            (define-key paredit-mode-map (kbd "M-p") 'paredit-backward-down)
-            (define-key paredit-mode-map (kbd "M-;") 'paredit-forward-down)
-            (define-key paredit-mode-map (kbd "C-M-p") 'paredit-backward-up)
-            (define-key paredit-mode-map (kbd "C-M-;") 'paredit-forward-up)
-            (define-key paredit-mode-map (kbd "M-k") 'kill-line)
-            (define-key paredit-mode-map (kbd "M-d") 'kill-region)))
+    ;;; Editing
+    "C-z" undo
+    "M-d" kill-region
+    "C-c C-q" join-line
+    "C-=" comment-or-uncomment-region
+    "C-f" fill-paragraph
+    "<f6>" whitespace-cleanup
+    "C-c C-r" eval-and-replace
+    "M-\\" indent-region
+    "C-M-\\" indent-buffer
+    "C-c TAB" quoted-insert
+    "C-c c" clone-and-comment-line
 
-;; Flyspell mode
-(eval-after-load "flyspell"
-  '(progn
-     (define-key flyspell-mode-map (kbd "C-;") 'next-line)
-     (define-key flyspell-mode-map (kbd "C-.") 'stesla-rotate-buffers)
-     (define-key flyspell-mode-map (kbd "C-,") (lambda ()
-                                                 (interactive)
-                                                 (stesla-rotate-buffers -1)))))
+    ;;; Buffer manipulation
+    "C-x <C-return>" other-window
+    "C-\\" kill-buffer-and-its-windows
 
-;; Org-mode
-(add-hook 'org-mode-hook
-          (lambda () (define-key org-mode-map (kbd "C-'") 'forward-char)))
+    ;;; Miscellaneous
+    "C-/" toggle-input-method
+    "C-c M-r" query-replace
+    "<f5>" minimap-toggle
+    "<f8>" stupid-encoding
 
-;; HideShow mode
-(global-set-key (kbd "C-h") 'hs-hide-all)
-(global-set-key (kbd "C-S-h") 'hs-show-all)
-(global-set-key (kbd "<C-tab>") 'hs-toggle-hiding)
+    ;; Local bindings
+    ;;; Sunrise
+    :global
+    "<f7>" sunrise
+    "<C-f7>" sunrise-cd
 
-;; Magit mode
-(add-hook 'magit-mode-hook
-          (lambda () (define-key magit-mode-map (kbd ";") 'magit-goto-next-section)))
-(add-hook 'magit-log-mode-hook
-          (lambda ()
-            (define-key magit-log-mode-map (kbd "p") 'previous-line)
-            (define-key magit-log-mode-map (kbd ";") 'next-line)))
+    :local sr-mode-map sr-mode-hook
+    "C-;" sr-advertised-find-file
+    ";" dired-next-line
+    "C-c C-y" (lambda () (interactive)
+                (dired-next-line 1))
 
-;; Read-only modes
-(add-hook 'buffer-menu-mode-hook (lambda () (define-key Buffer-menu-mode-map (kbd ";") 'next-line)))
-(add-hook 'occur-mode-hook
-          (lambda ()
-            (define-key occur-mode-map (kbd ";") 'occur-next)
-            (define-key occur-mode-map (kbd "p") 'occur-prev)
-            (define-key occur-mode-map (kbd "C-p") 'occur-prev)
-            (define-key occur-mode-map (kbd "C-;") 'occur-next)))
+    :local sr-tabs-mode-map sr-mode-hook
+    "C-h" (lambda () (interactive)
+            (sr-goto-dir "~/"))
+    "C-j" sr-cycle-bookmark
+    "j" ido-sunrise
+    "C-p" sr-dired-prev-subdir
+    "<f9>" sr-open-custom-terminal
 
-;; Buffer selection menu
-(global-set-key (kbd "C-x C-l") 'bs-show)
-(add-hook 'bs-mode-hook (lambda () (define-key bs-mode-map (kbd ";") 'next-line)))
-(global-set-key (kbd "<C-down-mouse-1>") 'mouse-bs-show)
+    ;; Undo-tree-mode
+    :global
+    "C-]" undo-tree-redo
+    ;; :local undo-tree-visualizer-map undo-tree-visualizer-
+    ;; (eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))
 
-;; Multiple cursors
-(global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click)
-(global-set-key (kbd "<C-down>") 'mc/mark-next-like-this)
+    ;; Paredit
+    :local paredit-mode-map paredit-mode-hook
+    "M-[" paredit-wrap-square
+    "M-{" paredit-wrap-curly
+    "M-p" paredit-backward-down
+    "M-;" paredit-forward-down
+    "C-M-p" paredit-backward-up
+    "C-M-;" paredit-forward-up
+    "M-k" kill-line
+    "M-d" kill-region
 
-;; Helm
-(global-set-key (kbd "C-c p h") 'helm-do-projectile-grep)
-(add-hook 'helm-grep-mode-hook
-          (lambda ()
-            (define-key helm-c-grep-map (kbd "C-;") 'helm-next-line)
-            (define-key helm-c-grep-map (kbd "M-;") 'helm-c-goto-next-file)
-            (define-key helm-c-grep-map (kbd "M-p") 'helm-c-goto-precedent-file)))
+    ;; Flyspell mode
+    ;; (eval-after-load "flyspell"
+    ;;   '(progn
+    ;;      (define-key flyspell-mode-map (kbd "C-;") 'next-line)
+    ;;      (define-key flyspell-mode-map (kbd "C-.") 'stesla-rotate-buffers)
+    ;;      (define-key flyspell-mode-map (kbd "C-,") (lambda ()
+    ;;                                                  (interactive)
+    ;;                                                  (stesla-rotate-buffers -1)))))
+
+    ;; HideShow mode
+    :global
+    "C-h" hs-hide-all
+    "C-S-h" hs-show-all
+    "<C-tab>" hs-toggle-hiding
+
+    ;; Magit mode
+    :global
+    "C-x g" magit-status
+
+    :local magit-mode-map magit-mode-hook
+    ";" magit-goto-next-section
+
+    :local magit-log-mode-map magit-log-mode-hook
+    "p" previous-line
+    ";" next-line
+
+    ;; bs mode
+    :global
+    "C-x C-l" bs-show
+
+    :local Buffer-menu-mode-map Buffer-menu-mode-hook
+    ";" bs-down
+    "<C-down-mouse-1>" mouse-bs-show
+
+    ;; Occur mode
+    :local occur-mode-map occur-mode-hook
+    ";" occur-next
+    "p" occur-prev
+
+    ;; Multiple cursors
+    "C-S-<mouse-1>" mc/add-cursor-on-click
+    "<C-down>" mc/mark-next-like-this
+
+    ;; Helm
+    :global
+    "M-m" helm-mini
+    "C-c p h" helm-do-projectile-grep
+
+    :local helm-grep-map helm-after-initialize-hook
+    "C-;" helm-next-line
+    "M-;" helm-goto-next-file
+    "M-p" helm-goto-precedent-file
+    ))
