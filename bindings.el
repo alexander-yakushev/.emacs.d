@@ -2,7 +2,6 @@
 (require 'dash)
 
 (defun define-keys (global-map args)
-  ;; (-partition-by-header #'keywordp args)
   (lexical-let ((defkeys (lambda (map args)
                            (-map (lambda (x)
                                    (define-key map (kbd (car x)) (cadr x)))
@@ -51,6 +50,7 @@
 
     ;;; Editing
     "C-z" undo
+    "C-w" backward-kill-word
     "M-d" kill-region
     "C-c C-q" join-line
     "C-=" comment-or-uncomment-region
@@ -65,6 +65,9 @@
     ;;; Buffer manipulation
     "C-x <C-return>" other-window
     "C-\\" kill-buffer-and-its-windows
+    "C-." stesla-rotate-buffers
+    "C-," (lambda () (interactive)
+            (stesla-rotate-buffers -1))
 
     ;;; Miscellaneous
     "C-/" toggle-input-method
@@ -79,8 +82,8 @@
     "<C-f7>" sunrise-cd
 
     :local sr-mode-map sr-mode-hook
-    "C-;" sr-advertised-find-file
     ";" dired-next-line
+    "C-;" sr-advertised-find-file
     "C-c C-y" (lambda () (interactive)
                 (dired-next-line 1))
 
@@ -140,6 +143,9 @@
     "C-x C-l" bs-show
 
     :local Buffer-menu-mode-map Buffer-menu-mode-hook
+    ";" bs-down
+
+    :local bs-mode-map bs-mode-hook
     ";" bs-down
     "<C-down-mouse-1>" mouse-bs-show
 

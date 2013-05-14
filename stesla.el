@@ -66,24 +66,3 @@
        (nth n my-buffer-list)))))
 
 ;; Windows-style C-TAB and C-M-TAB to switch buffers.
-
-(global-set-key (kbd "C-.") 'stesla-rotate-buffers)
-(global-set-key (kbd "C-,") (lambda ()
-                              (interactive)
-                              (stesla-rotate-buffers -1)))
-
-;; This is C-TAB and C-M-TAB for the Linux console.  This requires special
-;; setup; namely, you need to load a keymap file with /usr/bin/loadkeys
-;; containing the following lines:
-;;
-;; control keycode 15 = Macro
-;; control alt keycode 15 = Pause
-;;
-;; If you actually -have- a key that generates the Macro or Pause keysyms,  you
-;; have a better keyboard than I.  For me, this makes Emacs DWIW.  Credit for
-;; this hack goes to Alex Schroeder.
-
-(global-set-key (kbd "ESC [ M") 'stesla-rotate-buffers)
-(global-set-key (kbd "ESC [ P") (lambda ()
-                                  (interactive)
-                                  (stesla-rotate-buffers -1)))
