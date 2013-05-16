@@ -42,6 +42,7 @@
     sunrise-x-checkpoints
     sunrise-x-loop
     sunrise-x-mirror
+    thing-at-point
     undo-tree
     xmlgen
     yasnippet-bundle

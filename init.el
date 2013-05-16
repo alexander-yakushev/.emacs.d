@@ -177,14 +177,7 @@ Display the results in a hyperlinked *compilation* buffer."
 ;; Occur word under the cursor
 (defun occur-at-point ()
   (interactive)
-  (let ((ip (point)))
-    (forward-char)
-    (left-meaningful-word)
-    (let ((p (point)))
-      (right-meaningful-word)
-      (let ((pe (point)))
-        (goto-char ip)
-        (occur (filter-buffer-substring p pe) 1)))))
+  (occur (thing-at-point 'symbol) 1))
 
 ;; Open files with stupid cp1251
 
@@ -283,11 +276,7 @@ Display the results in a hyperlinked *compilation* buffer."
 
 ;; Projectile
 (projectile-global-mode)
-
-(require 'eproject)
-;; Configure eproject
-(define-project-type clojure (generic-git) (look-for "project.clj")
-  :irrelevant-files ("target/" "bin/"))
+(setq projectile-enable-caching t)
 
 ;; Enable recentf
 (require 'recentf)
