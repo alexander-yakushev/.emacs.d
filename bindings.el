@@ -1,19 +1,23 @@
 (require 'cl)
 (require 'dash)
 
-(defun define-keys (global-map args)
-  (lexical-let ((defkeys (lambda (map args)
+(defun define-keys (mode global-map args)
+  (lexical-let ((lmode mode)
+                (defkeys (lambda (map args)
                            (-map (lambda (x)
                                    (define-key map (kbd (car x)) (cadr x)))
                                  (-partition 2 args)))))
-   (-map (lambda (modelist)
-           (if (eq (car modelist) :global)
-               (funcall defkeys global-map (cdr modelist))
-             (lexical-let ((modelist modelist))
-               (add-hook (caddr modelist)
-                         (lambda ()
-                           (funcall defkeys (eval (cadr modelist)) (cdddr modelist)))))))
-         (-partition-by-header #'keywordp args))))
+    (-map (lambda (modelist)
+            (cond
+             ((eq (car modelist) :global) (funcall defkeys global-map (cdr modelist)))
+             ((eq (car modelist) :disable) (-map (lambda (hook)
+                                                   (add-hook hook (lambda () (funcall lmode 0))))
+                                                 (cdr modelist)))
+             (t (lexical-let ((modelist modelist))
+                  (add-hook (caddr modelist)
+                            (lambda ()
+                              (funcall defkeys (eval (cadr modelist)) (cdddr modelist))))))))
+          (-partition-by-header #'keywordp args))))
 
 (define-minor-mode custom-keys-mode
   "Get your foos in the right places."
@@ -23,9 +27,7 @@
 (define-globalized-minor-mode global-custom-keys-mode
   custom-keys-mode (lambda () (custom-keys-mode 1)))
 
-(global-custom-keys-mode)
-
-(define-keys custom-keys-mode-map
+(define-keys 'custom-keys-mode custom-keys-mode-map
   '(:global
     ;; Global bindings
     ;;; Navigation
@@ -49,7 +51,6 @@
     "C-M-o" er/expand-region
 
     ;;; Editing
-    "C-z" undo
     "C-w" backward-kill-word
     "M-d" kill-region
     "C-c C-q" join-line
@@ -97,6 +98,7 @@
 
     ;; Undo-tree-mode
     :global
+    "C-z" undo-tree-undo
     "C-]" undo-tree-redo
     ;; :local undo-tree-visualizer-map undo-tree-visualizer-
     ;; (eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))
@@ -111,6 +113,7 @@
     "C-M-;" paredit-forward-up
     "M-k" kill-line
     "M-d" kill-region
+    "C-w" paredit-backward-kill-word
 
     ;; Flyspell mode
     ;; (eval-after-load "flyspell"
@@ -161,10 +164,23 @@
     ;; Helm
     :global
     "M-m" helm-mini
+    "M-f" projectile-find-file
+    "M-h" helm-do-projectile-grep
     "C-c p h" helm-do-projectile-grep
 
     :local helm-grep-map helm-after-initialize-hook
     "C-;" helm-next-line
     "M-;" helm-goto-next-file
     "M-p" helm-goto-precedent-file
+
+    :disable minibuffer-setup-hook sr-mode-hook
     ))
+
+;; Enable globally
+(global-custom-keys-mode)
+
+;; Don't enable in the following modes
+;; (add-hook 'minibuffer-setup-hook (lambda () (custom-keys-mode 0)))
+;; (add-hook 'sr-mode-hook (lambda () (custom-keys-mode 0)))
+
+;; (eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))
