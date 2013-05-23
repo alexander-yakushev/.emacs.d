@@ -105,6 +105,7 @@
     "M-;" paredit-forward-down
     "C-M-p" paredit-backward-up
     "C-M-;" paredit-forward-up
+    "C-M-q" beginning-of-defun
     "M-k" kill-line
     "M-d" kill-region
     "C-w" paredit-backward-kill-word
@@ -174,4 +175,9 @@
     ;; Grep-mode
     :local grep-mode-map grep-mode-hook
     "q" kill-buffer-and-its-windows
+
+    ;; Elisp-mode
+    :local emacs-lisp-mode-map emacs-lisp-mode-hook
+    "C-c C-e" eval-defun
+    "C-c M-e" eval-and-replace
     ))
