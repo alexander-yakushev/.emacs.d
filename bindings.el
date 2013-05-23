@@ -1,33 +1,28 @@
 (require 'cl)
 (require 'dash)
 
-(defun define-keys (mode global-map args)
-  (lexical-let ((lmode mode)
-                (defkeys (lambda (map args)
+(defun define-keys (args)
+  (lexical-let ((defkeys (lambda (map args)
                            (-map (lambda (x)
-                                   (define-key map (kbd (car x)) (cadr x)))
+                                   (if map
+                                       (define-key map (kbd (car x)) (cadr x))
+                                     (global-set-key (kbd (car x)) (cadr x))))
                                  (-partition 2 args)))))
     (-map (lambda (modelist)
             (cond
-             ((eq (car modelist) :global) (funcall defkeys global-map (cdr modelist)))
-             ((eq (car modelist) :disable) (-map (lambda (hook)
-                                                   (add-hook hook (lambda () (funcall lmode 0))))
-                                                 (cdr modelist)))
+             ((eq (car modelist) :global) (funcall defkeys nil (cdr modelist)))
              (t (lexical-let ((modelist modelist))
-                  (add-hook (caddr modelist)
-                            (lambda ()
-                              (funcall defkeys (eval (cadr modelist)) (cdddr modelist))))))))
+                  (if (stringp (caddr modelist))
+                      (eval-after-load (caddr modelist)
+                        `(-map (lambda (x)
+                                 (define-key ,(cadr modelist) (kbd (car x)) (cadr x)))
+                               (-partition 2 ',(cdddr modelist))))
+                    (add-hook (caddr modelist)
+                              (lambda ()
+                                (funcall defkeys (eval (cadr modelist)) (cdddr modelist)))))))))
           (-partition-by-header #'keywordp args))))
 
-(define-minor-mode custom-keys-mode
-  "Get your foos in the right places."
-  :lighter "CustomKeys"
-  :keymap (make-sparse-keymap))
-
-(define-globalized-minor-mode global-custom-keys-mode
-  custom-keys-mode (lambda () (custom-keys-mode 1)))
-
-(define-keys 'custom-keys-mode custom-keys-mode-map
+(define-keys
   '(:global
     ;; Global bindings
     ;;; Navigation
@@ -85,23 +80,22 @@
     :local sr-mode-map sr-mode-hook
     ";" dired-next-line
     "C-;" sr-advertised-find-file
-    "C-c C-y" (lambda () (interactive)
-                (dired-next-line 1))
-
-    :local sr-tabs-mode-map sr-mode-hook
+    "C-p" sr-dired-prev-subdir
     "C-h" (lambda () (interactive)
             (sr-goto-dir "~/"))
-    "C-j" sr-cycle-bookmark
     "j" ido-sunrise
-    "C-p" sr-dired-prev-subdir
     "<f9>" sr-open-custom-terminal
+
+    :local sr-tabs-mode-map sr-mode-hook
+    "C-j" sr-cycle-bookmark
 
     ;; Undo-tree-mode
     :global
     "C-z" undo-tree-undo
     "C-]" undo-tree-redo
-    ;; :local undo-tree-visualizer-map undo-tree-visualizer-
-    ;; (eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))
+
+    :local undo-tree-map "undo-tree"
+    "C-/" toggle-input-method
 
     ;; Paredit
     :local paredit-mode-map paredit-mode-hook
@@ -116,13 +110,17 @@
     "C-w" paredit-backward-kill-word
 
     ;; Flyspell mode
-    ;; (eval-after-load "flyspell"
-    ;;   '(progn
-    ;;      (define-key flyspell-mode-map (kbd "C-;") 'next-line)
-    ;;      (define-key flyspell-mode-map (kbd "C-.") 'stesla-rotate-buffers)
-    ;;      (define-key flyspell-mode-map (kbd "C-,") (lambda ()
-    ;;                                                  (interactive)
-    ;;                                                  (stesla-rotate-buffers -1)))))
+    :local flyspell-mode-map "flyspell"
+    "C-;" next-line
+    "C-." stesla-rotate-buffers
+    "C-," (lambda () (interactive)
+            (stesla-rotate-buffers -1))
+
+    ;; Org-mode
+    :local org-mode-map org-mode-hook
+    "C-'" forward-char
+    "C-," (lambda () (interactive)
+            (stesla-rotate-buffers -1))
 
     ;; HideShow mode
     :global
@@ -173,14 +171,7 @@
     "M-;" helm-goto-next-file
     "M-p" helm-goto-precedent-file
 
-    :disable minibuffer-setup-hook sr-mode-hook
+    ;; Grep-mode
+    :local grep-mode-map grep-mode-hook
+    "q" kill-buffer-and-its-windows
     ))
-
-;; Enable globally
-(global-custom-keys-mode)
-
-;; Don't enable in the following modes
-;; (add-hook 'minibuffer-setup-hook (lambda () (custom-keys-mode 0)))
-;; (add-hook 'sr-mode-hook (lambda () (custom-keys-mode 0)))
-
-;; (eval-after-load "undo-tree" '(define-key undo-tree-map (kbd "C-/") 'toggle-input-method))

@@ -1,11 +1,14 @@
-(require 'hippie-exp)
+; (require 'hippie-exp)
 
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+            '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("SC"  . "http://joseito.republika.pl/sunrise-commander/") t)
+            '("SC"  . "http://joseito.republika.pl/sunrise-commander/") t)
 (package-initialize)
+
+(set-face-attribute 'default nil
+                   :family "Menlo" :height 145 :weight 'normal)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -17,16 +20,18 @@
  '(clojure-swank-command "echo \"lein2 jack-in %s\" | $SHELL -l")
  '(default-input-method "ukrainian-computer")
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
+ '(find-directory-functions (quote (sr-dired cvs-dired-noselect dired-noselect)))
  '(font-lock-maximum-decoration (quote ((dired-mode) (sunrise) (t . t))))
+ '(highlight-symbol-idle-delay 0.5)
  '(inferior-lisp-program "sbcl")
- '(ispell-program-name "/usr/bin/aspell")
+ '(ispell-program-name "aspell")
  '(ls-lisp-verbosity (quote (links uid gid)))
  '(midnight-mode t nil (midnight))
  '(minimap-width-fraction 0.1)
  '(minimap-window-location (quote right))
  '(nrepl-lein-command "lein2")
  '(nrepl-server-command "echo \"lein2 repl :headless\" | $SHELL -l")
- '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jp?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
+ '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
  '(openwith-mode t)
  '(package-archives (quote (("gnu" . "http://elpa.gnu.org/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("SC" . "http://joseito.republika.pl/sunrise-commander/") ("melpa" . "http://melpa.milkbox.net/packages/"))))
  '(pop-up-windows nil)
@@ -42,20 +47,22 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
  '(minimap-active-region-background ((t (:background "#494949"))) t)
- '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))))
- '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120)))))
+ '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))) t)
+ '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120))) t))
 
 (load-file "~/.emacs.d/installed-packages.el")
 (mapc
- (lambda (package)
-   (or (package-installed-p package)
-       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
-           (package-install package))))
- unlogic-installed-packages)
+(lambda (package)
+  (or (package-installed-p package)
+      (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+          (package-install package))))
+unlogic-installed-packages)
 
-(load-file "~/.emacs.d/bindings.el")
+(add-hook 'after-init-hook (lambda ()
+                             (load-file "~/.emacs.d/bindings.el")))
+
 
 ;; Start from userdir
 (cd "~")
@@ -123,10 +130,10 @@ BUFFER may be either a buffer or its name (a string)."
 (load-file "~/.emacs.d/stesla.el")
 
 ;; nREPL mode
-(load-file "~/.emacs.d/nrepl.el/nrepl.el")
-(setq nrepl-popup-stacktraces nil)
+;; (load-file "~/.emacs.d/nrepl.el/nrepl.el")
+;; (setq nrepl-popup-stacktraces nil)
 
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+;; (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
 
 ;; Openwith mode
 (openwith-mode t)
@@ -271,8 +278,8 @@ Display the results in a hyperlinked *compilation* buffer."
            (insert (current-kill 0)))))
 
 ;; Init YASnippet
-(yas/load-directory "~/.emacs.d/snippets")
-(load "~/.emacs.d/clojure-utils.el")
+;; (yas/load-directory "~/.emacs.d/snippets")
+;; (load "~/.emacs.d/clojure-utils.el")
 
 ;; Projectile
 (projectile-global-mode)
@@ -330,7 +337,7 @@ Display the results in a hyperlinked *compilation* buffer."
      " +" " "
      (reduce (lambda (s mode)
                (replace-regexp-in-string mode "" s))
-             '("Undo-Tree" "Projectile" "WS" "Fill" "hs")
+             '("Projectile" "WS" "Fill" "hs" "Undo-Tree")
              :initial-value
              (format-mode-line minor-mode-alist))))))
 
@@ -483,7 +490,7 @@ and selects that window."
                                                      rspec-mode      python-mode
                                                      c-mode          c++-mode
                                                      objc-mode       latex-mode
-                                                     plain-tex-mode))
+                                                     plain-tex-mode  lua-mode))
                 (let ((mark-even-if-inactive transient-mark-mode))
                   (indent-region (region-beginning) (region-end) nil))))))
 
@@ -497,6 +504,21 @@ and selects that window."
 ;;; Add magit-gh-pulls plugin
 (load "~/.emacs.d/magit-gh-pulls.el")
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+
+(defun vc-git-annotate-command (file buf &optional rev)
+  (let ((name (file-relative-name file)))
+    (vc-git-command buf 'async nil "blame" "--date=short" "-C" "-C" rev "--" name)))
+
+(when (equal system-type 'darwin)
+  (setenv "PATH" (concat "/opt/local/bin:/usr/local/bin:/usr/local/git/bin:" (getenv "PATH")))
+  (push "/usr/local/bin" exec-path)
+  (push "/usr/local/git/bin" exec-path)
+  (setq ispell-dictionary-alist
+        '((nil
+           "[A-Za-z]" "[^A-Za-z]" "[']" nil
+           ("-B" "-d" "english" "--dict-dir"
+            "/Library/Application Support/cocoAspell/aspell6-en-6.0-0")
+           nil iso-8859-1))))
 
 (defun clone-and-comment-line (beg end)
   (interactive (if (use-region-p)
