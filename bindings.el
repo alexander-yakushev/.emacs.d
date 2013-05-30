@@ -80,7 +80,6 @@
     :local sr-mode-map sr-mode-hook
     ";" dired-next-line
     "C-;" sr-advertised-find-file
-    "C-p" sr-dired-prev-subdir
     "C-h" (lambda () (interactive)
             (sr-goto-dir "~/"))
     "j" ido-sunrise
@@ -88,6 +87,7 @@
 
     :local sr-tabs-mode-map sr-mode-hook
     "C-j" sr-cycle-bookmark
+    "C-p" sr-dired-prev-subdir
 
     ;; Undo-tree-mode
     :global
@@ -120,6 +120,7 @@
     ;; Org-mode
     :local org-mode-map org-mode-hook
     "C-'" forward-char
+    "M-h" helm-do-projectile-grep
     "C-," (lambda () (interactive)
             (stesla-rotate-buffers -1))
 
