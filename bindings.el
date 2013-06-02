@@ -106,6 +106,7 @@
     "C-M-p" paredit-backward-up
     "C-M-;" paredit-forward-up
     "C-M-q" beginning-of-defun
+    "M-q" highlight-symbol-prev
     "M-k" kill-line
     "M-d" kill-region
     "C-w" paredit-backward-kill-word
