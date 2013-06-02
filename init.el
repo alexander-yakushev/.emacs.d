@@ -24,10 +24,14 @@
  '(midnight-mode t nil (midnight))
  '(minimap-width-fraction 0.1)
  '(minimap-window-location (quote right))
- '(nrepl-lein-command "lein2")
- '(nrepl-server-command "echo \"lein2 repl :headless\" | $SHELL -l")
+ '(nrepl-lein-command "lein")
+ '(nrepl-server-command "echo \"lein repl :headless\" | $SHELL -l")
  '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jp?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
  '(openwith-mode t)
+ '(org-directory "~/Documents/Notes/")
+ '(org-mobile-directory "~/Dropbox/SharedData/Notes/")
+ '(org-mobile-files (quote (org-agenda-files "~/Documents/Notes/gsoc.org" "~/Documents/Notes/life.org")))
+ '(org-mobile-inbox-for-pull "~/Documents/Notes/from-mobile.org")
  '(package-archives (quote (("gnu" . "http://elpa.gnu.org/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("SC" . "http://joseito.republika.pl/sunrise-commander/") ("melpa" . "http://melpa.milkbox.net/packages/"))))
  '(pop-up-windows nil)
  '(recentf-auto-cleanup (quote never))
@@ -124,6 +128,7 @@ BUFFER may be either a buffer or its name (a string)."
 
 ;; nREPL mode
 (load-file "~/.emacs.d/nrepl.el/nrepl.el")
+(load-file "~/.emacs.d/nrepl-inspect.el")
 (setq nrepl-popup-stacktraces nil)
 
 (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
@@ -467,7 +472,7 @@ and selects that window."
 
 (global-linum-mode t)
 (require 'linum-relative)
-(setq lua-indent-level 4)
+(setq lua-indent-level 3)
 
 (require 'key-chord)
 (key-chord-mode 1)
@@ -488,10 +493,14 @@ and selects that window."
                   (indent-region (region-beginning) (region-end) nil))))))
 
 ;; Configure helm
+(require 'helm)
 (defun helm-do-projectile-grep ()
   (interactive)
   (helm-do-grep-1 (list (projectile-project-p))
                   t nil '("*.*")))
+
+;; (setq helm-grep-default-command "ag -n --nogroup %p"
+;;       helm-grep-default-recurse-command "ag --nocolor --nogroup -n %p %f")
 
 ;; Configure magit
 ;;; Add magit-gh-pulls plugin

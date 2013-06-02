@@ -1,7 +1,11 @@
+(require 's)
+
 (defun clj-ns ()
-  (let ((fname (buffer-file-name)))
-    (string-match (concat (projectile-project-p) "src/\\(.+\\)\\\.clj") fname)
-    (replace-regexp-in-string "/" "." (match-string 1 fname))))
+  (replace-regexp-in-string "/" "."
+                            (cadr
+                             (s-match (concat (projectile-project-p) "src/\\(.+\\)\\\.clj")
+                                      (replace-regexp-in-string "/home/\\(\\w+\\)/" "~/" (buffer-file-name))))))
+
 
 (defun curr-sexp-fn ()
   (condition-case nil

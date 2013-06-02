@@ -182,4 +182,8 @@
     :local emacs-lisp-mode-map emacs-lisp-mode-hook
     "C-c C-e" eval-defun
     "C-c M-e" eval-and-replace
+
+    ;; Package mode
+    :local package-menu-mode-map package-menu-mode-hook
+    ";" next-line
     ))
