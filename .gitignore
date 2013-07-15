@@ -7,6 +7,8 @@ swank/
 nrepl.el/
 games/
 eshell/
+thumbs/
+image-dired/
 url/
 var/
 ac-comphist.dat

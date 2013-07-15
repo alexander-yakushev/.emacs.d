@@ -18,6 +18,7 @@
  '(default-input-method "ukrainian-computer")
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
  '(font-lock-maximum-decoration (quote ((dired-mode) (sunrise) (t . t))))
+ '(global-whitespace-mode t)
  '(inferior-lisp-program "sbcl")
  '(ispell-program-name "/usr/bin/aspell")
  '(ls-lisp-verbosity (quote (links uid gid)))
@@ -25,6 +26,8 @@
  '(minimap-width-fraction 0.1)
  '(minimap-window-location (quote right))
  '(nrepl-lein-command "lein")
+ '(nrepl-popup-on-error t)
+ '(nrepl-popup-stacktraces t)
  '(nrepl-server-command "echo \"lein repl :headless\" | $SHELL -l")
  '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jp?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
  '(openwith-mode t)
@@ -34,8 +37,9 @@
  '(org-mobile-inbox-for-pull "~/Documents/Notes/from-mobile.org")
  '(package-archives (quote (("gnu" . "http://elpa.gnu.org/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("SC" . "http://joseito.republika.pl/sunrise-commander/") ("melpa" . "http://melpa.milkbox.net/packages/"))))
  '(pop-up-windows nil)
+ '(projectile-enable-caching nil)
  '(recentf-auto-cleanup (quote never))
- '(recentf-max-saved-items 200)
+ '(recentf-max-saved-items 20000)
  '(sr-attributes-display-mask (quote (nil nil nil nil t nil nil nil t)))
  '(sr-avfs-root "/avfs")
  '(sr-listing-switches "-alh")
@@ -116,9 +120,6 @@ BUFFER may be either a buffer or its name (a string)."
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (ac-config-default)
 (setq ac-auto-start 4)
-
-;; Auto whitespace
-(global-whitespace-mode)
 
 ;; Auto undo-tree
 (global-undo-tree-mode)
@@ -339,6 +340,12 @@ Display the results in a hyperlinked *compilation* buffer."
              :initial-value
              (format-mode-line minor-mode-alist))))))
 
+(defun get-project-and-branch ()
+  (let ((pn (and (projectile-project-p) (projectile-project-name))))
+    (cond ((and vc-mode pn) (concat pn ":" (replace-regexp-in-string ".+[:-]" "" vc-mode)))
+          (vc-mode (replace-regexp-in-string ".+[:-]" "" vc-mode))
+          (pn pn))))
+
 (setq-default mode-line-format
               '("%e" (:eval (concat
                              (mainline-rmw 'left mainline-color3)
@@ -347,8 +354,9 @@ Display the results in a hyperlinked *compilation* buffer."
                              (mainline-make (quote left) "(%4l : %3c)" mainline-color1 mainline-color2)
                              (mainline-make 'left mode-name mainline-color2)
                              (let* ((magic 25)
-                                    (vcskip (if vc-mode
-                                                (length vc-mode)
+                                    (vc (get-project-and-branch))
+                                    (vcskip (if vc
+                                                (- (length vc) 2)
                                               -1))
                                     (mms (get-interesting-minor-modes))
                                     (skip (- (window-width) (length mms) (length mode-name)
@@ -356,7 +364,7 @@ Display the results in a hyperlinked *compilation* buffer."
                                (concat
                                 (mainline-make 'center (make-string skip 32) mainline-color2)
                                 (mainline-make 'right mms mainline-color2)
-                                (mainline-vc 'right mainline-color1 mainline-color2)))
+                                (mainline-make 'right vc mainline-color1 mainline-color2)))
                              (mainline-make 'right (or current-input-method-title "EN") mainline-color3 mainline-color1)
                              (mainline-make 'right "%z     " mainline-color3)
                              ))))
@@ -507,6 +515,16 @@ and selects that window."
 (load "~/.emacs.d/magit-gh-pulls.el")
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
+(defun vc-annotate-show-commit-at-line ()
+  (interactive)
+  (let* ((rev (car (vc-annotate-extract-revision-at-line)))
+         (rev (if (string= (substring rev 0 1) "^")
+                  (substring rev 1)
+                rev)))
+    (magit-show-commit rev)))
+
+(vc-annotate-show-commit-at-line)
+
 (defun clone-and-comment-line (beg end)
   (interactive (if (use-region-p)
                    (list (region-beginning) (region-end))
@@ -523,3 +541,9 @@ and selects that window."
     (goto-char beg)
     (open-line 1)
     (yank)))
+
+;; Enable flyspell-prog-mode for programming languages
+(add-hook 'clojure-mode-hook 'flyspell-prog-mode)
+(add-hook 'java-mode-hook 'flyspell-prog-mode)
+(add-hook 'lua-mode-hook 'flyspell-prog-mode)
+(add-hook 'lisp-mode-hook 'flyspell-prog-mode)

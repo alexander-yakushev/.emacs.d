@@ -111,6 +111,16 @@
     "M-d" kill-region
     "C-w" paredit-backward-kill-word
 
+    ;; nrepl
+    :local nrepl-mode-map nrepl-mode-hook
+    "C-c C-e" nrepl-eval-expression-at-point
+
+    :local nrepl-inspector-mode-map "nrepl-inspect.el"
+    ";" nrepl-inspector-next-inspectable-object
+    "p" nrepl-inspector-previous-inspectable-object
+    "C-;" nrepl-inspector-operate-on-point
+    "C-p" nrepl-inspector-pop
+
     ;; Flyspell mode
     :local flyspell-mode-map "flyspell"
     "C-;" next-line
@@ -142,6 +152,9 @@
     "p" previous-line
     ";" next-line
 
+    :local vc-annotate-mode-map vc-annotate-mode-hook
+    "c" vc-annotate-show-commit-at-line
+
     ;; bs mode
     :global
     "C-x C-l" bs-show
@@ -159,13 +172,15 @@
     "p" occur-prev
 
     ;; Multiple cursors
+    :global
     "C-S-<mouse-1>" mc/add-cursor-on-click
     "<C-down>" mc/mark-next-like-this
+    "C-c m" mc/mark-all-like-this-dwim
 
     ;; Helm
     :global
     "M-m" helm-mini
-    "M-f" projectile-find-file
+    "M-f" find-file-in-project
     "M-h" helm-do-projectile-grep
     "C-c p h" helm-do-projectile-grep
 

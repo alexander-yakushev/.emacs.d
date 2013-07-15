@@ -249,6 +249,6 @@ that value.
 ;;                    (get-text-property point 'nrepl-range-button)
 ;;                    (get-text-property point 'nrepl-action-number)))
            (goto-char point)
-           (slime-inspector-operate-on-point))
+           (nrepl-inspector-operate-on-point))
           (t
            (error "No clickable part here")))))
