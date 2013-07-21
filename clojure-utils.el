@@ -1,11 +1,10 @@
 (require 's)
 
 (defun clj-ns ()
-  (replace-regexp-in-string "/" "."
-                            (cadr
-                             (s-match (concat (projectile-project-p) "src/\\(.+\\)\\\.clj")
-                                      (replace-regexp-in-string "/home/\\(\\w+\\)/" "~/" (buffer-file-name))))))
-
+  (replace-regexp-in-string
+   "/" "."
+   (cadr (s-match (concat (projectile-project-p) "src/\\(.+\\)\\\.clj")
+                  (buffer-file-name)))))
 
 (defun curr-sexp-fn ()
   (condition-case nil
