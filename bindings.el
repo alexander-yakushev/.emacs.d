@@ -57,6 +57,7 @@
     "C-M-\\" indent-buffer
     "C-c TAB" quoted-insert
     "C-c c" clone-and-comment-line
+    "M-c" just-one-space
 
     ;;; Buffer manipulation
     "C-x <C-return>" other-window
@@ -70,6 +71,9 @@
     "C-c M-r" query-replace
     "<f5>" minimap-toggle
     "<f8>" stupid-encoding
+    "C-c d" (lambda () (interactive)
+              (ediff-windows-linewise t))
+    "M-SPC" auto-complete
 
     ;; Local bindings
     ;;; Sunrise
@@ -180,7 +184,7 @@
     ;; Helm
     :global
     "M-m" helm-mini
-    "M-f" find-file-in-project
+    "M-f" projectile-find-file
     "M-h" helm-do-projectile-grep
     "C-c p h" helm-do-projectile-grep
 

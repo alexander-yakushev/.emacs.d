@@ -12,6 +12,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ac-auto-show-menu 0.0)
+ '(ac-auto-start nil)
+ '(ac-quick-help-delay 0.5)
+ '(ac-trigger-key "TAB")
  '(clean-buffer-list-delay-general 1)
  '(clojure-defun-indents (quote (on-ui\ set-content-view!)))
  '(clojure-swank-command "echo \"lein2 jack-in %s\" | $SHELL -l")
@@ -32,7 +36,7 @@
  '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jp?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
- '(org-mobile-directory "~/Dropbox/SharedData/Notes/")
+ '(org-mobile-directory "~/ownCloud/Notes")
  '(org-mobile-files (quote (org-agenda-files "~/Documents/Notes/gsoc.org" "~/Documents/Notes/life.org")))
  '(org-mobile-inbox-for-pull "~/Documents/Notes/from-mobile.org")
  '(package-archives (quote (("gnu" . "http://elpa.gnu.org/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("SC" . "http://joseito.republika.pl/sunrise-commander/") ("melpa" . "http://melpa.milkbox.net/packages/"))))
@@ -68,16 +72,30 @@
 ;; Start from userdir
 (cd "~")
 
-;; SLIME
-;; (add-to-list 'load-path "~/.emacs.d/slime")
-;; (require 'slime)
-;; (slime-setup '(slime-fancy))
+;; Autocomplete-nrepl-compliment
 
-;; ;; Autocomplete-SLIME
-;; (require 'ac-slime)
-;; (add-hook 'slime-mode-hook 'set-up-slime-ac)
-;; (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-;; (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'slime-repl-mode))
+(load "~/.emacs.d/ac-nrepl-compliment/ac-nrepl-compliment.el")
+(require 'ac-nrepl-compliment)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-compliment-setup)
+(add-hook 'nrepl-mode-hook 'ac-flyspell-workaround)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-compliment-setup)
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'nrepl-mode))
+
+;; (load "~/.emacs.d/ac-nrepl/ac-nrepl.el")
+;; (require 'ac-nrepl)
+;; (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+;; (add-hook 'nrepl-mode-hook 'ac-flyspell-workaround)
+;; (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+;; (add-hook 'nrepl-connected-hook 'ac-nrepl-require-complete-core)
+;; (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions '(auto-complete)))
+
+(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'nrepl-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'nrepl-interaction-mode-hook 'set-auto-complete-as-completion-at-point-function)
 
 (defun kill-buffer-and-its-windows ()
   "Kill BUFFER and delete its windows.  Default is `current-buffer'.
@@ -282,14 +300,13 @@ Display the results in a hyperlinked *compilation* buffer."
 
 ;; Projectile
 (projectile-global-mode)
-(setq projectile-enable-caching t)
 
 ;; Enable recentf
 (require 'recentf)
 (recentf-mode 1)
 
 ;; General config
-(setq require-final-newline t)
+(setq-default require-final-newline t)
 
 (setq-default scroll-margin 1
               scroll-conservatively 0
@@ -328,17 +345,25 @@ Display the results in a hyperlinked *compilation* buffer."
 ;; "#293B3A"))
 
 (defun get-interesting-minor-modes ()
-  (replace-regexp-in-string
-   " $" ""
-   (replace-regexp-in-string
-    "^ " ""
+  (let ((mms (format-mode-line minor-mode-alist)))
+   (propertize
     (replace-regexp-in-string
-     " +" " "
-     (reduce (lambda (s mode)
-               (replace-regexp-in-string mode "" s))
-             '("Undo-Tree" "Projectile" "WS" "Fill" "hs")
-             :initial-value
-             (format-mode-line minor-mode-alist))))))
+     " $" ""
+     (replace-regexp-in-string
+      " +" " "
+      (reduce (lambda (s mode)
+                (replace-regexp-in-string mode "" s))
+              '("Undo-Tree" "Projectile" "WS" "Fill" "hs"
+                "SliNav" "Paredit" "ElDoc" "Hi")
+              :initial-value
+              mms)))
+    'help-echo mms)))
+
+(defun trimmed-buffer-name (bn n)
+  (let* ((l (length bn)))
+    (if (> l n)
+        (concat ".." (substring bn (- l (- n 2))))
+      bn)))
 
 (defun get-project-and-branch ()
   (let ((pn (and (projectile-project-p) (projectile-project-name))))
@@ -346,28 +371,57 @@ Display the results in a hyperlinked *compilation* buffer."
           (vc-mode (replace-regexp-in-string ".+[:-]" "" vc-mode))
           (pn pn))))
 
+(defun org-clock-working-on-project ()
+  (org-propertize
+   (concat (if org-clock-mode-line-timer "+" "-") org-clock-heading)
+   'local-map org-clock-mode-line-map
+   'mouse-face 'mode-line-highlight))
+
 (setq-default mode-line-format
-              '("%e" (:eval (concat
-                             (mainline-rmw 'left mainline-color3)
-                             (mainline-make 'left (center-format (buffer-name) 20) mainline-color3 mainline-color1)
-                             (mainline-make 'left (my/percentage-from-top 4) mainline-color1)
-                             (mainline-make (quote left) "(%4l : %3c)" mainline-color1 mainline-color2)
-                             (mainline-make 'left mode-name mainline-color2)
-                             (let* ((magic 25)
-                                    (vc (get-project-and-branch))
-                                    (vcskip (if vc
-                                                (- (length vc) 2)
-                                              -1))
-                                    (mms (get-interesting-minor-modes))
-                                    (skip (- (window-width) (length mms) (length mode-name)
-                                             vcskip (max (length (buffer-name)) 20) magic 12)))
-                               (concat
-                                (mainline-make 'center (make-string skip 32) mainline-color2)
-                                (mainline-make 'right mms mainline-color2)
-                                (mainline-make 'right vc mainline-color1 mainline-color2)))
-                             (mainline-make 'right (or current-input-method-title "EN") mainline-color3 mainline-color1)
-                             (mainline-make 'right "%z     " mainline-color3)
-                             ))))
+              '("%e" (:eval
+                      (let* ((classic-bn-length 20)
+                             (ww (window-width))
+                             (full-buffer-name (center-format (buffer-name) classic-bn-length))
+                             (position-length 16)
+                             (vc (get-project-and-branch))
+                             (vc-length (if vc (+ 3 (length vc)) 2))
+                             (mms (get-interesting-minor-modes))
+                             (mms-length (length mms))
+                             (mms-length (if (> mms-length 0) (+ 3 mms-length) 2))
+                             (total-length (+ 3 (length full-buffer-name) 3 position-length 3
+                                              (length mode-name) 1
+                                              mms-length vc-length 3 -2))
+                             (cut-down (< ww total-length))
+                             (space-for-buffer-name (+ (length full-buffer-name)
+                                                       (- ww (- total-length mms-length
+                                                                vc-length))))
+                             (real-buffer-name (if cut-down
+                                                   (center-format (trimmed-buffer-name (buffer-name) space-for-buffer-name)
+                                                                  (min classic-bn-length space-for-buffer-name))
+                                                 full-buffer-name))
+                             (total-length (if cut-down
+                                               (+ (- total-length mms-length
+                                                     vc-length (length full-buffer-name))
+                                                  (length real-buffer-name))
+                                             total-length))
+                             (skip-space (- ww total-length)))
+                        (concat
+                         (mainline-rmw 'left mainline-color3)
+                         (mainline-make 'left real-buffer-name mainline-color3 mainline-color1)
+                         (mainline-make 'left (my/percentage-from-top 3) mainline-color1)
+                         (mainline-make 'left "(%4l : %3c)" mainline-color1 mainline-color2)
+                         (mainline-make 'left mode-name mainline-color2)
+                         (mainline-make 'center (make-string skip-space 32) mainline-color2)
+                         (if cut-down
+                             (mainline-make 'center " " mainline-color2)
+                           (concat
+                            (mainline-make 'right mms mainline-color2)
+                            (mainline-make 'right vc mainline-color1 mainline-color2)))
+                         (mainline-make 'right (or current-input-method-title "EN")
+                                        mainline-color3 (if cut-down
+                                                            mainline-color2
+                                                          mainline-color1))
+                         (mainline-make 'right "%z     " mainline-color3))))))
 
 ;; bs-show for mouse
 
@@ -515,15 +569,16 @@ and selects that window."
 (load "~/.emacs.d/magit-gh-pulls.el")
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
+(defun rev-at-line ()
+  (vc-annotate-extract-revision-at-line))
+
 (defun vc-annotate-show-commit-at-line ()
   (interactive)
-  (let* ((rev (car (vc-annotate-extract-revision-at-line)))
+  (let* ((rev (car (rev-at-line)))
          (rev (if (string= (substring rev 0 1) "^")
                   (substring rev 1)
                 rev)))
     (magit-show-commit rev)))
-
-(vc-annotate-show-commit-at-line)
 
 (defun clone-and-comment-line (beg end)
   (interactive (if (use-region-p)
@@ -547,3 +602,12 @@ and selects that window."
 (add-hook 'java-mode-hook 'flyspell-prog-mode)
 (add-hook 'lua-mode-hook 'flyspell-prog-mode)
 (add-hook 'lisp-mode-hook 'flyspell-prog-mode)
+
+(load "~/.emacs.d/smali-mode.el")
+(require 'smali-mode)
+
+(add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
+
+;; Google Translate
+
+(require 'google-translate)
