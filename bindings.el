@@ -39,7 +39,7 @@
 
     "C-q" move-beginning-of-line
 
-    "M-o" occur-at-point
+    "M-o" helm-swoop
     "M-q" highlight-symbol-prev
     "M-e" highlight-symbol-next
     "C-o" recenter-top-bottom
@@ -48,6 +48,7 @@
     ;;; Editing
     "C-w" backward-kill-word
     "M-d" kill-region
+    "C-b" kill-whole-line
     "C-c C-q" join-line
     "C-=" comment-or-uncomment-region
     "C-f" fill-paragraph
@@ -65,12 +66,12 @@
     "C-." stesla-rotate-buffers
     "C-," (lambda () (interactive)
             (stesla-rotate-buffers -1))
+    "C-n" create-temp-buffer
 
     ;;; Miscellaneous
     "C-/" toggle-input-method
     "C-c M-r" query-replace
     "<f5>" minimap-toggle
-    "<f8>" stupid-encoding
     "C-c d" (lambda () (interactive)
               (ediff-windows-linewise t))
     "M-SPC" auto-complete
@@ -115,15 +116,15 @@
     "M-d" kill-region
     "C-w" paredit-backward-kill-word
 
-    ;; nrepl
-    :local nrepl-mode-map nrepl-mode-hook
-    "C-c C-e" nrepl-eval-expression-at-point
+    ;; cider-inspector
+    :local cider-mode-map cider-mode-hook
+    "C-c i" cider-inspect
 
-    :local nrepl-inspector-mode-map "nrepl-inspect.el"
-    ";" nrepl-inspector-next-inspectable-object
-    "p" nrepl-inspector-previous-inspectable-object
-    "C-;" nrepl-inspector-operate-on-point
-    "C-p" nrepl-inspector-pop
+    :local cider-inspector-mode-map "cider-inspect.el"
+    ";" cider-inspector-next-inspectable-object
+    "p" cider-inspector-previous-inspectable-object
+    "C-;" cider-inspector-operate-on-point
+    "C-p" cider-inspector-pop
 
     ;; Flyspell mode
     :local flyspell-mode-map "flyspell"
@@ -132,12 +133,17 @@
     "C-," (lambda () (interactive)
             (stesla-rotate-buffers -1))
 
+    ;; Flymake mode
+    :global
+    "C-x ," flymake-goto-next-error
+
     ;; Org-mode
     :local org-mode-map org-mode-hook
     "C-'" forward-char
     "M-h" helm-do-projectile-grep
     "C-," (lambda () (interactive)
             (stesla-rotate-buffers -1))
+    "C-c 9" org-insert-codeblock
 
     ;; HideShow mode
     :global
@@ -148,6 +154,7 @@
     ;; Magit mode
     :global
     "C-x g" magit-status
+    "<f8>" magit-blame-mode
 
     :local magit-mode-map magit-mode-hook
     ";" magit-goto-next-section
@@ -155,6 +162,9 @@
     :local magit-log-mode-map magit-log-mode-hook
     "p" previous-line
     ";" next-line
+
+    :local magit-blame-map "magit-blame"
+    ";" magit-blame-next-chunk
 
     :local vc-annotate-mode-map vc-annotate-mode-hook
     "c" vc-annotate-show-commit-at-line
@@ -175,6 +185,10 @@
     ";" occur-next
     "p" occur-prev
 
+    ;; Helm-swoop mode
+    :local helm-swoop-map "helm-swoop"
+    "C-;" helm-next-line
+
     ;; Multiple cursors
     :global
     "C-S-<mouse-1>" mc/add-cursor-on-click
@@ -185,10 +199,15 @@
     :global
     "M-m" helm-mini
     "M-f" projectile-find-file
-    "M-h" helm-do-projectile-grep
+    "M-h" helm-git-grep
     "C-c p h" helm-do-projectile-grep
 
     :local helm-grep-map helm-after-initialize-hook
+    "C-;" helm-next-line
+    "M-;" helm-goto-next-file
+    "M-p" helm-goto-precedent-file
+
+    :local helm-git-grep-map "helm-git-grep"
     "C-;" helm-next-line
     "M-;" helm-goto-next-file
     "M-p" helm-goto-precedent-file
@@ -205,4 +224,14 @@
     ;; Package mode
     :local package-menu-mode-map package-menu-mode-hook
     ";" next-line
+
+    :local octave-mode-map octave-mode-hook
+    "C-c C-c" octave-send-region
+    "C-x C-e" octave-send-line
+
+    :local LaTeX-mode-map LaTeX-mode-hook
+    "C-c C-a" TeX-texify
+
+    :global
+    "C-x t" thesaurus-choose-synonym-and-replace
     ))

@@ -12,50 +12,68 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(LaTeX-command-style (quote (("" "%(PDF)%(latex) -file-line-error %S%(PDFout)"))))
  '(ac-auto-show-menu 0.0)
  '(ac-auto-start nil)
  '(ac-quick-help-delay 0.5)
  '(ac-trigger-key "TAB")
+ '(ansi-color-faces-vector [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector (vector "#c5c8c6" "#cc6666" "#b5bd68" "#f0c674" "#81a2be" "#b294bb" "#8abeb7" "#1d1f21"))
+ '(bibtex-dialect (quote biblatex))
  '(clean-buffer-list-delay-general 1)
- '(clojure-defun-indents (quote (on-ui\ set-content-view!)))
- '(clojure-swank-command "echo \"lein2 jack-in %s\" | $SHELL -l")
+ '(clojure-defun-indents (quote (on-ui\ set-content-view!\ let-mutable)))
+ '(create-lockfiles nil)
+ '(custom-enabled-themes (quote (sanityinc-tomorrow-eighties)))
+ '(custom-safe-themes (quote ("bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "c5207e7b8cc960e08818b95c4b9a0c870d91db3eaf5959dd4eba09098b7f232b" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
  '(default-input-method "ukrainian-computer")
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
+ '(eldoc-idle-delay 1)
+ '(fci-rule-color "#282a2e")
+ '(fill-column 80)
+ '(find-directory-functions (quote (cvs-dired-noselect dired-noselect sr-dired)))
+ '(flymake-start-syntax-check-on-newline nil)
  '(font-lock-maximum-decoration (quote ((dired-mode) (sunrise) (t . t))))
  '(global-whitespace-mode t)
  '(inferior-lisp-program "sbcl")
  '(ispell-program-name "/usr/bin/aspell")
+ '(latex-block-names (quote ("dmath" "lstlisting")))
  '(ls-lisp-verbosity (quote (links uid gid)))
+ '(magit-time-format-string "%b %d, %Y %T")
  '(midnight-mode t nil (midnight))
  '(minimap-width-fraction 0.1)
  '(minimap-window-location (quote right))
- '(nrepl-lein-command "lein")
- '(nrepl-popup-on-error t)
- '(nrepl-popup-stacktraces t)
- '(nrepl-server-command "echo \"lein repl :headless\" | $SHELL -l")
- '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jp?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)))))
+ '(openwith-associations (quote (("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file)) ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file)) ("\\.\\(?:jpe?g\\|png\\)\\'" "feh" (file)) ("\\.odt\\'" "lowriter" (file)) ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file)) ("\\.svg\\'" "display" (file)))))
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
  '(org-mobile-directory "~/ownCloud/Notes")
  '(org-mobile-files (quote (org-agenda-files "~/Documents/Notes/gsoc.org" "~/Documents/Notes/life.org")))
  '(org-mobile-inbox-for-pull "~/Documents/Notes/from-mobile.org")
  '(package-archives (quote (("gnu" . "http://elpa.gnu.org/packages/") ("marmalade" . "http://marmalade-repo.org/packages/") ("SC" . "http://joseito.republika.pl/sunrise-commander/") ("melpa" . "http://melpa.milkbox.net/packages/"))))
+ '(persp-auto-save-opt 0)
+ '(persp-auto-save-persps-to-their-file nil)
  '(pop-up-windows nil)
  '(projectile-enable-caching nil)
  '(recentf-auto-cleanup (quote never))
  '(recentf-max-saved-items 20000)
+ '(refheap-token "39bee1d0-8aa8-4168-ba05-24627adb1c9b")
+ '(refheap-user "alexyakushev")
  '(sr-attributes-display-mask (quote (nil nil nil nil t nil nil nil t)))
  '(sr-avfs-root "/avfs")
  '(sr-listing-switches "-alh")
  '(sr-show-file-attributes nil)
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map (quote ((20 . "#cc6666") (40 . "#de935f") (60 . "#f0c674") (80 . "#b5bd68") (100 . "#8abeb7") (120 . "#81a2be") (140 . "#b294bb") (160 . "#cc6666") (180 . "#de935f") (200 . "#f0c674") (220 . "#b5bd68") (240 . "#8abeb7") (260 . "#81a2be") (280 . "#b294bb") (300 . "#cc6666") (320 . "#de935f") (340 . "#f0c674") (360 . "#b5bd68"))))
+ '(vc-annotate-very-old-color nil)
+ '(warning-suppress-types (quote ((undo discard-info))))
  '(yas/trigger-key "C-o"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
- '(minimap-active-region-background ((t (:background "#494949"))) t)
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 144 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
+ '(minimap-active-region-background ((t (:background "#494949"))))
+ '(preview-reference-face ((t (:foreground "#00CCCC" :background "#CCCCCC"))) t)
  '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))))
  '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120)))))
 
@@ -63,8 +81,7 @@
 (mapc
  (lambda (package)
    (or (package-installed-p package)
-       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
-           (package-install package))))
+       (package-install package)))
  unlogic-installed-packages)
 
 (load-file "~/.emacs.d/bindings.el")
@@ -74,28 +91,28 @@
 
 ;; Autocomplete-nrepl-compliment
 
-(load "~/.emacs.d/ac-nrepl-compliment/ac-nrepl-compliment.el")
-(require 'ac-nrepl-compliment)
-(add-hook 'nrepl-mode-hook 'ac-nrepl-compliment-setup)
-(add-hook 'nrepl-mode-hook 'ac-flyspell-workaround)
-(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-compliment-setup)
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'nrepl-mode))
+;; (load "~/.emacs.d/ac-nrepl-compliment/ac-cider-compliment.el")
 
-;; (load "~/.emacs.d/ac-nrepl/ac-nrepl.el")
 ;; (require 'ac-nrepl)
-;; (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
-;; (add-hook 'nrepl-mode-hook 'ac-flyspell-workaround)
-;; (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
-;; (add-hook 'nrepl-connected-hook 'ac-nrepl-require-complete-core)
-;; (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+;; (add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
+;; (add-hook 'cider-mode-hook 'ac-nrepl-setup)
+;; (eval-after-load "auto-complete"
+;;   '(add-to-list 'ac-modes 'cider-repl-mode))
+
+(require 'ac-cider-compliment)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-compliment-setup)
+;; (add-hook 'cider-interaction-mode-hook 'ac-cider-compliment-repl-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-compliment-repl-setup)
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'cider-mode))
 
 (defun set-auto-complete-as-completion-at-point-function ()
   (setq completion-at-point-functions '(auto-complete)))
 
 (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
-(add-hook 'nrepl-mode-hook 'set-auto-complete-as-completion-at-point-function)
-(add-hook 'nrepl-interaction-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function)
 
 (defun kill-buffer-and-its-windows ()
   "Kill BUFFER and delete its windows.  Default is `current-buffer'.
@@ -145,12 +162,8 @@ BUFFER may be either a buffer or its name (a string)."
 ;; Initialize Stesla
 (load-file "~/.emacs.d/stesla.el")
 
-;; nREPL mode
-(load-file "~/.emacs.d/nrepl.el/nrepl.el")
-(load-file "~/.emacs.d/nrepl-inspect.el")
-(setq nrepl-popup-stacktraces nil)
-
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+;; CIDER mode
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
 ;; Openwith mode
 (openwith-mode t)
@@ -237,16 +250,31 @@ Display the results in a hyperlinked *compilation* buffer."
   (font-lock-add-keywords nil `(("(\\(fn\\>\\)"
                                  (0 (progn (compose-region (match-beginning 1)
                                                            (match-end 1)
-                                                           ?λ) nil))))))
+                                                           ?λ) nil)))))
+  (font-lock-add-keywords
+   'clojure-mode `(("\\(#\\)("
+                    (0 (progn (compose-region (match-beginning 1)
+                                              (match-end 1) "ƒ")
+                              nil)))))
+  (font-lock-add-keywords
+   'clojure-mode `(("\\(#\\){"
+                    (0 (progn (compose-region (match-beginning 1)
+                                              (match-end 1) "∈")
+                              nil))))))
 
 (add-hook 'clojure-mode-hook 'esk-pretty-fn)
 
+(put-clojure-indent 'let-mutable 'defun)
+(put-clojure-indent 'set-content-view! 'defun)
+(put-clojure-indent 'fact 'defun)
+(put-clojure-indent 'facts 'defun)
+
 ;; Configure sunrise
+(require 'sunrise-commander)
 (defvar bookmark-counter 0)
 (defvar bookmarks)
 
-(setq bookmarks '("~/Dropbox/KPI/sem10/"
-                  "~/work/uni/10sem/"))
+(setq bookmarks '("~/work/uni/12sem/"))
 
 (defun sr-cycle-bookmark ()
   (interactive)
@@ -267,7 +295,7 @@ Display the results in a hyperlinked *compilation* buffer."
   (interactive)
   (let ((ido-report-no-match nil)
         (ido-auto-merge-work-directories-length -1))
-    (ido-file-internal 'sr-dired 'sr-dired nil "Sunrise: " 'dir)))
+    (ido-file-internal 'read-only 'sr-advertised-find-file nil "Sunrise: " 'dir)))
 
 ;; Auto refresh buffers
 (global-auto-revert-mode 1)
@@ -282,6 +310,9 @@ Display the results in a hyperlinked *compilation* buffer."
 
 ;; Off flyspell
 (flyspell-mode 0)
+(add-hook 'org-mode-hook (lambda () (flyspell-mode 1) (flyspell-buffer)))
+(add-hook 'LaTeX-mode-hook (lambda () (flyspell-mode 1) (flyspell-buffer)))
+
 
 ;; Eval and replace
 (defun eval-and-replace ()
@@ -308,10 +339,11 @@ Display the results in a hyperlinked *compilation* buffer."
 ;; General config
 (setq-default require-final-newline t)
 
-(setq-default scroll-margin 1
-              scroll-conservatively 0
-              scroll-up-aggressively 0.01
-              scroll-down-aggressively 0.01)
+(setq-default redisplay-dont-pause t
+              scroll-margin 1
+              scroll-step 1
+              scroll-conservatively 10000
+              scroll-preserve-screen-position 1)
 
 ;; Configure main-line
 
@@ -346,18 +378,18 @@ Display the results in a hyperlinked *compilation* buffer."
 
 (defun get-interesting-minor-modes ()
   (let ((mms (format-mode-line minor-mode-alist)))
-   (propertize
-    (replace-regexp-in-string
-     " $" ""
+    (propertize
      (replace-regexp-in-string
-      " +" " "
-      (reduce (lambda (s mode)
-                (replace-regexp-in-string mode "" s))
-              '("Undo-Tree" "Projectile" "WS" "Fill" "hs"
-                "SliNav" "Paredit" "ElDoc" "Hi")
-              :initial-value
-              mms)))
-    'help-echo mms)))
+      " $" ""
+      (replace-regexp-in-string
+       " +" " "
+       (reduce (lambda (s mode)
+                 (replace-regexp-in-string mode "" s))
+               '("Undo-Tree" "Projectile" "WS" "Fill" "hs"
+                 "SliNav" "Paredit" "ElDoc" "Hi")
+               :initial-value
+               mms)))
+     'help-echo mms)))
 
 (defun trimmed-buffer-name (bn n)
   (let* ((l (length bn)))
@@ -410,7 +442,7 @@ Display the results in a hyperlinked *compilation* buffer."
                          (mainline-make 'left real-buffer-name mainline-color3 mainline-color1)
                          (mainline-make 'left (my/percentage-from-top 3) mainline-color1)
                          (mainline-make 'left "(%4l : %3c)" mainline-color1 mainline-color2)
-                         (mainline-make 'left mode-name mainline-color2)
+                         (mainline-make 'left (format-mode-line mode-name) mainline-color2)
                          (mainline-make 'center (make-string skip-space 32) mainline-color2)
                          (if cut-down
                              (mainline-make 'center " " mainline-color2)
@@ -421,95 +453,11 @@ Display the results in a hyperlinked *compilation* buffer."
                                         mainline-color3 (if cut-down
                                                             mainline-color2
                                                           mainline-color1))
-                         (mainline-make 'right "%z     " mainline-color3))))))
+                         (mainline-make 'right "%z     " mainline-color3)
+                         )))))
 
 ;; bs-show for mouse
 
-(require 'bs)
-
-(defun mouse-bs-show (event)
-  "Pop up a menu of buffers for selection with the mouse.
-This switches buffers in the window that you clicked on,
-and selects that window."
-  (interactive "e")
-  (mouse-minibuffer-check event)
-  (let ((buffers (bs-buffer-list))  alist menu split-by-major-mode sum-of-squares)
-    ;; Make an alist of elements that look like (MENU-ITEM . BUFFER).
-    (dolist (buf buffers)
-      ;; Divide all buffers into buckets for various major modes.
-      ;; Each bucket looks like (MODE NAMESTRING BUFFERS...).
-      (with-current-buffer buf
-        (let* ((adjusted-major-mode major-mode) elt)
-          (dolist (group mouse-buffer-menu-mode-groups)
-            (when (string-match (car group) (format-mode-line mode-name))
-              (setq adjusted-major-mode (cdr group))))
-          (setq elt (assoc adjusted-major-mode split-by-major-mode))
-          (unless elt
-            (setq elt (list adjusted-major-mode
-                            (if (stringp adjusted-major-mode)
-                                adjusted-major-mode
-                              (format-mode-line mode-name nil nil buf)))
-                  split-by-major-mode (cons elt split-by-major-mode)))
-          (or (memq buf (cdr (cdr elt)))
-              (setcdr (cdr elt) (cons buf (cdr (cdr elt))))))))
-    ;; Compute the sum of squares of sizes of the major-mode buckets.
-    (let ((tail split-by-major-mode))
-      (setq sum-of-squares 0)
-      (while tail
-	(setq sum-of-squares
-	      (+ sum-of-squares
-		 (let ((len (length (cdr (cdr (car tail)))))) (* len len))))
-	(setq tail (cdr tail))))
-    (if (< (* sum-of-squares mouse-buffer-menu-mode-mult)
-	   (* (length buffers) (length buffers)))
-	;; Subdividing by major modes really helps, so let's do it.
-	(let (subdivided-menus (buffers-left (length buffers)))
-	  ;; Sort the list to put the most popular major modes first.
-	  (setq split-by-major-mode
-		(sort split-by-major-mode
-		      (function (lambda (elt1 elt2)
-				  (> (length elt1) (length elt2))))))
-	  ;; Make a separate submenu for each major mode
-	  ;; that has more than one buffer,
-	  ;; unless all the remaining buffers are less than 1/10 of them.
-	  (while (and split-by-major-mode
-		      (and (> (length (car split-by-major-mode)) 3)
-			   (> (* buffers-left 10) (length buffers))))
-	    (let ((this-mode-list (mouse-buffer-menu-alist
-				   (cdr (cdr (car split-by-major-mode))))))
-	      (and this-mode-list
-		   (setq subdivided-menus
-			 (cons (cons
-				(nth 1 (car split-by-major-mode))
-				this-mode-list)
-			       subdivided-menus))))
-	    (setq buffers-left
-		  (- buffers-left (length (cdr (car split-by-major-mode)))))
-	    (setq split-by-major-mode (cdr split-by-major-mode)))
-	  ;; If any major modes are left over,
-	  ;; make a single submenu for them.
-	  (if split-by-major-mode
-	      (let ((others-list
-		     (mouse-buffer-menu-alist
-		      ;; we don't need split-by-major-mode any more,
-		      ;; so we can ditch it with nconc.
-		      (apply 'nconc (mapcar 'cddr split-by-major-mode)))))
-		(and others-list
-		     (setq subdivided-menus
-			   (cons (cons "Others" others-list)
-				 subdivided-menus)))))
-	  (setq menu (cons "Buffer Menu" (nreverse subdivided-menus))))
-      (progn
-	(setq alist (mouse-buffer-menu-alist buffers))
-	(setq menu (cons "Buffer Menu"
-			 (mouse-buffer-menu-split "Select Buffer" alist)))))
-    (let ((buf (x-popup-menu event menu))
-	  (window (posn-window (event-start event))))
-      (when buf
-	(select-window
-	 (if (framep window) (frame-selected-window window)
-	   window))
-	(switch-to-buffer buf)))))
 (put 'ido-exit-minibuffer 'disabled nil)
 
 (setq backup-by-copying t      ; don't clobber symlinks
@@ -555,18 +503,10 @@ and selects that window."
                   (indent-region (region-beginning) (region-end) nil))))))
 
 ;; Configure helm
-(require 'helm)
-(defun helm-do-projectile-grep ()
-  (interactive)
-  (helm-do-grep-1 (list (projectile-project-p))
-                  t nil '("*.*")))
-
-;; (setq helm-grep-default-command "ag -n --nogroup %p"
-;;       helm-grep-default-recurse-command "ag --nocolor --nogroup -n %p %f")
 
 ;; Configure magit
 ;;; Add magit-gh-pulls plugin
-(load "~/.emacs.d/magit-gh-pulls.el")
+(load "~/.emacs.d/magit-gh-pulls/magit-gh-pulls.el")
 (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
 
 (defun rev-at-line ()
@@ -579,6 +519,10 @@ and selects that window."
                   (substring rev 1)
                 rev)))
     (magit-show-commit rev)))
+
+(defun magit-read-tag (prompt &optional require-match)
+  (magit-completing-read prompt nil nil
+                         require-match nil 'magit-read-rev-history))
 
 (defun clone-and-comment-line (beg end)
   (interactive (if (use-region-p)
@@ -608,6 +552,142 @@ and selects that window."
 
 (add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
 
-;; Google Translate
+(defun org-insert-codeblock ()
+  (interactive)
+  (insert "#+begin_src clojure\n\n#+end_src")
+  (previous-line))
 
-(require 'google-translate)
+;; TeX editing
+
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(setq-default TeX-engine 'xetex)
+(setq-default TeX-PDF-mode t)
+
+;;; Texify everything
+
+(require 'tex-buf)
+(defun TeX-command-default (name)
+  "Next TeX command to use. Most of the code is stolen from `TeX-command-query'."
+  (cond ((if (string-equal name TeX-region)
+             (TeX-check-files (concat name "." (TeX-output-extension))
+                              (list name)
+                              TeX-file-extensions)
+           (TeX-save-document (TeX-master-file)))
+         TeX-command-default)
+        ((and (memq major-mode '(doctex-mode latex-mode))
+              (TeX-check-files (concat name ".bbl")
+                               (mapcar 'car
+                                       (LaTeX-bibliography-list))
+                               BibTeX-file-extensions))
+         ;; We should check for bst files here as well.
+         TeX-command-BibTeX)))
+
+(defcustom TeX-texify-max-runs-same-command 5
+  "Maximal run number of the same command"
+  :type 'integer :group 'TeX-command)
+
+(defun TeX-texify-sentinel (&optional proc sentinel)
+  "Non-interactive! Call the standard-sentinel of the current LaTeX-process.
+If there is still something left do do start the next latex-command."
+  (set-buffer (process-buffer proc))
+  (funcall TeX-texify-sentinel proc sentinel)
+  (let ((case-fold-search nil))
+    (when (string-match "\\(finished\\|exited\\)" sentinel)
+      (set-buffer TeX-command-buffer)
+      (unless (plist-get TeX-error-report-switches (intern (TeX-master-file)))
+	(TeX-texify)))))
+
+(defun TeX-texify ()
+  "Get everything done."
+  (interactive)
+  (let ((nextCmd (TeX-command-default (TeX-master-file)))
+	proc)
+    (if (null nextCmd)
+	(when  (called-interactively-p 'any)
+	  (message "TeX-texify: Nothing to be done."))
+      (TeX-command nextCmd 'TeX-master-file)
+      (when (or (called-interactively-p 'any)
+		(null (boundp 'TeX-texify-count-same-command))
+		(null (boundp 'TeX-texify-last-command))
+		(null (equal nextCmd TeX-texify-last-command)))
+	(mapc 'make-local-variable '(TeX-texify-sentinel TeX-texify-count-same-command TeX-texify-last-command))
+	(setq TeX-texify-count-same-command 1))
+      (if (>= TeX-texify-count-same-command TeX-texify-max-runs-same-command)
+	  (message "TeX-texify: Did %S already %d times. Don't want to do it anymore." TeX-texify-last-command TeX-texify-count-same-command)
+	(setq TeX-texify-count-same-command (1+ TeX-texify-count-same-command))
+	(setq TeX-texify-last-command nextCmd)
+	(and (null (equal nextCmd TeX-command-Show))
+	     (setq proc (get-buffer-process (current-buffer)))
+	     (setq TeX-texify-sentinel (process-sentinel proc))
+	     (set-process-sentinel proc 'TeX-texify-sentinel))))))
+
+;;; Texify everything ends
+
+(require 'flymake)
+
+(defun flymake-get-tex-args (file-name)
+  (list "chktex" (list "-q" "-v0" file-name)))
+
+(add-hook 'LaTeX-mode-hook
+          (lambda () (LaTeX-add-environments
+                      `("lstlisting")
+                      `("dmath"))
+            (setq TeX-master (buffer-file-name))
+            (flymake-mode-on)))
+
+;; Temp buffers
+
+(defvar temp-buffer-counter 0)
+
+(defun create-temp-buffer ()
+  (interactive)
+  (setf temp-buffer-counter (+ temp-buffer-counter 1))
+  (switch-to-buffer (concat "temp" (number-to-string temp-buffer-counter))))
+
+(put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
+;; Thesaurus
+
+(require 'thesaurus)
+(thesaurus-set-bhl-api-key-from-file "~/.bighugelabsapi.key")
+
+;; (require 'persp-mode)
+;; (persp-mode 1)
+
+;; (define-globalized-minor-mode global-persp-mode
+;;   persp-mode (lambda () (persp-mode 1)))
+                                        ;(global-persp-mode)
+
+
+(defmacro with-persp-buffer-list (&rest body)
+  (let ((buffers (gensym)))
+    `(let ((,buffers (safe-persp-buffers (get-frame-persp))))
+       (flet ((buffer-list (&optional frame) ,buffers))
+         ,@body))))
+
+(global-set-key (kbd "C-x l") #'(lambda (arg)
+                                  (interactive "P")
+                                  (with-persp-buffer-list (bs-show arg))))
+
+;; Unfill
+
+(defun unfill-block ()
+  "Remove ending chars on current paragraph. This command is
+similar to a toggle of `fill-paragraph'. When there is a text
+selection, act on the region."
+  (interactive)
+
+  ;; This command symbol has a property “'stateIsCompact-p”.
+  (let ((bigFillColumnVal most-positive-fixnum)
+        (deactivate-mark nil))
+    (save-excursion
+      ;; Determine whether the text is currently compact.
+      (let ((fill-column most-positive-fixnum))
+        (if (region-active-p)
+            (fill-region (region-beginning) (region-end))
+          (fill-paragraph nil))))))
+

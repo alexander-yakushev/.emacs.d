@@ -1,22 +1,32 @@
 (defvar unlogic-installed-packages
   '(
+    ac-cider-compliment
+    auctex
     auto-complete
+    cider
+    cider-tracing
     clojure-mode
     color-theme-sanityinc-tomorrow
     dash
     elisp-slime-nav
     expand-region
     find-file-in-project
+    floobits
     gh
     gist
     goto-last-change
     helm
+    helm-git-grep
+    helm-swoop
+    highlight
+    highlight-symbol
     htmlize
     idle-highlight-mode
     ido-ubiquitous
     javap-mode
     highlight-symbol
     key-chord
+    latex-pretty-symbols
     legalese
     linum-relative
     logito
@@ -29,6 +39,7 @@
     openwith
     paredit
     pcache
+    pkg-info
     popup
     projectile
     refheap
@@ -42,7 +53,7 @@
     sunrise-x-checkpoints
     sunrise-x-loop
     sunrise-x-mirror
-    thingatpt
+    thesaurus
     undo-tree
     xmlgen
     yasnippet-bundle
