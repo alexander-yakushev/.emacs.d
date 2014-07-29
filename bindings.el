@@ -44,6 +44,7 @@
     "M-e" highlight-symbol-next
     "C-o" recenter-top-bottom
     "C-M-o" er/expand-region
+    "C-a" narrow-or-widen-dwim
 
     ;;; Editing
     "C-w" backward-kill-word
@@ -163,6 +164,9 @@
     "p" previous-line
     ";" next-line
 
+    :local magit-status-mode-map magit-status-mode-hook
+    "W" magit-toggle-whitespace
+
     :local magit-blame-map "magit-blame"
     ";" magit-blame-next-chunk
 
@@ -200,7 +204,6 @@
     "M-m" helm-mini
     "M-f" projectile-find-file
     "M-h" helm-git-grep
-    "C-c p h" helm-do-projectile-grep
 
     :local helm-grep-map helm-after-initialize-hook
     "C-;" helm-next-line
@@ -234,4 +237,7 @@
 
     :global
     "C-x t" thesaurus-choose-synonym-and-replace
-    ))
+
+    ;; Google translate
+    :global
+    "C-x M-t" google-translate-fast))
