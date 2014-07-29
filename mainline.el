@@ -512,13 +512,14 @@ install the memoized function over the original function."
 (defun mainline-make-face
   (bg &optional fg)
   (if bg
-      (let ((cface (intern (concat "mainline-"
+      (let ((fg mainline-color-fg)
+            (cface (intern (concat "mainline-"
                                    bg
                                    "-"
                                    (if fg
                                        (format "%s" fg)
                                      "white")))))
-        (make-face cface)2
+        (make-face cface)
         (if fg
             (if (eq fg 0)
                 (set-face-attribute cface nil
