@@ -522,6 +522,13 @@ Display the results in a hyperlinked *compilation* buffer."
                   (indent-region (region-beginning) (region-end) nil))))))
 
 ;; Configure helm
+(require 'helm-git-grep)
+
+(defun helm-git-grep (sym-at-p)
+  (interactive "P")
+  (if sym-at-p
+      (helm-git-grep-at-point)
+    (helm-git-grep-1)))
 
 ;; Configure magit
 ;;; Add magit-gh-pulls plugin
@@ -550,6 +557,22 @@ Display the results in a hyperlinked *compilation* buffer."
   (let ((p (point))
         (beg (or beg (progn
                        (move-beginning-of-line 1)
+(defun magit-toggle-whitespace ()
+  (interactive)
+  (if (member "-w" magit-diff-options)
+      (magit-dont-ignore-whitespace)
+    (magit-ignore-whitespace)))
+
+(defun magit-ignore-whitespace ()
+  (interactive)
+  (add-to-list 'magit-diff-options "-w")
+  (magit-refresh))
+
+(defun magit-dont-ignore-whitespace ()
+  (interactive)
+  (setq magit-diff-options (remove "-w" magit-diff-options))
+  (magit-refresh))
+
                        (point))))
         (end (or end (progn
                        (move-end-of-line 1)
