@@ -691,3 +691,24 @@ selection, act on the region."
             (fill-region (region-beginning) (region-end))
           (fill-paragraph nil))))))
 
+
+;; Javadev
+
+(load "~/.emacs.d/javad.el")
+(require 'javap-mode)
+
+(defun javad-find-class (&rest args)
+  (interactive)
+  (if (not (string= ".class" (substring (buffer-file-name) -6 nil)))
+      nil
+    (message "Show class as: [b]ytecode, [d]issasembly or [i]dentity?")
+    (let ((resp (read-char)))
+      (cond
+       ((= resp 98) (progn (javap-buffer) nil))
+       ((= resp 100) (progn (javad-buffer) nil))
+       (t nil))
+      (let ((buff (current-buffer)))
+        (sr-quit)
+        (switch-to-buffer buff)))))
+
+(add-hook 'find-file-hook 'javad-find-class)
