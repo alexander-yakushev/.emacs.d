@@ -780,7 +780,6 @@ selection, act on the region."
                                   tab-width 4
                                   indent-tabs-mode t)
                             ))
-(setq java-mode-hook (list 'flyspell-prog-mode 'hs-minor-mode))
 
 ;; Customize narrow
 (defun narrow-or-widen-dwim (p)
@@ -797,3 +796,37 @@ narrowed."
          (narrow-to-region (region-beginning) (region-end)))
         ((derived-mode-p 'org-mode) (org-narrow-to-subtree))
         (t (narrow-to-defun))))
+
+;; Modeline hiding
+
+(defvar-local hidden-mode-line-mode nil)
+
+(define-minor-mode hidden-mode-line-mode
+  "Minor mode to hide the mode-line in the current buffer."
+  :init-value nil
+  :global t
+  :variable hidden-mode-line-mode
+  :group 'editing-basics
+  (if (not (null mode-line-format))
+      (progn
+        (setq hide-mode-line mode-line-format
+              mode-line-format nil)
+        (setq-default mode-line-format nil))
+    (setq-default mode-line-format hide-mode-line)
+    (setq mode-line-format hide-mode-line
+          hide-mode-line nil))
+  (force-mode-line-update)
+  ;; Apparently force-mode-line-update is not always enough to
+  ;; redisplay the mode-line
+  (redraw-display)
+  (when (and (called-interactively-p 'interactive)
+             hidden-mode-line-mode)
+    (run-with-idle-timer
+     0 nil 'message
+     (concat "Hidden Mode Line Mode enabled.  "
+             "Use M-x hidden-mode-line-mode to make the mode-line appear."))))
+
+(defun serenity-mode ()
+  (interactive)
+  (hidden-mode-line-mode)
+  (global-linum-mode (if (null mode-line-format) -1 1)))
