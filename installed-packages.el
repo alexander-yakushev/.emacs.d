@@ -1,6 +1,6 @@
 (defvar unlogic-installed-packages
   '(
-    ac-cider-compliment
+    ac-cider
     auctex
     auto-complete
     cider
