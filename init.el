@@ -565,6 +565,14 @@ Display the results in a hyperlinked *compilation* buffer."
   (setq magit-diff-options (remove "-w" magit-diff-options))
   (magit-refresh))
 
+(defun unlogic-git-fix-url ()
+  (interactive)
+  (let* ((old-url (buffer-substring-no-properties (region-beginning) (region-end)))
+         (r (s-match "^https?://\\([^/]+\\)/\\([^/]+\\)/\\([^/]+\\)" old-url))
+         (new-url (concat "git@" (cadr r) ":" (caddr r) "/" (cadddr r) ".git")))
+    (kill-region (region-beginning) (region-end))
+    (insert new-url)))
+
 (defun clone-and-comment-line (beg end)
   (interactive (if (use-region-p)
                    (list (region-beginning) (region-end))
