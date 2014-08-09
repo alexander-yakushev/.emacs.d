@@ -1,3 +1,5 @@
+(require 'centered-window-mode)
+
 (setq calendar-latitude +60.79)
 (setq calendar-longitude +10.69)
 
@@ -37,10 +39,10 @@
                 e (string-to-number (match-string 5 rise_set))
                 f (match-string 6 rise_set))
           (if (equal c "pm")
-              (setq 24h/sunrise (list (+ 12 a) b))
+              (setq 24h/sunrise (list (+ 12 a -1) b))
             (setq 24h/sunrise (list a b)))
           (if (equal f "pm")
-              (setq 24h/sunset (list (+ 12 d) e))
+              (setq 24h/sunset (list (+ 12 d -1) e))
             (setq 24h/sunset (list d e))))))))
 
 (if (and
@@ -63,7 +65,8 @@
                  (and (= (car now) (car 24h/sunset))
                       (< (second now) (second 24h/sunset)))))
         (theme-set 'day)
-      (theme-set 'night))))
+      (theme-set 'night))
+    (cwm/update-fringe-background)))
 
 (theme-auto-switch)
 (setq moe-timer (run-with-timer 0 (* 1 60) 'theme-auto-switch))

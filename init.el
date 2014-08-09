@@ -833,7 +833,8 @@ narrowed."
      (concat "Hidden Mode Line Mode enabled.  "
              "Use M-x hidden-mode-line-mode to make the mode-line appear."))))
 
-(defun serenity-mode ()
-  (interactive)
-  (hidden-mode-line-mode)
-  (global-linum-mode (if (null mode-line-format) -1 1)))
+;; (defun serenity-mode ()
+;;   (interactive)
+;;   (hidden-mode-line-mode)
+;;   (centered-window-mode -1)
+;;   (global-linum-mode (if (null mode-line-format) -1 1)))
