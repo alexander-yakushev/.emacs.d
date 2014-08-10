@@ -1,3 +1,10 @@
+;; define-keys is a macro for convenient keybindings definition. It expects
+;; key-value pairs where key is a string for a keybinding, and value is a
+;; function to execute. Pairs can be intersected with context switchers. You can
+;; put in :global for next bindings to become glonbal, or :local <mode-map>
+;; <hook-or-file> for bindings to be bound to the specific mode. If mode file is
+;; used instead of a hook, bindings will be bound with `EVAL-AFTER-LOAD`.
+
 (require 'cl)
 (require 'dash)
 
@@ -23,9 +30,8 @@
           (-partition-by-header #'keywordp args))))
 
 (define-keys
-  '(:global
-    ;; Global bindings
-    ;;; Navigation
+  '(;;; Navigation
+    :global
     "C-l" backward-char
     "C-'" forward-char
     "C-p" previous-line
@@ -77,7 +83,6 @@
               (ediff-windows-linewise t))
     "M-SPC" auto-complete
 
-    ;; Local bindings
     ;;; Sunrise
     :global
     "<f7>" sunrise
