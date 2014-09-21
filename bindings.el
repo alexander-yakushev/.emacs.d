@@ -79,8 +79,7 @@
     "C-/" toggle-input-method
     "C-c M-r" query-replace
     "<f5>" minimap-toggle
-    "C-c d" (lambda () (interactive)
-              (ediff-windows-linewise t))
+    "C-c d" ediff-opened-buffers
     "M-SPC" auto-complete
 
     ;;; Sunrise

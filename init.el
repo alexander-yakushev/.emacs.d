@@ -601,6 +601,20 @@ Display the results in a hyperlinked *compilation* buffer."
 
 (add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
 
+(require 'ediff)
+(defun ediff-opened-buffers ()
+  "Run Ediff on a pair of buffers, BUFFER-A and BUFFER-B."
+  (interactive)
+  (let* ((bA (ediff-other-buffer ""))
+         (bB (progn
+               ;; realign buffers so that two visible bufs will be
+               ;; at the top
+               (save-window-excursion (other-window 1))
+               (ediff-other-buffer bA))))
+    (setq job-name 'ediff-buffers)
+    (ediff-buffers-internal bA bB nil nil nil)
+    (ediff-toggle-split)))
+
 (defun org-insert-codeblock ()
   (interactive)
   (insert "#+begin_src clojure\n\n#+end_src")
@@ -784,8 +798,8 @@ selection, act on the region."
 (add-hook 'java-mode-hook (lambda ()
                             (c-set-style "whitesmith")
                             (setq ;; c-basic-offset 4
-                                  tab-width 4
-                                  indent-tabs-mode t)
+                             tab-width 4
+                             indent-tabs-mode t)
                             ))
 
 ;; Customize narrow
@@ -833,8 +847,8 @@ narrowed."
      (concat "Hidden Mode Line Mode enabled.  "
              "Use M-x hidden-mode-line-mode to make the mode-line appear."))))
 
-;; (defun serenity-mode ()
-;;   (interactive)
-;;   (hidden-mode-line-mode)
-;;   (centered-window-mode -1)
-;;   (global-linum-mode (if (null mode-line-format) -1 1)))
+(defun serenity-mode ()
+  (interactive)
+  (hidden-mode-line-mode)
+  (centered-window-mode)
+  (global-linum-mode (if (null mode-line-format) -1 1)))

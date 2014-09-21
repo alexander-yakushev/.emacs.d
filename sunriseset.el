@@ -42,7 +42,7 @@
               (setq 24h/sunrise (list (+ 12 a -1) b))
             (setq 24h/sunrise (list a b)))
           (if (equal f "pm")
-              (setq 24h/sunset (list (+ 12 d -1) e))
+              (setq 24h/sunset (list (+ 12 d) e))
             (setq 24h/sunset (list d e))))))))
 
 (if (and
