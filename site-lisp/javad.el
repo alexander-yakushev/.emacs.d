@@ -24,4 +24,18 @@
 (define-derived-mode javad-mode java-mode "Java dissasembled"
   "Major mode for Javad")
 
+(defun javad-find-class (&rest args)
+  (interactive)
+  (if (not (string= ".class" (substring (buffer-file-name) -6 nil)))
+      nil
+    (message "Show class as: [b]ytecode, [d]issasembly or [i]dentity?")
+    (let ((resp (read-char)))
+      (cond
+       ((= resp 98) (progn (javap-buffer) nil))
+       ((= resp 100) (progn (javad-buffer) nil))
+       (t nil))
+      (let ((buff (current-buffer)))
+        (sr-quit)
+        (switch-to-buffer buff)))))
+
 (provide 'javad)

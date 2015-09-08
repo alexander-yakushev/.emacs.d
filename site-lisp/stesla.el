@@ -65,4 +65,11 @@
        (bury-buffer)
        (nth n my-buffer-list)))))
 
-;; Windows-style C-TAB and C-M-TAB to switch buffers.
+(defun stesla-rotate-backwards (&optional n)
+  "Switch to the -Nth next buffer."
+  (interactive)
+  (unless n
+    (setq n 1))
+  (stesla-rotate-buffers (- n)))
+
+(provide 'stesla)

@@ -1,7 +1,7 @@
 (require 'centered-window-mode)
 
-(setq calendar-latitude +60.79)
-(setq calendar-longitude +10.69)
+(setq calendar-latitude +48.92)
+(setq calendar-longitude +24.71)
 
 (defun get-sunrise-sunset-string ()
   (save-window-excursion
@@ -39,7 +39,7 @@
                 e (string-to-number (match-string 5 rise_set))
                 f (match-string 6 rise_set))
           (if (equal c "pm")
-              (setq 24h/sunrise (list (+ 12 a -1) b))
+              (setq 24h/sunrise (list (+ 12 a) b))
             (setq 24h/sunrise (list a b)))
           (if (equal f "pm")
               (setq 24h/sunset (list (+ 12 d) e))
@@ -70,3 +70,5 @@
 
 (theme-auto-switch)
 (setq moe-timer (run-with-timer 0 (* 1 60) 'theme-auto-switch))
+;; (theme-set 'night)
+;; (setq moe-timer nil)

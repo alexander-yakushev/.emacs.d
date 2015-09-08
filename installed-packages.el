@@ -1,11 +1,13 @@
 (defvar unlogic-installed-packages
   '(
-    ac-cider
+;    ac-cider
+    aggressive-indent
     auctex
     auto-complete
-    cider
-    cider-tracing
-    clojure-mode
+    centered-window-mode
+;    cider
+    clj-refactor
+;    clojure-mode
     color-theme-sanityinc-tomorrow
     dash
     elisp-slime-nav
@@ -22,39 +24,31 @@
     highlight-symbol
     htmlize
     idle-highlight-mode
+    ido-completing-read+
     ido-ubiquitous
-    javap-mode
-    highlight-symbol
-    key-chord
-    latex-pretty-symbols
-    legalese
-    linum-relative
-    logito
+;    javap-mode
     lua-mode
-    magit
     markdown-mode
     minimap
-    mo-git-blame
     multiple-cursors
+; nlinum
     openwith
+    org
     paredit
-    pcache
-    pkg-info
     popup
-    projectile
+;    projectile
+;    rainbow-mode
     refheap
     s
     smex
-    starter-kit
-    starter-kit-bindings
-    starter-kit-eshell
-    starter-kit-lisp
-    sunrise-commander
-    sunrise-x-checkpoints
-    sunrise-x-loop
-    sunrise-x-mirror
+;    sunrise-commander
+;    sunrise-x-checkpoints
+;    sunrise-x-loop
+;    sunrise-x-mirror
     thesaurus
     undo-tree
+    use-package
+    wakatime-mode
     xmlgen
-    yasnippet-bundle
+    yasnippet
     ))
