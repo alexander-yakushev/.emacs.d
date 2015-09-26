@@ -157,6 +157,10 @@
           (ido-auto-merge-work-directories-length -1))
       (ido-file-internal 'read-only 'sr-advertised-find-file nil "Sunrise: " 'dir)))
 
+  ;; Also auto refresh dired, but be quiet about it
+  (setq global-auto-revert-non-file-buffers t)
+  (setq auto-revert-verbose nil)
+
   (use-package javad
     :config
     (use-package javap-mode :ensure t)
@@ -329,11 +333,6 @@ BUFFER may be either a buffer or its name (a string)."
 ;; Disable flashes on errors
 (setq ring-bell-function 'ignore)
 
-;; Open files with stupid cp1251
-(defun stupid-encoding ()
-  (interactive)
-  (revert-buffer-with-coding-system 'cp1251 t))
-
 ;; count-words with Yegges
 (defun count-words--message (str start end)
   (let* ((lines (count-lines start end))
@@ -376,14 +375,8 @@ BUFFER may be either a buffer or its name (a string)."
                                               (match-end 1) "∈")
                               nil))))))
 
-;; Configure sunrise
-
 ;; Auto refresh buffers
 (global-auto-revert-mode 1)
-
-;; Also auto refresh dired, but be quiet about it
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
 
 ;; Configure midnight mode
 (require 'midnight)
@@ -413,24 +406,7 @@ BUFFER may be either a buffer or its name (a string)."
 
 ;; Configure main-line
 
-(defun center-format (str c)
-  (let* ((l (length str)))
-    (if (< l c)
-        (let ((p (/ (- c l) 2)))
-          (concat (make-string p 32) str (make-string (- c p l) 32)))
-      str)))
-
-(defun my/percentage-from-top (padding)
-  (let ((p (round (/ (* 100.0 (point)) (point-max)))))
-    (replace-regexp-in-string "|" "%%"
-                              (format (concat "%" (number-to-string padding) "s")
-                                      (cond ((= p 0) "Top")
-                                            ((> p 98) "Bot")
-                                            (t (concat (number-to-string p) "|")))))))
-
-(load "~/.emacs.d/mainline.el")
-(require 'mainline)
-(setq mainline-arrow-shape 'arrow)
+(use-package mainline :demand t)
 
 (defun theme-set (time)
   (if (eq time 'day)
@@ -448,90 +424,8 @@ BUFFER may be either a buffer or its name (a string)."
 
 (load "~/.emacs.d/sunriseset.el")
 
-;; ;; 075E5D
-(set-face-attribute 'mode-line nil
-                    :background "#444444"
-                    :box nil)
-;; (propertize " %* " 'face '(:foreground "#ffffff" :background
-;; "#293B3A"))
-
-(defun get-interesting-minor-modes ()
-  (let ((mms (format-mode-line minor-mode-alist)))
-    (propertize
-     (replace-regexp-in-string
-      " $" ""
-      (replace-regexp-in-string
-       " +" " "
-       (reduce (lambda (s mode)
-                 (replace-regexp-in-string mode "" s))
-               '("Undo-Tree" "Projectile\\[.+\\]" "WS" "Fill" "hs"
-                 "SliNav" "Paredit" "ElDoc" "Hi")
-               :initial-value
-               mms)))
-     'help-echo mms)))
-
-(defun trimmed-buffer-name (bn n)
-  (let* ((l (length bn)))
-    (if (> l n)
-        (concat ".." (substring bn (- l (- n 2))))
-      bn)))
-
-(defun get-project-and-branch ()
-  (condition-case err
-      (let ((pn (and (projectile-project-p) (projectile-project-name))))
-        (cond ((and vc-mode pn) (concat pn ":" (replace-regexp-in-string ".+[:-]" "" vc-mode)))
-              (vc-mode (replace-regexp-in-string ".+[:-]" "" vc-mode))
-              (pn pn)))
-    (error "")))
-
-(setq-default mode-line-format
-              '("%e" (:eval
-                      (let* ((classic-bn-length 20)
-                             (ww (window-width))
-                             (full-buffer-name (center-format (buffer-name) classic-bn-length))
-                             (position-length 16)
-                             (vc (get-project-and-branch))
-                             (vc-length (if vc (+ 3 (length vc)) 2))
-                             (mms (get-interesting-minor-modes))
-                             (mms-length (length mms))
-                             (mms-length (if (> mms-length 0) (+ 3 mms-length) 2))
-                             (total-length (+ 3 (length full-buffer-name) 3 position-length 3
-                                              (length mode-name) 1
-                                              mms-length vc-length 3 -2))
-                             (cut-down (< ww total-length))
-                             (space-for-buffer-name (+ (length full-buffer-name)
-                                                       (- ww (- total-length mms-length
-                                                                vc-length))))
-                             (real-buffer-name (if cut-down
-                                                   (center-format (trimmed-buffer-name (buffer-name) space-for-buffer-name)
-                                                                  (min classic-bn-length space-for-buffer-name))
-                                                 full-buffer-name))
-                             (total-length (if cut-down
-                                               (+ (- total-length mms-length
-                                                     vc-length (length full-buffer-name))
-                                                  (length real-buffer-name))
-                                             total-length))
-                             (skip-space (- ww total-length)))
-                        (concat
-                         (mainline-rmw 'left mainline-color3)
-                         (mainline-make 'left real-buffer-name mainline-color3 mainline-color1)
-                         (mainline-make 'left (my/percentage-from-top 3) mainline-color1)
-                         (mainline-make 'left "(%4l : %3c)" mainline-color1 mainline-color2)
-                         (mainline-make 'left (format-mode-line mode-name) mainline-color2)
-                         (mainline-make 'center (make-string skip-space 32) mainline-color2)
-                         (if cut-down
-                             (mainline-make 'center " " mainline-color2)
-                           (concat
-                            (mainline-make 'right mms mainline-color2)
-                            (mainline-make 'right vc mainline-color1 mainline-color2)))
-                         (mainline-make 'right (or current-input-method-title "EN")
-                                        mainline-color3 (if cut-down
-                                                            mainline-color2
-                                                          mainline-color1))
-                         (mainline-make 'right "%z     " mainline-color3)
-                         )))))
-
-;; bs-show for mouse
+(setq mainline-arrow-shape 'arrow)
+(mainline-activate)
 
 (put 'ido-exit-minibuffer 'disabled nil)
 

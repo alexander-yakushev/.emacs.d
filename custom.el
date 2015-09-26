@@ -159,13 +159,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 110 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
- '(fringe ((t (:background "unspecified-bg"))))
+ '(fringe ((t (:background "white"))))
  '(magit-branch-local ((t (:foreground "SkyBlue4"))))
  '(magit-branch-remote ((t (:foreground "DarkOliveGreen4"))))
  '(magit-diff-file-heading ((t nil)))
  '(magit-section-heading ((t (:weight bold))))
  '(magit-tag ((t (:foreground "Goldenrod4"))))
  '(minimap-active-region-background ((t (:background "#494949"))) t)
+ '(mode-line ((t (:weight normal :box nil))))
+ '(mode-line-inactive ((t (:weight normal :box nil))))
  '(preview-reference-face ((t (:foreground "#00CCCC" :background "#CCCCCC"))))
  '(show-paren-match ((t (:background "dim gray" :foreground "#00bb00"))))
  '(show-paren-mismatch ((t (:background nil :foreground "#ff0000" :bold t))))
