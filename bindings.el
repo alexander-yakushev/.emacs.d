@@ -79,7 +79,7 @@
 
     ;;; Buffer manipulation
     "C-x <C-return>" other-window
-    "C-\\" kill-buffer-and-its-windows
+    "C-\\" kill-this-buffer
 
     "C-n" create-temp-buffer
     "C-+" text-scale-increase
