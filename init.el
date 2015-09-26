@@ -95,8 +95,6 @@
 
 (cd "~") ;; start from userdir
 
-(kill-buffer "*scratch*")
-
 ;; Configure packages
 
 (use-package sudo :commands sudo-find-file)
@@ -192,12 +190,6 @@
 (use-package auto-complete-config
   :commands ac-config-default
   :init (add-hook 'prog-mode-hook 'ac-config-default))
-
-(use-package nlinum :ensure t
-  :commands nlinum-mode
-  :init
-  (add-hook 'prog-mode-hook 'nlinum-mode)
-  (add-hook 'org-mode-hook 'nlinum-mode))
 
 (use-package slime :ensure t
   :config
@@ -447,20 +439,16 @@ BUFFER may be either a buffer or its name (a string)."
         (setq mainline-color2 "#efefef")
         (setq mainline-color3 "#70c0b1")
         (setq mainline-color-fg "black")
-        ;; (set-face-background 'linum-relative-current-face "#cccccc")
-        ;; (set-face-foreground 'linum-relative-current-face "#3e999f")
         (color-theme-sanityinc-tomorrow-day))
     (setq mainline-color1 "#444444")
     (setq mainline-color2 "#222222")
     (setq mainline-color3 "#293B3A")
     (setq mainline-color-fg "white")
-    ;; (set-face-background 'linum-relative-current-face "#444444")
-    ;; (set-face-foreground 'linum-relative-current-face "#cae682")
     (color-theme-sanityinc-tomorrow-eighties)))
 
 (load "~/.emacs.d/sunriseset.el")
 
-;; 075E5D
+;; ;; 075E5D
 (set-face-attribute 'mode-line nil
                     :background "#444444"
                     :box nil)
@@ -909,11 +897,9 @@ narrowed."
   (if (null mode-line-format)
       (progn
         (hidden-mode-line-mode -1)
-        (global-nlinum-mode 1)
         (centered-window-mode -1))
     (progn
       (hidden-mode-line-mode 1)
-      (global-nlinum-mode -1)
       (centered-window-mode 1))))
 
 (require 'aggressive-indent)
@@ -1076,6 +1062,12 @@ With a prefix argument N, (un)comment that many sexps."
       (insert final-text))))
 
 (use-package smali-mode :disabled t)
+
+(use-package nlinum :disabled t
+  :commands nlinum-mode
+  :init
+  (add-hook 'prog-mode-hook 'nlinum-mode)
+  (add-hook 'org-mode-hook 'nlinum-mode))
 
 (end-of-buffer)
 

@@ -31,7 +31,6 @@
     markdown-mode
     minimap
     multiple-cursors
-; nlinum
     openwith
     org
     paredit
