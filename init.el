@@ -3,21 +3,26 @@
 
   (setq load-prefer-newer t)
   (add-to-list 'package-archives
+               '("melpa" . "http://melpa.milkbox.net/packages/"))
+  (add-to-list 'package-archives
                '("melpa-stable" . "https://stable.melpa.org/packages/") t)
   (add-to-list 'package-archives
                '("SC"  . "http://joseito.republika.pl/sunrise-commander/") t)
   (package-initialize)
 
-  (load-file "~/.emacs.d/installed-packages.el")
- (mapc
-  (lambda (package)
-    (or (package-installed-p package)
-        (package-install package)))
-  unlogic-installed-packages)
+  (when (not (file-exists-p "~/.emacs.d/.initialized"))
+    (package-refresh-contents)
+    (load-file "~/.emacs.d/installed-packages.el")
+    (mapc
+     (lambda (package)
+       (or (package-installed-p package)
+           (package-install package)))
+     unlogic-installed-packages)
 
- (unless (package-installed-p 'use-package)
-   (package-refresh-contents)
-   (package-install 'use-package))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (write-region "" nil "~/.emacs.d/.initialized"))
 
   (eval-when-compile
     (require 'use-package))
@@ -77,6 +82,9 @@
 (load-file "~/.emacs.d/bindings.el")
 
 (load-file "~/.emacs.d/esk.el")
+
+(require 'centered-window-mode)
+
 (put 'use-package 'lisp-indent-function 'defun)
 
 (load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
@@ -86,7 +94,8 @@
   (when (fboundp mode) (funcall mode -1)))
 
 (cd "~") ;; start from userdir
-(kill-buffer "*scratch*") ;; import to defer nlinum loading
+
+(kill-buffer "*scratch*")
 
 ;; Configure packages
 
@@ -120,6 +129,7 @@
   (use-package sunrise-x-checkpoints :ensure t)
   (use-package sunrise-x-loop :ensure t)
   (use-package sunrise-x-mirror :ensure t)
+  (use-package sunrise-x-tabs :ensure t)
 
   (defvar bookmark-counter 0)
   (setq bookmarks '("~/.emacs.d/" "~/clojure/android/lein-droid" "~/clojure/android/neko"))
@@ -188,6 +198,23 @@
   :init
   (add-hook 'prog-mode-hook 'nlinum-mode)
   (add-hook 'org-mode-hook 'nlinum-mode))
+
+(use-package slime :ensure t
+  :config
+  (use-package ac-slime :ensure t :demand t
+    :init
+    (add-hook 'slime-mode-hook 'set-up-slime-ac)
+    (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+    (eval-after-load "auto-complete"
+      '(add-to-list 'ac-modes 'slime-repl-mode)))
+  (setq slime-contribs '(slime-asdf))
+  (slime-setup '(slime-fancy slime-scratch slime-editing-commands
+                             slime-fuzzy slime-repl slime-fancy-inspector
+                             slime-presentations slime-asdf
+                             slime-indentation))
+  (require 'slime-autoloads))
+
+(use-package s :ensure t :demand t)
 
 ;; Initialize smex
 (setq smex-save-file (concat user-emacs-directory ".smex-items"))
@@ -390,7 +417,7 @@ BUFFER may be either a buffer or its name (a string)."
 (require 'recentf)
 (recentf-mode 1)
 
-(require 'smooth-scrolling)
+(use-package smooth-scrolling :ensure t :demand t)
 
 ;; Configure main-line
 
@@ -598,8 +625,8 @@ BUFFER may be either a buffer or its name (a string)."
 
 ;; Configure magit
 
-(use-package magit
-  :load-path "~/.emacs.d/site-lisp/magit/lisp"
+(use-package magit :ensure t
+;  :load-path "~/.emacs.d/site-lisp/magit/lisp"
   :commands (magit-status magit-blame-mode)
   :config
   (setq magit-last-seen-setup-instructions "1.4.0")
@@ -616,9 +643,11 @@ BUFFER may be either a buffer or its name (a string)."
       t)))
   (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
 
-  (use-package magit-gh-pulls
-    :load-path "~/.emacs.d/site-lisp/magit-gh-pulls/"
-    :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
+;;   (use-package magit-gh-pulls :ensure t
+;;     :pin melpa
+;; ;    :load-path "~/.emacs.d/site-lisp/magit-gh-pulls/"
+;;     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+  )
 
 (defun rev-at-line ()
   (vc-annotate-extract-revision-at-line))
@@ -936,12 +965,12 @@ isn't there and triggers an error"
                 (y-or-n-p "The binary files differ, look at the differences in hexl-mode? ")))
      (error (error-message-string err)))))
 
-(require 'langtool)
+(use-package langtool :ensure t :demand t)
 (setq langtool-java-classpath
       "/usr/share/languagetool:/usr/share/java/languagetool/*")
 
-(require 'wakatime-mode)
-(global-wakatime-mode)
+;; (require 'wakatime-mode)
+;; (global-wakatime-mode)
 
 ;; Sexp commenting
 (defun uncomment-sexp (&optional n)
@@ -1047,6 +1076,8 @@ With a prefix argument N, (un)comment that many sexps."
       (insert final-text))))
 
 (use-package smali-mode :disabled t)
+
+(end-of-buffer)
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)

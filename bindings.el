@@ -221,10 +221,6 @@
     :local package-menu-mode-map package-menu-mode-hook
     ";" next-line
 
-    :local octave-mode-map octave-mode-hook
-    "C-c C-c" octave-send-region
-    "C-x C-e" octave-send-line
-
     :local LaTeX-mode-map LaTeX-mode-hook
     "C-c C-a" TeX-texify
 
