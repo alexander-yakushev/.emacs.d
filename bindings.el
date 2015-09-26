@@ -133,6 +133,8 @@
     "p" cider-inspector-previous-inspectable-object
     "C-;" cider-inspector-operate-on-point
     "C-p" cider-inspector-pop
+    "SPC" cider-inspector-next-page
+    "M-SPC" cider-inspector-prev-page
 
     ;; Flyspell mode
     :local flyspell-mode-map "flyspell"
