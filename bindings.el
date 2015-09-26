@@ -96,7 +96,6 @@
     "<f5>" minimap-toggle
     "M-SPC" auto-complete
     "M-=" count-words
-    "<f12>" serenity-mode
 
     ;; Undo-tree-mode
     :global

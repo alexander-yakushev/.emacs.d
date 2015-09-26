@@ -27,6 +27,7 @@
   (eval-when-compile
     (require 'use-package))
   (setq use-package-verbose t)
+  (put 'use-package 'lisp-indent-function 'defun)
 
   (push :keys (cdr (member :bind use-package-keywords)))
 
@@ -76,16 +77,11 @@
                    ,(when global-keys `(bind-keys ,@global-keys))
                    ,(when override-keys `(bind-keys* ,@override-keys)))))))))
 
-;; Load bindings
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 
-(load-file "~/.emacs.d/bindings.el")
+(load-file "~/.emacs.d/bindings.el") ;; Load bindings
 
-(load-file "~/.emacs.d/esk.el")
-
-(require 'centered-window-mode)
-
-(put 'use-package 'lisp-indent-function 'defun)
+(load-file "~/.emacs.d/esk.el") ;; Load Emacs starter kit leftovers
 
 (load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
 
@@ -212,10 +208,159 @@
 
 (use-package s :ensure t :demand t)
 
-;; Initialize smex
-(setq smex-save-file (concat user-emacs-directory ".smex-items"))
-(smex-initialize)
-(global-set-key (kbd "M-x") 'smex)
+(use-package midnight :demand t
+  :init (midnight-delay-set 'midnight-delay "11:59pm"))
+
+(use-package smooth-scrolling :ensure t :demand t)
+
+(use-package helm-git-grep :ensure t
+  :keys (:override
+         "M-h" helm-git-grep
+
+         helm-git-grep-map
+         "C-;" helm-next-line
+         "M-;" helm-goto-next-file
+         "M-p" helm-goto-precedent-file)
+  :config
+  (defun helm-git-grep (sym-at-p)
+    (interactive "P")
+    (if sym-at-p
+        (helm-git-grep-at-point)
+      (helm-git-grep-1))))
+
+(use-package magit :ensure t
+                                        ;  :load-path "~/.emacs.d/site-lisp/magit/lisp"
+  :commands (magit-status magit-blame-mode)
+  :config
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
+  (magit-add-section-hook 'magit-status-sections-hook
+                          'magit-insert-stashes 'magit-insert-untracked-files)
+
+  (defun magit-section-highlight-less (section _)
+    (magit-section-case
+      ((untracked unstaged staged unpushed unpulled pulls branch)
+       (magit-section-make-overlay (magit-section-start   section)
+                                   (magit-section-content section)
+                                   'magit-section-highlight)
+       t)))
+  (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
+
+  ;;   (use-package magit-gh-pulls :ensure t
+  ;;     :pin melpa
+  ;; ;    :load-path "~/.emacs.d/site-lisp/magit-gh-pulls/"
+  ;;     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+  )
+
+(use-package ediff
+  :keys ("C-c d" ediff-opened-buffers)
+  :commands ediff
+  :config
+  (add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
+
+  (defun ediff-opened-buffers ()
+    "Run Ediff on a pair of buffers, BUFFER-A and BUFFER-B."
+    (interactive)
+    (let* ((bA (ediff-other-buffer ""))
+           (bB (progn
+                 ;; realign buffers so that two visible bufs will be
+                 ;; at the top
+                 (save-window-excursion (other-window 1))
+                 (ediff-other-buffer bA))))
+      (setq job-name 'ediff-buffers)
+      (ediff-buffers-internal bA bB nil nil nil)
+      (ediff-toggle-split)))
+
+  (defvar ediff-do-hexl-diff nil
+    "variable used to store trigger for doing diff in hexl-mode")
+
+  (defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate)
+    "catch the condition when the binary files differ
+the reason for catching the error out here (when re-thrown from the inner advice)
+is to let the stack continue to unwind before we start the new diff
+otherwise some code in the middle of the stack expects some output that
+isn't there and triggers an error"
+    (let ((file-A (ad-get-arg 0))
+          (file-B (ad-get-arg 1))
+          ediff-do-hexl-diff)
+      (condition-case err
+          (progn
+            ad-do-it)
+        (error
+         (if ediff-do-hexl-diff
+             (let ((buf-A (find-file-noselect file-A))
+                   (buf-B (find-file-noselect file-B)))
+               (with-current-buffer buf-A
+                 (hexl-mode 1))
+               (with-current-buffer buf-B
+                 (hexl-mode 1))
+               (ediff-buffers buf-A buf-B))
+           (error (error-message-string err)))))))
+
+  (defadvice ediff-setup-diff-regions (around ediff-setup-diff-regions-for-binary-files activate)
+    "when binary files differ, set the variable "
+    (condition-case err
+        (progn
+          ad-do-it)
+      (error
+       (setq ediff-do-hexl-diff
+             (and (string-match-p "^Errors in diff output.  Diff output is in.*"
+                                  (error-message-string err))
+                  (string-match-p "^\\(Binary \\)?[fF]iles .* and .* differ"
+                                  (buffer-substring-no-properties
+                                   (line-beginning-position)
+                                   (line-end-position)))
+                  (y-or-n-p "The binary files differ, look at the differences in hexl-mode? ")))
+       (error (error-message-string err))))))
+
+(use-package centered-window-mode :ensure t
+  :keys ("<f12>" serenity-mode)
+  :config
+  (defvar-local hidden-mode-line-mode nil)
+
+  (define-minor-mode hidden-mode-line-mode
+    "Minor mode to hide the mode-line in the current buffer."
+    :init-value nil
+    :global t
+    :variable hidden-mode-line-mode
+    :group 'editing-basics
+    (if (not (null mode-line-format))
+        (progn
+          (setq hide-mode-line mode-line-format
+                mode-line-format nil)
+          (setq-default mode-line-format nil))
+      (setq-default mode-line-format hide-mode-line)
+      (setq mode-line-format hide-mode-line
+            hide-mode-line nil))
+    (force-mode-line-update)
+    ;; Apparently force-mode-line-update is not always enough to
+    ;; redisplay the mode-line
+    (redraw-display)
+    (when (and (called-interactively-p 'interactive)
+               hidden-mode-line-mode)
+      (run-with-idle-timer
+       0 nil 'message
+       (concat "Hidden Mode Line Mode enabled.  "
+               "Use M-x hidden-mode-line-mode to make the mode-line appear."))))
+
+  (defun serenity-mode ()
+    (interactive)
+    (if (null mode-line-format)
+        (progn
+          (hidden-mode-line-mode -1)
+          (centered-window-mode -1))
+      (progn
+        (hidden-mode-line-mode 1)
+        (centered-window-mode 1)))))
+
+(use-package smex :ensure t
+  :keys ("M-x" smex)
+  :init
+  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  (smex-initialize))
+
+(use-package saveplace :demand t
+  :init (setq-default save-place t))
 
 (require 'paren)
 (show-paren-mode 1)
@@ -248,9 +393,6 @@ BUFFER may be either a buffer or its name (a string)."
                (when (window-live-p win) (delete-window win))))))
         ((interactive-p)
          (error "Cannot kill buffer.  Not a live buffer: `%s'" buffer))))
-
-;; Sudo-save
-
 
 ;; Default SSH for tramp
 
@@ -311,6 +453,12 @@ BUFFER may be either a buffer or its name (a string)."
     (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
     (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
     (add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function)))
+
+(use-package aggressive-indent :ensure t
+  :commands aggressive-indent-mode
+  :config
+  (add-hook 'lisp-mode-hook 'aggressive-indent-mode)
+  (add-hook 'clojure-mode-hook 'aggressive-indent-mode))
 
 ;; Autocomplete
 ;; (require 'auto-complete-config)
@@ -378,10 +526,6 @@ BUFFER may be either a buffer or its name (a string)."
 ;; Auto refresh buffers
 (global-auto-revert-mode 1)
 
-;; Configure midnight mode
-(require 'midnight)
-(midnight-delay-set 'midnight-delay "11:59pm")
-
 ;; Off flyspell
 (flyspell-mode 0)
 (add-hook 'org-mode-hook (lambda () (flyspell-mode 1) (flyspell-buffer)))
@@ -402,10 +546,7 @@ BUFFER may be either a buffer or its name (a string)."
 (require 'recentf)
 (recentf-mode 1)
 
-(use-package smooth-scrolling :ensure t :demand t)
-
 ;; Configure main-line
-
 (use-package mainline :demand t)
 
 (defun theme-set (time)
@@ -437,40 +578,6 @@ BUFFER may be either a buffer or its name (a string)."
   (interactive)
   (indent-region (point-min) (point-max) nil))
 
-(require 'saveplace)
-(setq-default save-place t)
-
-;; Multiple cursors
-
-
-;; (require 'use-package)
-
-;; (use-package nlinum
-;;   :defer 1
-;;   :init
-;;   (define-globalized-minor-mode global-linum-mode nlinum-mode (lambda () (nlinum-mode 1)))
-;;   (global-linum-mode 1)
-;;   ;; (add-hook 'prog-mode-hook (lambda () (nlinum-mode 1)))
-;;   ;; (add-hook 'dired-mode-hook (lambda () (nlinum-mode 1)))
-;;   ;; (add-hook 'nxml-mode-hook (lambda () (nlinum-mode 1)))
-;;   )
-
-;; (if (daemonp)
-;;     (add-hook 'window-setup-hook
-;;               (lambda ()
-;;                 (message ">> Daemon mode")
-;;                 (require 'nlinum)
-;;                 (define-globalized-minor-mode global-linum-mode nlinum-mode
-;;                   (lambda () (nlinum-mode 1)))
-;;                 (global-linum-mode 1)))
-;;   (message ">> Non daemon mode")
-;;   (define-globalized-minor-mode global-linum-mode nlinum-mode
-;;     (lambda () (nlinum-mode 1)))
-;;   (global-linum-mode 1)
-;;   (require 'nlinum))
-
-
-;; (global-linum-mode 1)
 
 (setq lua-indent-level 3)
 
@@ -487,49 +594,6 @@ BUFFER may be either a buffer or its name (a string)."
                                                      plain-tex-mode  lua-mode))
                 (let ((mark-even-if-inactive transient-mark-mode))
                   (indent-region (region-beginning) (region-end) nil))))))
-
-;; Configure helm
-
-(use-package helm-git-grep :ensure t
-  :keys (:override
-         "M-h" helm-git-grep
-
-         helm-git-grep-map
-         "C-;" helm-next-line
-         "M-;" helm-goto-next-file
-         "M-p" helm-goto-precedent-file)
-  :config
-  (defun helm-git-grep (sym-at-p)
-    (interactive "P")
-    (if sym-at-p
-        (helm-git-grep-at-point)
-      (helm-git-grep-1))))
-
-;; Configure magit
-
-(use-package magit :ensure t
-;  :load-path "~/.emacs.d/site-lisp/magit/lisp"
-  :commands (magit-status magit-blame-mode)
-  :config
-  (setq magit-last-seen-setup-instructions "1.4.0")
-  (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
-  (magit-add-section-hook 'magit-status-sections-hook
-                          'magit-insert-stashes 'magit-insert-untracked-files)
-
-  (defun magit-section-highlight-less (section _)
-    (magit-section-case
-     ((untracked unstaged staged unpushed unpulled pulls branch)
-      (magit-section-make-overlay (magit-section-start   section)
-                                  (magit-section-content section)
-                                  'magit-section-highlight)
-      t)))
-  (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
-
-;;   (use-package magit-gh-pulls :ensure t
-;;     :pin melpa
-;; ;    :load-path "~/.emacs.d/site-lisp/magit-gh-pulls/"
-;;     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
-  )
 
 (defun rev-at-line ()
   (vc-annotate-extract-revision-at-line))
@@ -572,26 +636,6 @@ BUFFER may be either a buffer or its name (a string)."
 (add-hook 'java-mode-hook 'flyspell-prog-mode)
 (add-hook 'lua-mode-hook 'flyspell-prog-mode)
 (add-hook 'lisp-mode-hook 'flyspell-prog-mode)
-
-
-(use-package ediff
-  :keys ("C-c d" ediff-opened-buffers)
-  :commands ediff
-  :config
-  (add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
-
-  (defun ediff-opened-buffers ()
-    "Run Ediff on a pair of buffers, BUFFER-A and BUFFER-B."
-    (interactive)
-    (let* ((bA (ediff-other-buffer ""))
-           (bB (progn
-                 ;; realign buffers so that two visible bufs will be
-                 ;; at the top
-                 (save-window-excursion (other-window 1))
-                 (ediff-other-buffer bA))))
-      (setq job-name 'ediff-buffers)
-      (ediff-buffers-internal bA bB nil nil nil)
-      (ediff-toggle-split))))
 
 ;; TeX editing
 
@@ -699,13 +743,8 @@ BUFFER may be either a buffer or its name (a string)."
   (setf temp-buffer-counter (+ temp-buffer-counter 1))
   (switch-to-buffer (concat "temp" (number-to-string temp-buffer-counter))))
 
-(put 'narrow-to-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-
-;; Thesaurus
-
-;; Unfill
 
 (defun unfill-block ()
   "Remove ending chars on current paragraph. This command is
@@ -756,94 +795,6 @@ narrowed."
          (narrow-to-region (region-beginning) (region-end)))
         ((derived-mode-p 'org-mode) (org-narrow-to-subtree))
         (t (narrow-to-defun))))
-
-;; Modeline hiding
-
-(defvar-local hidden-mode-line-mode nil)
-
-(define-minor-mode hidden-mode-line-mode
-  "Minor mode to hide the mode-line in the current buffer."
-  :init-value nil
-  :global t
-  :variable hidden-mode-line-mode
-  :group 'editing-basics
-  (if (not (null mode-line-format))
-      (progn
-        (setq hide-mode-line mode-line-format
-              mode-line-format nil)
-        (setq-default mode-line-format nil))
-    (setq-default mode-line-format hide-mode-line)
-    (setq mode-line-format hide-mode-line
-          hide-mode-line nil))
-  (force-mode-line-update)
-  ;; Apparently force-mode-line-update is not always enough to
-  ;; redisplay the mode-line
-  (redraw-display)
-  (when (and (called-interactively-p 'interactive)
-             hidden-mode-line-mode)
-    (run-with-idle-timer
-     0 nil 'message
-     (concat "Hidden Mode Line Mode enabled.  "
-             "Use M-x hidden-mode-line-mode to make the mode-line appear."))))
-
-(defun serenity-mode ()
-  (interactive)
-  (if (null mode-line-format)
-      (progn
-        (hidden-mode-line-mode -1)
-        (centered-window-mode -1))
-    (progn
-      (hidden-mode-line-mode 1)
-      (centered-window-mode 1))))
-
-(require 'aggressive-indent)
-;; (global-aggressive-indent-mode)
-(add-hook 'lisp-mode-hook 'aggressive-indent-mode)
-(add-hook 'clojure-mode-hook 'aggressive-indent-mode)
-
-;; Binary diff
-
-(defvar ediff-do-hexl-diff nil
-  "variable used to store trigger for doing diff in hexl-mode")
-
-(defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate)
-  "catch the condition when the binary files differ
-the reason for catching the error out here (when re-thrown from the inner advice)
-is to let the stack continue to unwind before we start the new diff
-otherwise some code in the middle of the stack expects some output that
-isn't there and triggers an error"
-  (let ((file-A (ad-get-arg 0))
-        (file-B (ad-get-arg 1))
-        ediff-do-hexl-diff)
-    (condition-case err
-        (progn
-          ad-do-it)
-      (error
-       (if ediff-do-hexl-diff
-           (let ((buf-A (find-file-noselect file-A))
-                 (buf-B (find-file-noselect file-B)))
-             (with-current-buffer buf-A
-               (hexl-mode 1))
-             (with-current-buffer buf-B
-               (hexl-mode 1))
-             (ediff-buffers buf-A buf-B))
-         (error (error-message-string err)))))))
-
-(defadvice ediff-setup-diff-regions (around ediff-setup-diff-regions-for-binary-files activate)
-  "when binary files differ, set the variable "
-  (condition-case err
-      (progn
-        ad-do-it)
-    (error
-     (setq ediff-do-hexl-diff
-           (and (string-match-p "^Errors in diff output.  Diff output is in.*"
-                                (error-message-string err))
-                (string-match-p "^\\(Binary \\)?[fF]iles .* and .* differ"
-                                (buffer-substring-no-properties
-                                 (line-beginning-position)
-                                 (line-end-position)))
-                (y-or-n-p "The binary files differ, look at the differences in hexl-mode? ")))
-     (error (error-message-string err)))))
 
 (use-package langtool :ensure t :demand t)
 (setq langtool-java-classpath
@@ -962,8 +913,6 @@ With a prefix argument N, (un)comment that many sexps."
   :init
   (add-hook 'prog-mode-hook 'nlinum-mode)
   (add-hook 'org-mode-hook 'nlinum-mode))
-
-(end-of-buffer)
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)

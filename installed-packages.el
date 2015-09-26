@@ -1,13 +1,9 @@
 (defvar unlogic-installed-packages
   '(
-;    ac-cider
     aggressive-indent
     auctex
     auto-complete
-    centered-window-mode
-;    cider
     clj-refactor
-;    clojure-mode
     color-theme-sanityinc-tomorrow
     dash
     elisp-slime-nav
@@ -26,7 +22,6 @@
     idle-highlight-mode
     ido-completing-read+
     ido-ubiquitous
-;    javap-mode
     lua-mode
     markdown-mode
     minimap
@@ -35,15 +30,8 @@
     org
     paredit
     popup
-;    projectile
-;    rainbow-mode
     refheap
     s
-    smex
-;    sunrise-commander
-;    sunrise-x-checkpoints
-;    sunrise-x-loop
-;    sunrise-x-mirror
     thesaurus
     undo-tree
     use-package
