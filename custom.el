@@ -24,7 +24,7 @@
  '(clean-buffer-list-delay-general 1)
  '(clojure-defun-indents (quote (set-content-view! on-ui transact fact facts)))
  '(create-lockfiles nil)
- '(custom-enabled-themes (quote (sanityinc-tomorrow-day)))
+ '(custom-enabled-themes (quote (sanityinc-tomorrow-eighties)))
  '(custom-safe-themes
    (quote
     ("bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "c5207e7b8cc960e08818b95c4b9a0c870d91db3eaf5959dd4eba09098b7f232b" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
@@ -64,7 +64,8 @@
  '(magit-revision-insert-related-refs nil)
  '(magit-time-format-string "%b %d, %Y %T")
  '(midnight-mode t nil (midnight))
- '(minimap-width-fraction 0.1)
+ '(minimap-display-semantic-overlays nil)
+ '(minimap-width-fraction 0.15)
  '(minimap-window-location (quote right))
  '(mouse-yank-at-point t)
  '(nrepl-log-messages t)
@@ -165,7 +166,7 @@
  '(magit-diff-file-heading ((t nil)))
  '(magit-section-heading ((t (:weight bold))))
  '(magit-tag ((t (:foreground "Goldenrod4"))))
- '(minimap-active-region-background ((t (:background "#494949"))) t)
+ '(minimap-active-region-background ((t (:background "#494949"))))
  '(mode-line ((t (:weight normal :box nil))))
  '(mode-line-inactive ((t (:weight normal :box nil))))
  '(preview-reference-face ((t (:foreground "#00CCCC" :background "#CCCCCC"))))
