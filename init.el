@@ -374,11 +374,8 @@ isn't there and triggers an error"
   (setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
   )
 
-(require 'paren)
-(show-paren-mode 1)
-(set-face-foreground 'show-paren-match "#00ff00")
-(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-(set-face-background 'show-paren-match (face-background 'default))
+(use-package paren :demand t
+  :config (show-paren-mode 1))
 
 ;; Autocomplete in Clojure
 
@@ -547,11 +544,17 @@ isn't there and triggers an error"
         (setq mainline-color2 "#efefef")
         (setq mainline-color3 "#70c0b1")
         (setq mainline-color-fg "black")
+        (custom-set-faces
+         '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
+         '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000")))))
         (color-theme-sanityinc-tomorrow-day))
     (setq mainline-color1 "#444444")
     (setq mainline-color2 "#222222")
     (setq mainline-color3 "#293B3A")
     (setq mainline-color-fg "white")
+    (custom-set-faces
+     '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
+     '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified)))))
     (color-theme-sanityinc-tomorrow-eighties))
   (custom-set-faces
    `(fringe ((t (:background ,(face-attribute 'default :background)))))))

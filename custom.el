@@ -174,8 +174,6 @@
  '(mode-line ((t (:weight normal :box nil))))
  '(mode-line-inactive ((t (:weight normal :box nil))))
  '(preview-reference-face ((t (:foreground "#00CCCC" :background "#CCCCCC"))))
- '(show-paren-match ((t (:background "dim gray" :foreground "#00bb00"))))
- '(show-paren-mismatch ((t (:background nil :foreground "#ff0000" :bold t))))
  '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))))
  '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120))))
  '(whitespace-space ((t (:background "#dd0000" :foreground "#999999"))))

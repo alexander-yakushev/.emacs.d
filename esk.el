@@ -14,9 +14,6 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       diff-switches "-u")
 
-;; Highlight matching parentheses when the point is on them.
-(show-paren-mode 1)
-
 ;; ido-mode is like magic pixie dust!
 (ido-mode t)
 (ido-ubiquitous-mode)
