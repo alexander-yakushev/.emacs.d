@@ -35,6 +35,7 @@
    (quote
     (".cm/" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".dfsl" ".pfsl" ".d64fsl" ".p64fsl" ".lx64fsl" ".lx32fsl" ".dx64fsl" ".dx32fsl" ".fx64fsl" ".fx32fsl" ".sx64fsl" ".sx32fsl" ".wx64fsl" ".wx32fsl" ".fasl" ".ufsl" ".fsl" ".dxl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo" ".idx" ".lof" ".lot" ".glo" ".blg" ".bbl" ".cp" ".cps" ".fn" ".fns" ".ky" ".kys" ".pg" ".pgs" ".tp" ".tps" ".vr" ".vrs" ".bcf" ".out")))
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(eldoc-idle-delay 1)
  '(electric-indent-mode nil)
  '(fci-rule-color "#282a2e")
@@ -57,6 +58,7 @@
  '(kept-new-versions 6)
  '(latex-block-names (quote ("dmath" "lstlisting")))
  '(ls-lisp-verbosity (quote (links uid gid)))
+ '(magit-blame-goto-chunk-hook nil)
  '(magit-commit-arguments nil)
  '(magit-completing-read-function (quote magit-ido-completing-read))
  '(magit-diff-auto-show (quote (stage-all log-oneline log-select blame-follow)))
@@ -157,6 +159,7 @@
  '(wakatime-api-key "d63979c5-252c-4bdc-bd01-c2dba0471c4d")
  '(wakatime-cli-path "~/Software/wakatime/wakatime/cli.py")
  '(warning-suppress-types (quote ((undo discard-info))))
+ '(whitespace-style (quote (face trailing lines-tail tabs)))
  '(yas/trigger-key "C-o"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

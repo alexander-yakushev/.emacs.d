@@ -226,7 +226,8 @@
       (helm-git-grep-1))))
 
 (use-package magit :ensure t
-                                        ;  :load-path "~/.emacs.d/site-lisp/magit/lisp"
+  :keys ("C-x g" magit-status
+         "<f8>" magit-blame)
   :commands (magit-status magit-blame-mode)
   :config
   (setq magit-last-seen-setup-instructions "1.4.0")
@@ -249,6 +250,9 @@
   ;;     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
   )
 
+(use-package git-timemachine :ensure t
+  :keys ("<C-f8>" git-timemachine))
+
 (use-package ediff
   :keys ("C-c d" ediff-opened-buffers)
   :commands ediff
@@ -265,8 +269,7 @@
                  (save-window-excursion (other-window 1))
                  (ediff-other-buffer bA))))
       (setq job-name 'ediff-buffers)
-      (ediff-buffers-internal bA bB nil nil nil)
-      (ediff-toggle-split)))
+      (ediff-buffers-internal bA bB nil '(ediff-toggle-split) nil)))
 
   (defvar ediff-do-hexl-diff nil
     "variable used to store trigger for doing diff in hexl-mode")
@@ -357,7 +360,9 @@ isn't there and triggers an error"
   (smex-initialize))
 
 (use-package saveplace :demand t
-  :init (setq-default save-place t))
+  :init
+  (setq save-place-file (concat user-emacs-directory "var/places"))
+  (setq-default save-place t))
 
 (use-package hippie-exp
   :keys ("M-/" hippie-expand)

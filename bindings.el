@@ -154,10 +154,6 @@
     "<C-tab>" hs-toggle-hiding
 
     ;; Magit mode
-    :global
-    "C-x g" magit-status
-    "<f8>" magit-blame-mode
-
     :local magit-mode-map magit-mode-hook
     ";" magit-section-forward
     "M-;" magit-section-forward-sibling

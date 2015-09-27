@@ -1,16 +1,12 @@
 ;;; Code:
 
 (when window-system
-  (tooltip-mode -1)
+  (tooltip-mode 1)
   (mouse-wheel-mode t)
   (blink-cursor-mode -1))
 
 (setq color-theme-is-global t
       uniquify-buffer-name-style 'forward
-      whitespace-style '(face trailing lines-tail tabs)
-      whitespace-line-column 80
-      ediff-window-setup-function 'ediff-setup-windows-plain
-      save-place-file (concat user-emacs-directory "places")
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       diff-switches "-u")
 
@@ -43,9 +39,6 @@
 
 (random t) ;; Seed the random-number generator
 
-;; Hippie expand: at times perhaps too hip
-
-
 ;; Cosmetics
 
 ;;; These belong in prog-mode-hook:
@@ -67,10 +60,6 @@
   (when (> (display-color-cells) 8)
     (hl-line-mode t)))
 
-(defun esk-turn-on-save-place-mode ()
-  (require 'saveplace)
-  (setq save-place t))
-
 (defun esk-pretty-lambdas ()
   (font-lock-add-keywords
    nil `(("(?\\(lambda\\>\\)"
@@ -86,7 +75,6 @@
 (add-hook 'prog-mode-hook 'esk-local-column-number-mode)
 (add-hook 'prog-mode-hook 'esk-local-comment-auto-fill)
 (add-hook 'prog-mode-hook 'esk-turn-on-hl-line-mode)
-(add-hook 'prog-mode-hook 'esk-turn-on-save-place-mode)
 (add-hook 'prog-mode-hook 'esk-pretty-lambdas)
 (add-hook 'prog-mode-hook 'esk-add-watchwords)
 (add-hook 'prog-mode-hook 'idle-highlight-mode)
@@ -97,17 +85,6 @@
 (defun esk-untabify-buffer ()
   (interactive)
   (untabify (point-min) (point-max)))
-
-(defun esk-indent-buffer ()
-  (interactive)
-  (indent-region (point-min) (point-max)))
-
-(defun esk-cleanup-buffer ()
-  "Perform a bunch of operations on the whitespace content of a buffer."
-  (interactive)
-  (esk-indent-buffer)
-  (esk-untabify-buffer)
-  (delete-trailing-whitespace))
 
 ;; Commands
 
