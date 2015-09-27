@@ -41,13 +41,6 @@
 
 ;; Cosmetics
 
-;;; These belong in prog-mode-hook:
-
-;; We have a number of turn-on-* functions since it's advised that lambda
-;; functions not go in hooks. Repeatedly evaling an add-to-list with a
-;; hook value will repeatedly add it since there's no way to ensure
-;; that a byte-compiled lambda doesn't already exist in the list.
-
 (defun esk-local-column-number-mode ()
   (make-local-variable 'column-number-mode)
   (column-number-mode t))
@@ -87,7 +80,6 @@
   (untabify (point-min) (point-max)))
 
 ;; Commands
-
 (defun esk-sudo-edit (&optional arg)
   (interactive "p")
   (if (or arg (not buffer-file-name))
@@ -104,16 +96,6 @@
           "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla "
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
-
-(defun esk-suck-it (suckee)
-  "Insert a comment of appropriate length about what can suck it."
-  (interactive "MWhat can suck it? ")
-  (let ((prefix (concat ";; " suckee " can s"))
-        (postfix "ck it!")
-        (col (current-column)))
-    (insert prefix)
-    (dotimes (_ (- 80 col (length prefix) (length postfix))) (insert "u"))
-    (insert postfix)))
 
 ;; A monkeypatch to cause annotate to ignore whitespace
 (defun vc-git-annotate-command (file buf &optional rev)

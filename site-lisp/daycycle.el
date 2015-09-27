@@ -3,6 +3,7 @@
 
 (defvar daycycle-24h-sunrise nil)
 (defvar daycycle-24h-sunset nil)
+(defvar daycycle-theme-set-fn nil)
 
 (defun daycycle-get-sunriseset-string ()
   (save-window-excursion
@@ -63,14 +64,15 @@
              (or (< (car now) (car daycycle-24h-sunset))
                  (and (= (car now) (car daycycle-24h-sunset))
                       (< (second now) (second daycycle-24h-sunset)))))
-        (theme-set 'day)
-      (theme-set 'night))))
+        (funcall daycycle-theme-set-fn 'day)
+      (funcall daycycle-theme-set-fn 'night))))
 
-(defun daycycle-init (arg)
+(defun daycycle-init (theme-set-fn arg)
+  (setq daycycle-theme-set-fn theme-set-fn)
   (cond ((equal arg 'day)
-         (theme-set 'day))
+         (funcall daycycle-theme-set-fn 'day))
         ((equal arg 'night)
-         (theme-set 'night))
+         (funcall daycycle-theme-set-fn 'night))
         ((equal arg 'auto)
          (progn
            (daycycle-start-daily-recalc-timer)

@@ -546,35 +546,36 @@ isn't there and triggers an error"
 (recentf-mode 1)
 
 ;; Configure main-line
-(use-package mainline :demand t)
-
-(defun theme-set (time)
-  (if (eq time 'day)
-      (progn
-        (setq mainline-color1 "#d6d6d6")
-        (setq mainline-color2 "#efefef")
-        (setq mainline-color3 "#70c0b1")
-        (setq mainline-color-fg "black")
-        (custom-set-faces
-         '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
-         '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000")))))
-        (color-theme-sanityinc-tomorrow-day))
-    (setq mainline-color1 "#444444")
-    (setq mainline-color2 "#222222")
-    (setq mainline-color3 "#293B3A")
-    (setq mainline-color-fg "white")
-    (custom-set-faces
-     '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
-     '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified)))))
-    (color-theme-sanityinc-tomorrow-eighties))
-  (custom-set-faces
-   `(fringe ((t (:background ,(face-attribute 'default :background)))))))
+(use-package mainline :demand t
+  :config
+  (setq mainline-arrow-shape 'arrow)
+  (mainline-activate))
 
 (use-package daycycle :demand t
-  :config (daycycle-init 'auto))
+  :config
+  (defun -theme-set (time)
+    (if (eq time 'day)
+        (progn
+          (setq mainline-color1 "#d6d6d6")
+          (setq mainline-color2 "#efefef")
+          (setq mainline-color3 "#70c0b1")
+          (setq mainline-color-fg "black")
+          (custom-set-faces
+           '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
+           '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000")))))
+          (color-theme-sanityinc-tomorrow-day))
+      (setq mainline-color1 "#444444")
+      (setq mainline-color2 "#222222")
+      (setq mainline-color3 "#293B3A")
+      (setq mainline-color-fg "white")
+      (custom-set-faces
+       '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
+       '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified)))))
+      (color-theme-sanityinc-tomorrow-eighties))
+    (custom-set-faces
+     `(fringe ((t (:background ,(face-attribute 'default :background)))))))
 
-(setq mainline-arrow-shape 'arrow)
-(mainline-activate)
+  (daycycle-init '-theme-set 'auto))
 
 (put 'ido-exit-minibuffer 'disabled nil)
 
@@ -585,8 +586,6 @@ isn't there and triggers an error"
   "indent whole buffer"
   (interactive)
   (indent-region (point-min) (point-max) nil))
-
-(setq lua-indent-level 3)
 
 ;; Advice yanking to auto-indent yank content
 (dolist (command '(yank yank-pop))
