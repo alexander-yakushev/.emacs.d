@@ -360,6 +360,15 @@ isn't there and triggers an error"
 (use-package saveplace :demand t
   :init (setq-default save-place t))
 
+(use-package hippie-exp
+  :keys ("M-/" hippie-expand)
+  :init
+  (dolist (f '(try-expand-line try-expand-list try-complete-file-name-partially))
+    (delete f hippie-expand-try-functions-list))
+
+  ;; Add this back in at the end of the list.
+  (add-to-list 'hippie-expand-try-functions-list 'try-complete-file-name-partially t))
+
 ;; Smooth scrolling
 (progn
   (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering

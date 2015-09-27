@@ -14,9 +14,6 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       diff-switches "-u")
 
-(add-to-list 'safe-local-variable-values '(lexical-binding . t))
-(add-to-list 'safe-local-variable-values '(whitespace-line-column . 80))
-
 ;; Highlight matching parentheses when the point is on them.
 (show-paren-mode 1)
 
@@ -50,13 +47,7 @@
 (random t) ;; Seed the random-number generator
 
 ;; Hippie expand: at times perhaps too hip
-(eval-after-load 'hippie-exp
-  '(progn
-     (dolist (f '(try-expand-line try-expand-list try-complete-file-name-partially))
-       (delete f hippie-expand-try-functions-list))
 
-     ;; Add this back in at the end of the list.
-     (add-to-list 'hippie-expand-try-functions-list 'try-complete-file-name-partially t)))
 
 ;; Cosmetics
 
@@ -92,7 +83,7 @@
 
 (defun esk-add-watchwords ()
   (font-lock-add-keywords
-   nil '(("\\<\\(FIX\\(ME\\)?\\|TODO\\|HACK\\|REFACTOR\\|NOCOMMIT\\)"
+   nil '(("\\<\\(TODO\\|FIXME\\)"
           1 font-lock-warning-face t))))
 
 (add-hook 'prog-mode-hook 'esk-local-column-number-mode)
