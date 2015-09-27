@@ -192,6 +192,7 @@
   :init (add-hook 'prog-mode-hook 'ac-config-default))
 
 (use-package slime :ensure t
+  :commands slime
   :config
   (use-package ac-slime :ensure t :demand t
     :init
@@ -206,10 +207,8 @@
                              slime-indentation))
   (require 'slime-autoloads))
 
-(use-package s :ensure t :demand t)
-
 (use-package midnight :demand t
-  :init (midnight-delay-set 'midnight-delay "11:59pm"))
+  :config (midnight-delay-set 'midnight-delay "11:59pm"))
 
 (use-package helm-git-grep :ensure t
   :keys (:override
@@ -353,8 +352,8 @@ isn't there and triggers an error"
 
 (use-package smex :ensure t
   :keys ("M-x" smex)
-  :init
-  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
+  :config
+  (setq smex-save-file (concat user-emacs-directory "var/.smex-items"))
   (smex-initialize))
 
 (use-package saveplace :demand t
@@ -362,7 +361,7 @@ isn't there and triggers an error"
 
 (use-package hippie-exp
   :keys ("M-/" hippie-expand)
-  :init
+  :config
   (dolist (f '(try-expand-line try-expand-list try-complete-file-name-partially))
     (delete f hippie-expand-try-functions-list))
 
@@ -392,7 +391,6 @@ isn't there and triggers an error"
 ;; (add-hook 'cider-mode-hook #'company-mode)
 
 ;; Default SSH for tramp
-(setq tramp-default-method "ssh")
 
 ;; Auto undo-tree
 (global-undo-tree-mode)
@@ -470,9 +468,6 @@ isn't there and triggers an error"
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 (add-hook 'clojure-mode-hook    'hs-minor-mode)
-
-;; Enable Tomorrow Eighties theme
-(color-theme-sanityinc-tomorrow-eighties)
 
 ;; Disable flashes on errors
 (setq ring-bell-function 'ignore)
@@ -557,9 +552,12 @@ isn't there and triggers an error"
     (setq mainline-color2 "#222222")
     (setq mainline-color3 "#293B3A")
     (setq mainline-color-fg "white")
-    (color-theme-sanityinc-tomorrow-eighties)))
+    (color-theme-sanityinc-tomorrow-eighties))
+  (custom-set-faces
+   `(fringe ((t (:background ,(face-attribute 'default :background)))))))
 
-(load "~/.emacs.d/sunriseset.el")
+(use-package daycycle :demand t
+  :config (daycycle-init 'auto))
 
 (setq mainline-arrow-shape 'arrow)
 (mainline-activate)
@@ -573,7 +571,6 @@ isn't there and triggers an error"
   "indent whole buffer"
   (interactive)
   (indent-region (point-min) (point-max) nil))
-
 
 (setq lua-indent-level 3)
 
