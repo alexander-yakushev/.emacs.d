@@ -228,7 +228,7 @@
 (use-package magit :ensure t
   :keys ("C-x g" magit-status
          "<f8>" magit-blame)
-  :commands (magit-status magit-blame-mode)
+  :commands (magit-show-commit)
   :config
   (setq magit-last-seen-setup-instructions "1.4.0")
   (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
@@ -251,7 +251,13 @@
   )
 
 (use-package git-timemachine :ensure t
-  :keys ("<C-f8>" git-timemachine))
+  :keys ("<C-f8>" git-timemachine
+         :local
+         "c" git-timemachine-show-commit)
+  :config
+  (defun git-timemachine-show-commit ()
+    (interactive)
+    (magit-show-commit (car git-timemachine-revision))))
 
 (use-package ediff
   :keys ("C-c d" ediff-opened-buffers)
