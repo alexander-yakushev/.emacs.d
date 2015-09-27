@@ -17,7 +17,6 @@
 ;;;
 ;;;     arrow
 ;;;     slant
-;;;     curve
 
 (require 'projectile)
 
@@ -39,7 +38,7 @@
 (scroll-bar-mode -1)
 
 (defun slant-left-xpm
-  (color1 color2)
+    (color1 color2)
   "Return an XPM left slant string representing."
   (create-image
    (format "/* XPM */
@@ -70,7 +69,7 @@ static char * slant_left[] = {
    'xpm t :ascent 'center))
 
 (defun slant-right-xpm
-  (color1 color2)
+    (color1 color2)
   "Return an XPM right slant string representing@"
   (create-image
    (format "/* XPM */
@@ -101,7 +100,7 @@ static char * slant_right[] = {
    'xpm t :ascent 'center))
 
 (defun arrow-left-xpm
-  (color1 color2)
+    (color1 color2)
   "Return an XPM left arrow string representing@"
   (create-image
    (format "/* XPM */
@@ -132,7 +131,7 @@ static char * arrow_left[] = {
    'xpm t :ascent 'center))
 
 (defun arrow-right-xpm
-  (color1 color2)
+    (color1 color2)
   "Return an XPM right arrow string representing@"
   (create-image
    (format "/* XPM */
@@ -162,68 +161,6 @@ static char * arrow_right[] = {
            (if color1 color1 "None"))
    'xpm t :ascent 'center))
 
-(defun curve-right-xpm
-  (color1 color2)
-  "Return an XPM right curve string representing@"
-  (create-image
-   (format "/* XPM */
-static char * curve_right[] = {
-\"12 18 2 1\",
-\"@ c %s\",
-\"  c %s\",
-\"           @\",
-\"         @@@\",
-\"         @@@\",
-\"       @@@@@\",
-\"       @@@@@\",
-\"       @@@@@\",
-\"      @@@@@@\",
-\"      @@@@@@\",
-\"      @@@@@@\",
-\"      @@@@@@\",
-\"      @@@@@@\",
-\"      @@@@@@\",
-\"       @@@@@\",
-\"       @@@@@\",
-\"       @@@@@\",
-\"         @@@\",
-\"         @@@\",
-\"           @\"};"
-           (if color2 color2 "None")
-           (if color1 color1 "None"))
-   'xpm t :ascent 'center))
-
-(defun curve-left-xpm
-  (color1 color2)
-  "Return an XPM left curve string representing@"
-  (create-image
-   (format "/* XPM */
-static char * curve_left[] = {
-\"12 18 2 1\",
-\"@ c %s\",
-\"  c %s\",
-\"@           \",
-\"@@@         \",
-\"@@@         \",
-\"@@@@@       \",
-\"@@@@@       \",
-\"@@@@@       \",
-\"@@@@@@      \",
-\"@@@@@@      \",
-\"@@@@@@      \",
-\"@@@@@@      \",
-\"@@@@@@      \",
-\"@@@@@@      \",
-\"@@@@@       \",
-\"@@@@@       \",
-\"@@@@@       \",
-\"@@@         \",
-\"@@@         \",
-\"@           \"};"
-           (if color1 color1 "None")
-           (if color2 color2 "None"))
-   'xpm t :ascent 'center))
-
 ;; from memoize.el @ http://nullprogram.com/blog/2010/07/26/
 (defun memoize (func)
   "Memoize the given function. If argument is a symbol then
@@ -249,11 +186,9 @@ install the memoized function over the original function."
 (memoize 'slant-right-xpm)
 (memoize 'arrow-left-xpm)
 (memoize 'arrow-right-xpm)
-(memoize 'curve-left-xpm)
-(memoize 'curve-right-xpm)
 
 (defun mainline-make-face
-  (bg &optional fg)
+    (bg &optional fg)
   (if bg
       (let ((fg mainline-color-fg)
             (cface (intern (concat "mainline-"
@@ -280,7 +215,7 @@ install the memoized function over the original function."
     nil))
 
 (defun mainline-make-left
-  (string color1 &optional color2 localmap)
+    (string color1 &optional color2 localmap)
   (let ((plface (mainline-make-face color1))
         (arrow  (and color2 (not (string= color1 color2)))))
     (concat
@@ -301,22 +236,19 @@ install the memoized function over the original function."
                             (arrow-left-xpm color1 color2))
                            ((eq mainline-arrow-shape 'slant)
                             (slant-left-xpm color1 color2))
-                           ((eq mainline-arrow-shape 'curve)
-                            (curve-left-xpm color1 color2))
                            (t
                             (arrow-left-xpm color1 color2)))
                      'local-map (make-mode-line-mouse-map
                                  'mouse-1 (lambda () (interactive)
                                             (setq mainline-arrow-shape
                                                   (cond ((eq mainline-arrow-shape 'arrow)       'slant)
-                                                        ((eq mainline-arrow-shape 'slant)       'curve)
-                                                        ((eq mainline-arrow-shape 'curve)       'arrow)
+                                                        ((eq mainline-arrow-shape 'slant)       'arrow)
                                                         (t                                       'arrow)))
                                             (redraw-modeline))))
        ""))))
 
 (defun mainline-make-right
-  (string color2 &optional color1 localmap)
+    (string color2 &optional color1 localmap)
   (let ((plface (mainline-make-face color2))
         (arrow  (and color1 (not (string= color1 color2)))))
     (concat
@@ -328,16 +260,13 @@ install the memoized function over the original function."
                             (slant-right-xpm color1 color2))
                            ((eq mainline-arrow-shape 'rounded)
                             (rounded-xpm color1 color2))
-                           ((eq mainline-arrow-shape 'curve)
-                            (curve-right-xpm color1 color2))
                            (t
                             (arrow-right-xpm color1 color2)))
                      'local-map (make-mode-line-mouse-map
                                  'mouse-1 (lambda () (interactive)
                                             (setq mainline-arrow-shape
                                                   (cond ((eq mainline-arrow-shape 'arrow)       'slant)
-                                                        ((eq mainline-arrow-shape 'slant)       'curve)
-                                                        ((eq mainline-arrow-shape 'curve)       'arrow)
+                                                        ((eq mainline-arrow-shape 'slant)       'arrow)
                                                         (t                                      'arrow)))
                                             (redraw-modeline))))
        "")
@@ -354,7 +283,7 @@ install the memoized function over the original function."
        (propertize " " 'face plface)))))
 
 (defun mainline-make-text
-  (string color &optional fg localmap)
+    (string color &optional fg localmap)
   (let ((plface (mainline-make-face color)))
     (if string
         (if localmap
@@ -371,10 +300,10 @@ install the memoized function over the original function."
 
 (defmacro defmainline (name string)
   `(defun ,(intern (concat "mainline-" (symbol-name name)))
-     (side color1 &optional color2)
+       (side color1 &optional color2)
      (mainline-make side
-                     ,string
-                     color1 color2)))
+                    ,string
+                    color1 color2)))
 
 (defmainline major-mode
   (propertize mode-name
@@ -396,7 +325,7 @@ install the memoized function over the original function."
        " +" " "
        (reduce (lambda (s mode)
                  (replace-regexp-in-string mode "" s))
-               '("Undo-Tree" "Projectile\\[.+\\]" "WS" "Fill" "hs"
+               '("Undo-Tree" "Projectile" "WS" "Fill" "hs"
                  "SliNav" "Paredit" "ElDoc" "Hi")
                :initial-value
                mms)))
@@ -423,13 +352,21 @@ install the memoized function over the original function."
         (concat ".." (substring bn (- l (- n 2))))
       bn)))
 
+(defvar vc-cache (make-hash-table :test 'equal))
+
 (defun mainline-get-project-and-branch ()
-  (condition-case err
-      (let ((pn (and (projectile-project-p) (projectile-project-name))))
-        (cond ((and vc-mode pn) (concat pn ":" (replace-regexp-in-string ".+[:-]" "" vc-mode)))
-              (vc-mode (replace-regexp-in-string ".+[:-]" "" vc-mode))
-              (pn pn)))
-    (error "")))
+  (let ((fn (buffer-file-name)))
+    (if fn
+        (let ((cached (gethash fn vc-cache)))
+          (if cached
+              cached
+            (let* ((pn (and (projectile-project-p) (projectile-project-name)))
+                   (ret (cond ((and vc-mode pn) (concat pn ":" (replace-regexp-in-string ".+[:-]" "" vc-mode)))
+                             (vc-mode (replace-regexp-in-string ".+[:-]" "" vc-mode))
+                             (pn pn))))
+              (puthash fn ret vc-cache)
+              ret)))
+      "")))
 
 (defun mainline-activate ()
   (setq-default
@@ -452,7 +389,7 @@ install the memoized function over the original function."
                                                      vc-length))))
                   (real-buffer-name (if compact?
                                         (mainline-center-format (mainline-trimmed-buffer-name (buffer-name) space-for-buffer-name)
-                                                       (min classic-bn-length space-for-buffer-name))
+                                                                (min classic-bn-length space-for-buffer-name))
                                       full-buffer-name))
                   (total-length (if compact?
                                     (+ (- total-length mms-length

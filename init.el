@@ -211,8 +211,6 @@
 (use-package midnight :demand t
   :init (midnight-delay-set 'midnight-delay "11:59pm"))
 
-(use-package smooth-scrolling :ensure t :demand t)
-
 (use-package helm-git-grep :ensure t
   :keys (:override
          "M-h" helm-git-grep
@@ -361,6 +359,12 @@ isn't there and triggers an error"
 
 (use-package saveplace :demand t
   :init (setq-default save-place t))
+
+;; Smooth scrolling
+(progn
+  (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
+  (setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
+  )
 
 (require 'paren)
 (show-paren-mode 1)
