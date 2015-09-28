@@ -92,6 +92,8 @@
 
 ;; Configure packages
 
+(use-package s :ensure t)
+
 (use-package sudo :commands sudo-find-file)
 
 (use-package stesla
