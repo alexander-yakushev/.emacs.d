@@ -26,7 +26,6 @@
 
   (eval-when-compile
     (require 'use-package))
-  (setq use-package-verbose t)
   (put 'use-package 'lisp-indent-function 'defun)
 
   (push :keys (cdr (member :bind use-package-keywords)))
