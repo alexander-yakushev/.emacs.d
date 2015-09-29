@@ -41,7 +41,9 @@
     (color1 color2)
   "Return an XPM left slant string representing."
   (create-image
-   (format "/* XPM */
+   (format
+    (if (> (x-display-pixel-height) 1080)
+        "/* XPM */
 static char * slant_left[] = {
 \"17 34 2 1\",
 \"@ c %s\",
@@ -80,6 +82,30 @@ static char * slant_left[] = {
 \"@@@@@@@@@@@@@@@@ \",
 \"@@@@@@@@@@@@@@@@@\",
 \"@@@@@@@@@@@@@@@@@\"};"
+
+"/* XPM */
+static char * slant_left[] = {
+\"12 18 2 1\",
+\"@ c %s\",
+\"  c %s\",
+\"@@@@         \",
+\"@@@@         \",
+\"@@@@@        \",
+\"@@@@@        \",
+\"@@@@@@       \",
+\"@@@@@@       \",
+\"@@@@@@@      \",
+\"@@@@@@@      \",
+\"@@@@@@@@     \",
+\"@@@@@@@@     \",
+\"@@@@@@@@@    \",
+\"@@@@@@@@@    \",
+\"@@@@@@@@@@   \",
+\"@@@@@@@@@@   \",
+\"@@@@@@@@@@@  \",
+\"@@@@@@@@@@@  \",
+\"@@@@@@@@@@@@ \",
+\"@@@@@@@@@@@@\"};")
            (if color1 color1 "None")
            (if color2 color2 "None"))
    'xpm t :ascent 'center))
@@ -88,7 +114,9 @@ static char * slant_left[] = {
     (color1 color2)
   "Return an XPM right slant string representing@"
   (create-image
-   (format "/* XPM */
+   (format
+    (if (> (x-display-pixel-height) 1080)
+        "/* XPM */
 static char * slant_right[] = {
 \"17 34 2 1\",
 \"@ c %s\",
@@ -127,6 +155,29 @@ static char * slant_right[] = {
 \" @@@@@@@@@@@@@@@@\",
 \"@@@@@@@@@@@@@@@@@\",
 \"@@@@@@@@@@@@@@@@@\"};"
+      "/* XPM */
+static char * slant_right[] = {
+\"12 18 2 1\",
+\"@ c %s\",
+\"  c %s\",
+\"        @@@@\",
+\"        @@@@\",
+\"       @@@@@\",
+\"       @@@@@\",
+\"      @@@@@@\",
+\"      @@@@@@\",
+\"     @@@@@@@\",
+\"     @@@@@@@\",
+\"    @@@@@@@@\",
+\"    @@@@@@@@\",
+\"   @@@@@@@@@\",
+\"   @@@@@@@@@\",
+\"  @@@@@@@@@@\",
+\"  @@@@@@@@@@\",
+\" @@@@@@@@@@@\",
+\" @@@@@@@@@@@\",
+\"@@@@@@@@@@@@\",
+\"@@@@@@@@@@@@\"};")
            (if color2 color2 "None")
            (if color1 color1 "None"))
    'xpm t :ascent 'center))
@@ -135,7 +186,9 @@ static char * slant_right[] = {
     (color1 color2)
   "Return an XPM left arrow string representing@"
   (create-image
-   (format "/* XPM */
+   (format
+    (if (> (x-display-pixel-height) 1080)
+        "/* XPM */
 static char * arrow_left[] = {
 \"17 34 2 1\",
 \"@ c %s\",
@@ -174,6 +227,29 @@ static char * arrow_left[] = {
 \"@@@              \",
 \"@@               \",
 \"@                \",};"
+      "/* XPM */
+static char * arrow_left[] = {
+\"12 18 2 1\",
+\"@ c %s\",
+\"  c %s\",
+\"@           \",
+\"@@          \",
+\"@@@         \",
+\"@@@@        \",
+\"@@@@@       \",
+\"@@@@@@      \",
+\"@@@@@@@     \",
+\"@@@@@@@@    \",
+\"@@@@@@@@@   \",
+\"@@@@@@@@@   \",
+\"@@@@@@@@    \",
+\"@@@@@@@     \",
+\"@@@@@@      \",
+\"@@@@@       \",
+\"@@@@        \",
+\"@@@         \",
+\"@@          \",
+\"@           \"};")
            (if color1 color1 "None")
            (if color2 color2 "None"))
    'xpm t :ascent 'center))
@@ -182,7 +258,9 @@ static char * arrow_left[] = {
     (color1 color2)
   "Return an XPM right arrow string representing@"
   (create-image
-   (format "/* XPM */
+   (format
+    (if (> (x-display-pixel-height) 1080)
+        "/* XPM */
 static char * arrow_right[] = {
 \"17 34 2 1\",
 \"@ c %s\",
@@ -221,6 +299,29 @@ static char * arrow_right[] = {
 \"              @@@\",
 \"               @@\",
 \"                @\"};"
+      "/* XPM */
+static char * arrow_right[] = {
+\"12 18 2 1\",
+\"@ c %s\",
+\"  c %s\",
+\"           @\",
+\"          @@\",
+\"         @@@\",
+\"        @@@@\",
+\"       @@@@@\",
+\"      @@@@@@\",
+\"     @@@@@@@\",
+\"    @@@@@@@@\",
+\"   @@@@@@@@@\",
+\"   @@@@@@@@@\",
+\"    @@@@@@@@\",
+\"     @@@@@@@\",
+\"      @@@@@@\",
+\"       @@@@@\",
+\"        @@@@\",
+\"         @@@\",
+\"          @@\",
+\"           @\"};")
            (if color2 color2 "None")
            (if color1 color1 "None"))
    'xpm t :ascent 'center))
