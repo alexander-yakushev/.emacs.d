@@ -258,7 +258,54 @@
   :config
   (defun git-timemachine-show-commit ()
     (interactive)
-    (magit-show-commit (car git-timemachine-revision))))
+    (magit-show-commit (car git-timemachine-revision)))
+
+  (defface git-timemachine-minibuffer-author-face
+    '((t (:foreground "firebrick")))
+    "How to display the minibuffer detail"
+    :group 'git-timemachine)
+
+  (defun git-timemachine--revisions ()
+    "List git revisions of current buffers file."
+    (if git-timemachine--revisions-cache
+        git-timemachine--revisions-cache
+      (setq git-timemachine--revisions-cache
+            (prog2
+                (message "Fetching Revisions...")
+                (let ((default-directory git-timemachine-directory)
+                      (file git-timemachine-file))
+                  (with-temp-buffer
+                    (unless (zerop (process-file vc-git-program nil t nil "--no-pager" "log" "--name-only" "--follow" "--date=short" "--pretty=format:%H:%ar:%ad:%an:%s" file))
+                      (error "Git log command exited with non-zero exit status for file: %s" file))
+                    (goto-char (point-min))
+                    (let ((lines)
+                          (commit-number (/ (1+ (count-lines (point-min) (point-max))) 3)))
+                      (while (not (eobp))
+                        (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+                          (string-match "\\([^:]*\\):\\([^:]*\\):\\(.*\\):\\(.*\\):\\(.*\\)" line)
+                          (let ((commit (match-string 1 line))
+                                (date-relative (match-string 2 line))
+                                (date-full (match-string 3 line))
+                                (author (match-string 4 line))
+                                (subject (match-string 5 line)))
+                            (forward-line 1)
+                            (let ((file-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+                              (push (list commit file-name commit-number date-relative date-full subject author) lines))))
+                        (setq commit-number (1- commit-number))
+                        (forward-line 2))
+                      (nreverse lines))))
+              (message "Fetching Revisions...done")))))
+
+  (defun git-timemachine--show-minibuffer-details (revision)
+    "Show details for REVISION in minibuffer."
+    (setq ---foo  revision)
+    (let ((detail (nth 5 revision))
+          (date-relative (nth 3 revision))
+          (date-full (nth 4 revision))
+          (author (nth 6 revision)))
+      (message (format "%s (%s) [%s (%s)]" (propertize detail 'face 'git-timemachine-minibuffer-detail-face)
+                       (propertize author 'face 'git-timemachine-minibuffer-author-face)
+                       date-full date-relative)))))
 
 (use-package ediff
   :keys ("C-c d" ediff-opened-buffers)
