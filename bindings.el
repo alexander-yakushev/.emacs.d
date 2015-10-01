@@ -176,9 +176,6 @@
     :local magit-blame-mode-map magit-blame-mode-hook
     ";" magit-blame-next-chunk
 
-    :local vc-annotate-mode-map vc-annotate-mode-hook
-    "c" vc-annotate-show-commit-at-line
-
     ;; bs mode
     :global
     "C-x C-l" bs-show

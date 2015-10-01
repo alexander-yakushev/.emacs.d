@@ -649,16 +649,47 @@ isn't there and triggers an error"
                 (let ((mark-even-if-inactive transient-mark-mode))
                   (indent-region (region-beginning) (region-end) nil))))))
 
-(defun rev-at-line ()
-  (vc-annotate-extract-revision-at-line))
+(use-package vc-annotate :demand t
+  :commands vc-annotate
+  :keys (:local
+         "c" vc-annotate-show-commit-at-line)
+  :config
+  (defun vc-annotate-show-commit-at-line ()
+    (interactive)
+    (let* ((rev (car (vc-annotate-extract-revision-at-line)))
+           (rev (if (string= (substring rev 0 1) "^")
+                    (substring rev 1)
+                  rev)))
+      (magit-show-commit rev)))
 
-(defun vc-annotate-show-commit-at-line ()
-  (interactive)
-  (let* ((rev (car (rev-at-line)))
-         (rev (if (string= (substring rev 0 1) "^")
-                  (substring rev 1)
-                rev)))
-    (magit-show-commit rev)))
+  (defun vc-git-annotate-command (file buf &optional rev)
+    (let ((name (file-relative-name file)))
+      (vc-git-command buf 'async nil "blame" "--date=short" rev "--" name)))
+
+  (defun vc-annotate-get-time-set-line-props ()
+    (let ((bol (point))
+          (date (vc-call-backend vc-annotate-backend 'annotate-time))
+          (inhibit-read-only t))
+      (cl-assert (>= (point) bol))
+      (put-text-property bol (point) 'invisible 'vc-annotate-annotation)
+      (let ((boc (point)))
+        (save-excursion
+          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9]")
+          (put-text-property (point) boc 'invisible t)))
+      date))
+
+  (defvar --vc-annotate-current-rev nil)
+
+  (defun --vc-annotate-post-hook (file rev &rest rst)
+    (setq --vc-annotate-current-rev rev)
+    (vc-run-delayed
+      (unless (active-minibuffer-window)
+        (message (vc-git--run-command-string
+                  nil "log" "--pretty=format:[%an] %s (%ar)" "-n 1" --vc-annotate-current-rev)))))
+
+  (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
+
+
 
 (defun unlogic-git-fix-url ()
   (interactive)
