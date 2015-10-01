@@ -664,7 +664,7 @@ isn't there and triggers an error"
 
   (defun vc-git-annotate-command (file buf &optional rev)
     (let ((name (file-relative-name file)))
-      (vc-git-command buf 'async nil "blame" "--date=short" rev "--" name)))
+      (vc-git-command buf 'async nil "blame" "--date=iso" rev "--" name)))
 
   (defun vc-annotate-get-time-set-line-props ()
     (let ((bol (point))
