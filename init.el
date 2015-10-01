@@ -674,8 +674,9 @@ isn't there and triggers an error"
       (put-text-property bol (point) 'invisible 'vc-annotate-annotation)
       (let ((boc (point)))
         (save-excursion
-          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9]")
-          (put-text-property (point) boc 'invisible t)))
+          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9] +[0-9]+)")
+          (when (< (- boc (point)) 40)
+            (put-text-property (point) boc 'invisible t))))
       date))
 
   (defvar --vc-annotate-current-rev nil)
@@ -998,6 +999,33 @@ With a prefix argument N, (un)comment that many sexps."
   :init
   (add-hook 'prog-mode-hook 'nlinum-mode)
   (add-hook 'org-mode-hook 'nlinum-mode))
+
+;; ;; Screen layout
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; ;; Modes
+;; (add-to-list 'load-path "~/projects/lisp/patterns/emacs/")
+;; (require 'patterns-modes)
+
+;; (defconst query-replace-highlight t)
+;; (defconst search-highlight t)
+
+;; (defun slime-init ()
+;;   (slime-repl-send-string "
+;; (pushnew :ling *features*)
+;; #+sbcl (pushnew :glove *features*)
+;; (ql:quickload :gr-patterns)
+;; #+ccl
+;; (setf ccl:*default-external-format*
+;;       (ccl:make-external-format :character-encoding :utf-8
+;;                                 :line-termination :unix))
+;; (named-readtables:in-readtable plang:patterns)
+;; (in-package :plang)
+;; (use-package :ptools)"))
+
+;; (setq slime-net-coding-system 'utf-8-unix)
+
+;; (slime)
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)
