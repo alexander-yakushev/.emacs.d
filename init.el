@@ -676,7 +676,12 @@ isn't there and triggers an error"
         (save-excursion
           (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9] +[0-9]+)")
           (when (< (- boc (point)) 40)
-            (put-text-property (point) boc 'invisible t))))
+            (put-text-property (point) boc 'invisible t))
+          (search-backward-regexp "(")
+          (let ((paren-point (point)))
+            (beginning-of-line)
+            (when (> (- paren-point (point) 10))
+              (put-text-property (+ (point) 9) paren-point 'invisible t)))))
       date))
 
   (defvar --vc-annotate-current-rev nil)
