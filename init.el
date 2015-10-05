@@ -891,8 +891,8 @@ narrowed."
 (setq langtool-java-classpath
       "/usr/share/languagetool:/usr/share/java/languagetool/*")
 
-;; (require 'wakatime-mode)
-;; (global-wakatime-mode)
+(use-package wakatime-mode :ensure t :demand t
+  :config (global-wakatime-mode))
 
 ;; Sexp commenting
 (defun uncomment-sexp (&optional n)
