@@ -24,7 +24,6 @@
     ido-ubiquitous
     lua-mode
     markdown-mode
-    minimap
     multiple-cursors
     openwith
     org
