@@ -93,7 +93,6 @@
     ;;; Miscellaneous
     "C-/" toggle-input-method
     "C-c M-r" query-replace
-    "<f5>" minimap-toggle
     "M-SPC" auto-complete
     "M-=" count-words
 

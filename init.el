@@ -664,7 +664,7 @@ isn't there and triggers an error"
 
   (defun vc-git-annotate-command (file buf &optional rev)
     (let ((name (file-relative-name file)))
-      (vc-git-command buf 'async nil "blame" "--date=short" rev "--" name)))
+      (vc-git-command buf 'async nil "blame" "--date=iso" rev "--" name)))
 
   (defun vc-annotate-get-time-set-line-props ()
     (let ((bol (point))
@@ -674,8 +674,14 @@ isn't there and triggers an error"
       (put-text-property bol (point) 'invisible 'vc-annotate-annotation)
       (let ((boc (point)))
         (save-excursion
-          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9]")
-          (put-text-property (point) boc 'invisible t)))
+          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9] +[0-9]+)")
+          (when (< (- boc (point)) 40)
+            (put-text-property (point) boc 'invisible t))
+          (search-backward-regexp "(")
+          (let ((paren-point (point)))
+            (beginning-of-line)
+            (when (> (- paren-point (point) 10))
+              (put-text-property (+ (point) 9) paren-point 'invisible t)))))
       date))
 
   (defvar --vc-annotate-current-rev nil)
@@ -885,8 +891,8 @@ narrowed."
 (setq langtool-java-classpath
       "/usr/share/languagetool:/usr/share/java/languagetool/*")
 
-;; (require 'wakatime-mode)
-;; (global-wakatime-mode)
+(use-package wakatime-mode :ensure t :demand t
+  :config (global-wakatime-mode))
 
 ;; Sexp commenting
 (defun uncomment-sexp (&optional n)
@@ -998,6 +1004,33 @@ With a prefix argument N, (un)comment that many sexps."
   :init
   (add-hook 'prog-mode-hook 'nlinum-mode)
   (add-hook 'org-mode-hook 'nlinum-mode))
+
+;; ;; Screen layout
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; ;; Modes
+;; (add-to-list 'load-path "~/projects/lisp/patterns/emacs/")
+;; (require 'patterns-modes)
+
+;; (defconst query-replace-highlight t)
+;; (defconst search-highlight t)
+
+;; (defun slime-init ()
+;;   (slime-repl-send-string "
+;; (pushnew :ling *features*)
+;; #+sbcl (pushnew :glove *features*)
+;; (ql:quickload :gr-patterns)
+;; #+ccl
+;; (setf ccl:*default-external-format*
+;;       (ccl:make-external-format :character-encoding :utf-8
+;;                                 :line-termination :unix))
+;; (named-readtables:in-readtable plang:patterns)
+;; (in-package :plang)
+;; (use-package :ptools)"))
+
+;; (setq slime-net-coding-system 'utf-8-unix)
+
+;; (slime)
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)
