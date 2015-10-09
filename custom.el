@@ -178,4 +178,4 @@
  '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))))
  '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120))))
  '(whitespace-space ((t (:background "#dd0000" :foreground "#999999"))))
- '(whitespace-trailing ((t (:background "#f2777a" :foreground "#f2777a")))))
+ '(whitespace-trailing ((t (:background "deep sky blue" :foreground "deep sky blue")))))
