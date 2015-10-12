@@ -427,6 +427,24 @@ isn't there and triggers an error"
   ;; Add this back in at the end of the list.
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-file-name-partially t))
 
+(use-package idle-highlight-mode :ensure t :demand t
+  :commands idle-highlight-mode
+  :config
+  ;; Hack idle-highlight to support symbols like $SOMETHING.
+  (defun idle-highlight-word-at-point ()
+    "Highlight the word under the point."
+    (if idle-highlight-mode
+        (let* ((target-symbol (symbol-at-point))
+               (target (symbol-name target-symbol)))
+          (idle-highlight-unhighlight)
+          (when (and target-symbol
+                     (not (in-string-p))
+                     (looking-at-p "\\s_\\|\\sw") ;; Symbol characters
+                     (not (member target idle-highlight-exceptions)))
+            (setq idle-highlight-regexp (concat "\\_<" (regexp-quote target) "\\_>"))
+            (highlight-regexp idle-highlight-regexp 'idle-highlight)))))
+  (add-hook 'prog-mode-hook 'idle-highlight-mode))
+
 ;; Smooth scrolling
 (progn
   (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
