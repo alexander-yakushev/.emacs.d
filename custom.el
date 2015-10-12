@@ -92,11 +92,7 @@
       (file)))))
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
- '(org-mobile-directory "~/ownCloud/Notes")
- '(org-mobile-files
-   (quote
-    (org-agenda-files "~/Documents/Notes/gsoc.org" "~/Documents/Notes/life.org")))
- '(org-mobile-inbox-for-pull "~/Documents/Notes/from-mobile.org")
+ '(org-reveal-root "~/Software/reveal-js")
  '(package-archives
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
