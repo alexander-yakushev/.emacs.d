@@ -52,7 +52,7 @@
     ("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*magit" "\\*buffer-selection" "\\*Compile-log\\*" "\\*Quail" "\\*Minibuf" "\\*Completions" "\\*Shell" "\\*Customize" "\\*Help\\*" ".+ (Sunrise)")))
  '(indent-tabs-mode nil)
  '(indicate-empty-lines t)
- '(inferior-lisp-program "ccl" t)
+ '(inferior-lisp-program "ccl")
  '(inhibit-startup-screen t)
  '(ispell-program-name "/usr/bin/aspell")
  '(kept-new-versions 6)
