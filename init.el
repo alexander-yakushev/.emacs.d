@@ -194,7 +194,31 @@
 
 (use-package slime :ensure t
   :commands slime
+  :init
+  (defvar grammarly-patterns-path-to-project nil)
+  (defun grammarly-patterns-set-path (path-to-patterns)
+    (setq grammarly-patterns-path-to-project path-to-patterns)
+    (add-to-list 'load-path (expand-file-name (concat path-to-patterns "/emacs")))
+    (condition-case _ (require 'patterns-modes)
+      (error (display-warning :error "Could not find patterns-mode."))))
+
+  (defun grammarly-patterns-slime-init ()
+    (interactive)
+    (slime-repl-send-string
+     (format "#+sbcl (pushnew :glove *features*)
+(pushnew :dev *features*)
+(load \"%s/init.lisp\")
+(named-readtables:in-readtable plang:patterns)
+(in-package :plang)
+(use-package :ptools)
+(declaim (sb-ext:muffle-conditions sb-ext:compiler-note))"
+grammarly-patterns-path-to-project)))
   :config
+  (grammarly-patterns-set-path "~/projects/grammarly/patterns")
+  (setq-default slime-lisp-implementations
+              '((sbcl ("sbcl" "--dynamic-space-size" "9500"))
+                (ccl ("ccl"))))
+
   (use-package ac-slime :ensure t :demand t
     :init
     (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -245,11 +269,9 @@
        t)))
   (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
 
-  ;;   (use-package magit-gh-pulls :ensure t
-  ;;     :pin melpa
-  ;; ;    :load-path "~/.emacs.d/site-lisp/magit-gh-pulls/"
-  ;;     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
-  )
+  (use-package magit-gh-pulls :ensure t
+    :pin melpa
+    :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 
 (use-package git-timemachine :ensure t
   :keys ("<C-f8>" git-timemachine
@@ -444,6 +466,13 @@ isn't there and triggers an error"
             (setq idle-highlight-regexp (concat "\\_<" (regexp-quote target) "\\_>"))
             (highlight-regexp idle-highlight-regexp 'idle-highlight)))))
   (add-hook 'prog-mode-hook 'idle-highlight-mode))
+
+(use-package dockerfile-mode :ensure t :demand t
+  :config (add-to-list 'auto-mode-alist '("Rockerfile.*\\'" . dockerfile-mode)))
+
+(use-package gradle-mode :ensure t)
+
+(use-package groovy-mode :ensure t)
 
 ;; Smooth scrolling
 (progn

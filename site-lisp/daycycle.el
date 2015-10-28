@@ -24,7 +24,7 @@
 (defun daycycle-convert-time-format-of-sunriseset ()
   (let (rise_set a b c d e f)
     (setq rise_set (daycycle-get-sunriseset-string))
-    (if (string-match "0:00 hours daylight" rise_set) ;If polar-night
+    (if (string-match "(0:00 hours daylight" rise_set) ;If polar-night
         (progn
           (setq daycycle-24h-sunrise 'polar-night
                 daycycle-24h-sunset 'polar-night))

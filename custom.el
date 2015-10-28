@@ -62,6 +62,7 @@
  '(magit-commit-arguments nil)
  '(magit-completing-read-function (quote magit-ido-completing-read))
  '(magit-diff-auto-show (quote (stage-all log-oneline log-select blame-follow)))
+ '(magit-gh-pulls-arguments nil)
  '(magit-push-always-verify nil)
  '(magit-revision-insert-related-refs nil)
  '(magit-time-format-string "%b %d, %Y %T")
