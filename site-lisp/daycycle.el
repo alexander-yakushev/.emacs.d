@@ -5,25 +5,9 @@
 (defvar daycycle-24h-sunset nil)
 (defvar daycycle-theme-set-fn nil)
 
-(defun daycycle-get-sunriseset-string ()
-  (save-window-excursion
-    (let ((regex "[0-9]+:[0-9]+[ap]m")
-          (s (sunrise-sunset))
-          (buf (get-buffer "*temp*")))
-      (unless (and (stringp s)
-                   (string-match-p regex s))
-        (when buf
-          (with-current-buffer buf
-            (let* ((s1 (buffer-string))
-                   (s2 (if (string-match-p regex s1)
-                           s1 nil)))
-              (setq s s2)
-              (kill-buffer buf)))))
-      s)))
-
 (defun daycycle-convert-time-format-of-sunriseset ()
   (let (rise_set a b c d e f)
-    (setq rise_set (daycycle-get-sunriseset-string))
+    (setq rise_set (solar-sunrise-sunset-string (calendar-current-date)))
     (if (string-match "(0:00 hours daylight" rise_set) ;If polar-night
         (progn
           (setq daycycle-24h-sunrise 'polar-night

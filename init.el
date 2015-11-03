@@ -24,8 +24,7 @@
       (package-install 'use-package))
     (write-region "" nil "~/.emacs.d/.initialized"))
 
-  (eval-when-compile
-    (require 'use-package))
+  (require 'use-package)
   (put 'use-package 'lisp-indent-function 'defun)
 
   (push :keys (cdr (member :bind use-package-keywords)))
@@ -270,7 +269,6 @@ grammarly-patterns-path-to-project)))
   (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
 
   (use-package magit-gh-pulls :ensure t
-    :pin melpa
     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
 
 (use-package git-timemachine :ensure t
@@ -483,6 +481,12 @@ isn't there and triggers an error"
 (use-package paren :demand t
   :config (show-paren-mode 1))
 
+(use-package beacon :ensure t :demand t
+  :config
+  (beacon-mode 1)
+  (setq beacon-push-mark 35)
+  (setq beacon-color "maroon"))
+
 ;; Autocomplete in Clojure
 
 ;; (require 'company)
@@ -655,6 +659,7 @@ isn't there and triggers an error"
           (setq mainline-color2 "#efefef")
           (setq mainline-color3 "#70c0b1")
           (setq mainline-color-fg "black")
+          (setq beacon-color "#c82829")
           (custom-set-faces
            '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
            '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000")))))
@@ -662,6 +667,7 @@ isn't there and triggers an error"
       (setq mainline-color1 "#444444")
       (setq mainline-color2 "#222222")
       (setq mainline-color3 "#293B3A")
+      (setq beacon-color "#f2777a")
       (setq mainline-color-fg "white")
       (custom-set-faces
        '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
