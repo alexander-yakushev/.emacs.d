@@ -5,6 +5,8 @@
 (defvar daycycle-24h-sunset nil)
 (defvar daycycle-theme-set-fn nil)
 
+(require 'solar)
+
 (defun daycycle-convert-time-format-of-sunriseset ()
   (let (rise_set a b c d e f)
     (setq rise_set (solar-sunrise-sunset-string (calendar-current-date)))
