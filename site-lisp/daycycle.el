@@ -1,3 +1,5 @@
+(require 'solar)
+
 (setq calendar-latitude +50.45)
 (setq calendar-longitude +30.52)
 
