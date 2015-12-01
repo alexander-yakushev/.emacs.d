@@ -153,7 +153,7 @@
  '(wakatime-api-key "d63979c5-252c-4bdc-bd01-c2dba0471c4d")
  '(wakatime-cli-path "~/Software/wakatime/wakatime/cli.py")
  '(warning-suppress-types (quote ((undo discard-info))))
- '(whitespace-style (quote (face trailing lines-tail tabs)))
+ '(whitespace-style (quote (face trailing lines-tail tabs empty)))
  '(yas/trigger-key "C-o"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -163,6 +163,7 @@
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 110 :width normal :foundry "unknown" :family "Droid Sans Mono"))))
  '(fringe ((t (:background "white"))))
  '(git-timemachine-minibuffer-detail-face ((t (:foreground "sea green"))))
+ '(magit-blame-heading ((t (:background "grey80" :foreground "black"))))
  '(magit-branch-local ((t (:foreground "SkyBlue4"))))
  '(magit-branch-remote ((t (:foreground "DarkOliveGreen4"))))
  '(magit-diff-file-heading ((t nil)))
@@ -172,6 +173,8 @@
  '(mode-line ((t (:weight normal :box nil))))
  '(mode-line-inactive ((t (:weight normal :box nil))))
  '(preview-reference-face ((t (:foreground "#00CCCC" :background "#CCCCCC"))))
+ '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
+ '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000"))))
  '(sr-active-path-face ((t (:foreground "#00CCCC" :weight bold :height 120))))
  '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120))))
  '(whitespace-space ((t (:background "#dd0000" :foreground "#999999"))))

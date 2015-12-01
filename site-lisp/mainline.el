@@ -471,7 +471,7 @@ install the memoized function over the original function."
                     color1 color2)))
 
 (defmainline major-mode
-  (propertize mode-name
+  (propertize (if (stringp mode-name) mode-name "SGML")
               'help-echo "Major mode\n\ mouse-1: Display major mode menu\n\ mouse-2: Show help for major mode\n\ mouse-3: Toggle minor modes"
               'local-map (let ((map (make-sparse-keymap)))
                            (define-key map [mode-line down-mouse-1]
@@ -481,20 +481,25 @@ install the memoized function over the original function."
                            (define-key map [mode-line down-mouse-3] mode-line-mode-menu)
                            map)))
 
+(defvar mms-cache (make-hash-table :test 'equal))
+
 (defun mainline-interesting-minor-modes ()
-  (let ((mms (format-mode-line minor-mode-alist)))
-    (propertize
-     (replace-regexp-in-string
-      " $" ""
-      (replace-regexp-in-string
-       " +" " "
-       (reduce (lambda (s mode)
-                 (replace-regexp-in-string mode "" s))
-               '("Undo-Tree" "Projectile" "WS" "Fill" "hs"
-                 "SliNav" "Paredit" "ElDoc" "Hi")
-               :initial-value
-               mms)))
-     'help-echo mms)))
+  (let ((cached (gethash minor-mode-alist mms-cache)))
+    (or cached
+        (propertize
+         (format-mode-line
+          (remove-if (lambda (mm)
+                       (let ((mm-sym (car mm)))
+                         (or (eq mm-sym 'auto-fill-function)
+                             (eq mm-sym 'global-whitespace-mode)
+                             (eq mm-sym 'undo-tree-mode)
+                             (eq mm-sym 'projectile-mode)
+                             (eq mm-sym 'eldoc-mode)
+                             (eq mm-sym 'elisp-slime-nav-mode)
+                             (eq mm-sym 'git-gutter-mode)
+                             (eq mm-sym 'hi-lock-mode)
+                             (eq mm-sym 'hs-minor-mode))))
+                     minor-mode-alist))))))
 
 (defun mainline-center-format (str c)
   (let* ((l (length str)))

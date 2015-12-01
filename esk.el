@@ -25,8 +25,6 @@
 (set-default 'imenu-auto-rescan t)
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
-;; (when (executable-find ispell-program-name)
-;;       (add-hook 'text-mode-hook 'turn-on-flyspell))
 
 (eval-after-load "ispell"
   '(when (executable-find ispell-program-name)
@@ -115,19 +113,21 @@
   (define-key read-expression-map (kbd "TAB") 'lisp-complete-symbol)
   (define-key lisp-mode-shared-map (kbd "RET") 'reindent-then-newline-and-indent)
 
-  ;; TODO: look into parenface package
-  (defface esk-paren-face
-    '((((class color) (background dark))
-       (:foreground "grey50"))
-      (((class color) (background light))
-       (:foreground "grey55")))
-    "Face used to dim parentheses."
-    :group 'starter-kit-faces)
+  (use-package paren-face :ensure t :demand t
+    :config
+    (dolist (mode '(scheme emacs-lisp lisp))
+      (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
+                'paren-face-mode))
+    (add-hook 'clojure-mode-hook
+              (lambda ()
+                (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
+                (paren-face-mode 1)))
+    (add-hook 'clojurescript-mode-hook
+              (lambda ()
+                (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
+                (paren-face-mode 1))))
 
   (dolist (mode '(scheme emacs-lisp lisp clojure clojurescript))
-    (when (> (display-color-cells) 8)
-      (font-lock-add-keywords (intern (concat (symbol-name mode) "-mode"))
-                              '(("(\\|)" . 'esk-paren-face))))
     (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
               'paredit-mode))
 

@@ -206,6 +206,10 @@
     (condition-case _ (require 'patterns-modes)
       (error (display-warning :error "Could not find patterns-mode."))))
 
+  (defun допобачення ()
+    (interactive)
+    (slime-quit-lisp))
+
   (defun grammarly-patterns-slime-init ()
     (interactive)
     (slime-repl-send-string
@@ -272,6 +276,7 @@ grammarly-patterns-path-to-project)))
                                    'magit-section-highlight)
        t)))
   (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
+  (remove-hook 'magit-status-mode-hook 'whitespace-mode)
 
   (use-package magit-gh-pulls :ensure t
     :init (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)))
@@ -331,6 +336,11 @@ grammarly-patterns-path-to-project)))
       (message (format "%s (%s) [%s (%s)]" (propertize detail 'face 'git-timemachine-minibuffer-detail-face)
                        (propertize author 'face 'git-timemachine-minibuffer-author-face)
                        date-full date-relative)))))
+
+(use-package git-gutter :ensure t :demand t
+  :config
+  (global-git-gutter-mode 1)
+  (setq-default git-gutter:modified-sign "~"))
 
 (use-package ediff
   :keys ("C-c d" ediff-opened-buffers)
@@ -427,10 +437,12 @@ isn't there and triggers an error"
     (if (null mode-line-format)
         (progn
           (hidden-mode-line-mode -1)
-          (centered-window-mode -1))
+          (centered-window-mode -1)
+          (set-fringe-mode 1))
       (progn
         (hidden-mode-line-mode 1)
-        (centered-window-mode 1)))))
+        (centered-window-mode 1)
+        (set-fringe-mode 0)))))
 
 (use-package smex :ensure t
   :keys ("M-x" smex)
@@ -1119,3 +1131,4 @@ With a prefix argument N, (un)comment that many sexps."
 ;; Local Variables:
 ;; eval: (hs-hide-all)
 ;; End:
+(put 'narrow-to-region 'disabled nil)
