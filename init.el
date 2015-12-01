@@ -164,11 +164,16 @@
 
   (openwith-mode t))
 
+(use-package web-mode :ensure t
+  :config
+  (add-hook 'web-mode-hook (lambda () (setq  web-mode-markup-indent-offset 2))))
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
   :init
   (add-hook 'prog-mode-hook 'rainbow-turn-on)
-  (add-hook 'nxml-mode-hook 'rainbow-turn-on))
+  (add-hook 'nxml-mode-hook 'rainbow-turn-on)
+  (add-hook 'sgml-mode-hook 'rainbow-turn-on)
+  (add-hook 'web-mode-hook 'rainbow-turn-on))
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -773,6 +778,7 @@ isn't there and triggers an error"
 
   (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
 
+(use-package zencoding-mode :ensure t)
 
 
 (defun unlogic-git-fix-url ()

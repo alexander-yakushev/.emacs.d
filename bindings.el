@@ -220,6 +220,10 @@
               (LaTeX-add-all-bibitems-from-bibtex)
               (reftex-citation))
 
+    :local zencoding-mode-keymap zencoding-mode-hook
+    "C-j" electric-newline-and-maybe-indent
+    "C-c C-z" zencoding-expand-line
+
     ;; Langtool
     "C-x 4 l" langtool-check
     "C-x 4 L" langtool-check-done
