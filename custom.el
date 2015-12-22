@@ -17,6 +17,7 @@
  '(backup-by-copying t)
  '(bibtex-dialect (quote biblatex))
  '(cider-auto-jump-to-error nil)
+ '(cider-boot-parameters "cider repl -s wait")
  '(cider-inspector-page-size 32)
  '(cider-lein-parameters "trampoline repl :headless")
  '(cider-prompt-for-symbol nil)
@@ -24,7 +25,7 @@
  '(clean-buffer-list-delay-general 1)
  '(clojure-defun-indents (quote (set-content-view! on-ui transact fact facts)))
  '(create-lockfiles nil)
- '(custom-enabled-themes (quote (sanityinc-tomorrow-day)))
+ '(custom-enabled-themes (quote (sanityinc-tomorrow-eighties)))
  '(custom-safe-themes
    (quote
     ("bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "c5207e7b8cc960e08818b95c4b9a0c870d91db3eaf5959dd4eba09098b7f232b" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
@@ -52,7 +53,7 @@
     ("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*magit" "\\*buffer-selection" "\\*Compile-log\\*" "\\*Quail" "\\*Minibuf" "\\*Completions" "\\*Shell" "\\*Customize" "\\*Help\\*" ".+ (Sunrise)")))
  '(indent-tabs-mode nil)
  '(indicate-empty-lines t)
- '(inferior-lisp-program "ccl")
+ '(inferior-lisp-program "ccl" t)
  '(inhibit-startup-screen t)
  '(ispell-program-name "/usr/bin/aspell")
  '(kept-new-versions 6)
@@ -93,7 +94,7 @@
       (file)))))
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
- '(org-reveal-root "~/Software/reveal-js")
+ '(org-reveal-root "../reveal-js")
  '(package-archives
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
@@ -116,7 +117,7 @@
      (langtool-local-disabled-rules "WHITESPACE_RULE")
      (langtool-local-disabled-rules quote
                                     ("WHITESPACE_RULE"))
-     (whitespace-line-column . 80)
+     (whitespace-line-column . 10000)
      (lexical-binding . t))))
  '(sentence-end-double-space nil)
  '(shift-select-mode nil)
@@ -153,7 +154,7 @@
  '(wakatime-api-key "d63979c5-252c-4bdc-bd01-c2dba0471c4d")
  '(wakatime-cli-path "~/Software/wakatime/wakatime/cli.py")
  '(warning-suppress-types (quote ((undo discard-info))))
- '(whitespace-style (quote (face trailing lines-tail tabs empty)))
+ '(whitespace-style (quote (face trailing tabs empty)))
  '(yas/trigger-key "C-o"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -126,7 +126,8 @@
   (use-package sunrise-x-tabs :ensure t)
 
   (defvar bookmark-counter 0)
-  (setq bookmarks '("~/.emacs.d/" "~/clojure/android/lein-droid" "~/clojure/android/neko"))
+  (setq bookmarks '("~/.emacs.d/" "~/clojure/android/lein-droid" "~/clojure/android/neko"
+                    "~/projects/grammarly/core-metrics" "~/projects/grammarly/clj-core-metrics"))
 
   (defun sr-cycle-bookmark ()
     (interactive)
@@ -436,13 +437,13 @@ isn't there and triggers an error"
     (interactive)
     (if (null mode-line-format)
         (progn
-          (hidden-mode-line-mode -1)
           (centered-window-mode -1)
-          (set-fringe-mode 1))
+          (hidden-mode-line-mode -1)
+          (set-fringe-mode "default"))
       (progn
-        (hidden-mode-line-mode 1)
         (centered-window-mode 1)
-        (set-fringe-mode 0)))))
+        (hidden-mode-line-mode 1)
+        (set-fringe-mode "no-fringes")))))
 
 (use-package smex :ensure t
   :keys ("M-x" smex)

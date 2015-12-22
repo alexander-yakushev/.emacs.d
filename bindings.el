@@ -175,6 +175,10 @@
     :local magit-blame-mode-map magit-blame-mode-hook
     ";" magit-blame-next-chunk
 
+    :global
+    "C-M-." git-gutter:next-hunk
+    "C-M-," git-gutter:previous-hunk
+
     ;; bs mode
     :global
     "C-x C-l" bs-show
