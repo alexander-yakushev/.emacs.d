@@ -68,4 +68,6 @@
            (setq daycycle-timer (run-with-timer 0 (* 1 60) 'daycycle-theme-auto-switch))))
         (t (error "Wrong argument:" arg))))
 
+;; (cancel-timer daycycle-timer)
+
 (provide 'daycycle)

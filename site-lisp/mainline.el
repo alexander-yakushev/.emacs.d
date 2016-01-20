@@ -498,6 +498,7 @@ install the memoized function over the original function."
                              (eq mm-sym 'elisp-slime-nav-mode)
                              (eq mm-sym 'git-gutter-mode)
                              (eq mm-sym 'hi-lock-mode)
+                             (eq mm-sym 'wakatime-mode)
                              (eq mm-sym 'hs-minor-mode))))
                      minor-mode-alist))))))
 

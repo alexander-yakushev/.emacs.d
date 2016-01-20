@@ -174,7 +174,8 @@
   (add-hook 'prog-mode-hook 'rainbow-turn-on)
   (add-hook 'nxml-mode-hook 'rainbow-turn-on)
   (add-hook 'sgml-mode-hook 'rainbow-turn-on)
-  (add-hook 'web-mode-hook 'rainbow-turn-on))
+  (add-hook 'web-mode-hook 'rainbow-turn-on)
+  (add-hook 'css-mode-hook 'rainbow-turn-on))
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -560,13 +561,15 @@ isn't there and triggers an error"
     :config
     (cljr-add-keybindings-with-prefix "C-c C-r")
     (add-hook 'clojure-mode-hook (lambda () (clj-refactor-mode 1)))
-    (add-hook 'clojure-mode-hook 'yas-minor-mode-on)))
+    (add-hook 'clojure-mode-hook 'yas-minor-mode-on))
+
+  (put 's/defn 'clojure-doc-string-elt 4))
 
 (use-package cider :ensure t
   :keys (:global ;empty
          :local cider-mode-map
          "C-c C-t" cider-toggle-trace-var
-         "C-c i" cider-inspect)
+         "C-c i" cider-inspect-usual)
   :commands (cider-connect cider-jack-in)
   :config
   (add-hook 'cider-mode-hook 'eldoc-mode)
@@ -579,6 +582,12 @@ isn't there and triggers an error"
            "p" cider-inspector-previous-inspectable-object
            "C-;" cider-inspector-operate-on-point
            "C-p" cider-inspector-pop))
+
+  (defun cider-inspect-usual ()
+    (interactive)
+    (when-let ((expression (cider-read-from-minibuffer "Inspect expression: "
+                                                       (cider-sexp-at-point))))
+      (cider-inspect-expr expression (cider-current-ns))))
 
   (use-package ac-cider :ensure t
     :config
@@ -716,6 +725,8 @@ isn't there and triggers an error"
        '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
        '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified)))))
       (color-theme-sanityinc-tomorrow-eighties))
+    (setq fci-rule-color "sienna")
+    (setq-default fci-rule-color "sienna")
     (custom-set-faces
      `(fringe ((t (:background ,(face-attribute 'default :background)))))))
 
@@ -793,6 +804,10 @@ isn't there and triggers an error"
 
 (use-package zencoding-mode :ensure t)
 
+(use-package fill-column-indicator :ensure t :demand t
+  :config
+  (add-hook 'prog-mode-hook 'fci-mode)
+  (add-hook 'clojure-mode-hook 'fci-mode))
 
 (defun unlogic-git-fix-url ()
   (interactive)
