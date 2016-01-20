@@ -94,7 +94,7 @@ occurs, returns an error list."
                                             (return (list :error :wrong-args-num :index ft-index :command "EXPORT" :min 1 :max 2))))
             ((not (member ft-name
                           '("MAINTAINER" "EXPOSE" "ENTRYPOINT" "VOLUME"
-                            "USER" "ONBUILD" "ATTACH"))) (return (list :error :unknown-op :index ft-index :command ft-name)))
+                            "USER" "ONBUILD" "ATTACH" "ENV"))) (return (list :error :unknown-op :index ft-index :command ft-name)))
             (t token-list)))))
 
 (defun rockerlint-lint (file)

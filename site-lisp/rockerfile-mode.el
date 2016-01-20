@@ -22,8 +22,8 @@
 (defvar rockerfile-font-lock-keywords
   `(,(cons (rx (or line-start "onbuild ")
                (group (or "from" "maintainer" "run" "cmd" "expose" "env"
-                         "add" "copy" "entrypoint" "volume" "user" "workdir" "onbuild"
-                         "mount" "import" "export" "push" "attach"))
+                          "add" "copy" "entrypoint" "volume" "user" "workdir" "onbuild"
+                          "mount" "import" "export" "push" "attach"))
                word-boundary)
            font-lock-keyword-face)
     ,@(sh-font-lock-keywords)
@@ -36,6 +36,7 @@
         (menu-map (make-sparse-keymap)))
     (define-key map "\C-c\C-b" 'rockerfile-build-buffer)
     (define-key map "\C-c\M-b" 'rockerfile-build-no-cache-buffer)
+    (define-key map "\C-c\C-a" 'rockerfile-build-and-attach-to-current-line)
     (define-key map "\C-c\C-z" 'rockerfile-test-function)
     (define-key map "\C-c\C-c" 'comment-region)
     (define-key map [menu-bar rockerfile-mode] (cons "Rockerfile" menu-map))
@@ -65,25 +66,58 @@
   (define-abbrev-table 'rockerfile-mode-abbrev-table ()))
 
 ;;;###autoload
-(defun rockerfile-build-buffer (image-name)
+;; (defun rockerfile-build-buffer (image-name)
+;;   "Build an image based upon the buffer"
+;;   (interactive
+;;    (if (null rocker-image-name)
+;;        (list (read-string "image-name: " nil nil))
+;;      (list rocker-image-name)))
+;;   (save-buffer)
+;;   (if (stringp image-name)
+;;       (async-shell-command
+;;        (format "%s rocker build -t %s -f %s %s" (if rockerfile-use-sudo "sudo" "") image-name (buffer-file-name) (file-name-directory (buffer-file-name)))
+;;        "*rocker-build-output*")
+;;     (print "rocker-image-name must be a string, consider surrounding it with double quotes")))
+
+(defun rockerfile-build-and-attach-to-current-line ()
   "Build an image based upon the buffer"
-  (interactive
-   (if (null rocker-image-name)
-      (list (read-string "image-name: " nil nil))
-     (list rocker-image-name)))
+  (interactive)
+  (end-of-line)
+  (newline)
+  (insert "ATTACH [\"/bin/bash\"]")
   (save-buffer)
-  (if (stringp image-name)
-      (async-shell-command
-       (format "%s rocker build -t %s -f %s %s" (if rockerfile-use-sudo "sudo" "") image-name (buffer-file-name) (file-name-directory (buffer-file-name)))
-       "*rocker-build-output*")
-    (print "rocker-image-name must be a string, consider surrounding it with double quotes")))
+  (save-current-buffer
+    (let ((original-file (buffer-file-name)))
+      (eshell)
+      (eshell-return-to-prompt)
+      (insert "rocker build --attach -f " original-file)
+      (eshell-send-input)
+      (end-of-buffer)))
+  (kill-whole-line)
+  (previous-line)
+  (save-buffer)
+  (with-current-buffer "*eshell*"
+    (eshell-return-to-prompt)))
+
+(defun rockerfile-build-buffer (arg)
+  "Build an image for the current Rockerfile. With prefix
+argument, also push the image."
+  (interactive "P")
+  (save-current-buffer
+    (let ((original-file (buffer-file-name)))
+      (eshell)
+      (eshell-return-to-prompt)
+      (if arg
+          (insert "rocker build --push -f " original-file)
+        (insert "rocker build -f " original-file))
+      (eshell-send-input))))
 
 ;;;###autoload
 (defun rockerfile-build-no-cache-buffer (image-name)
   "Build an image based upon the buffer without cache"
   (interactive
    (if (null rocker-image-name)
-      (list (read-string "image-name: " nil nil))
+       (list (read-string "image-name: " nil nil))
      (list rocker-image-name)))
   (save-buffer)
   (if (stringp image-name)
