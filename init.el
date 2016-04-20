@@ -107,7 +107,7 @@
 
 (use-package sunrise-commander :ensure t
   :keys ("<f7>" sunrise
-         "<C-f7>" sunrise-cd
+         "<C-f7>" sunrise-cd-resize
 
          sr-mode-map
          ";" dired-next-line
@@ -128,6 +128,11 @@
   (defvar bookmark-counter 0)
   (setq bookmarks '("~/.emacs.d/" "~/clojure/android/lein-droid" "~/clojure/android/neko"
                     "~/projects/grammarly/core-metrics" "~/projects/grammarly/clj-core-metrics"))
+
+  (defun sunrise-cd-resize ()
+    (interactive)
+    (setq sr-panes-height (* 2 (/ (frame-height) 3)))
+    (sunrise-cd))
 
   (defun sr-cycle-bookmark ()
     (interactive)
@@ -168,6 +173,7 @@
 (use-package web-mode :ensure t
   :config
   (add-hook 'web-mode-hook (lambda () (setq  web-mode-markup-indent-offset 2))))
+
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
   :init
@@ -192,7 +198,11 @@
 (use-package projectile :ensure t
   :keys ("M-f" projectile-find-file)
   :config
-  (projectile-global-mode))
+  (projectile-global-mode)
+  (add-hook 'find-file-hook
+            (lambda ()
+              (when (file-remote-p default-directory)
+                (setq-local projectile-mode-line "Projectile")))))
 
 (use-package auto-complete-config
   :commands ac-config-default
@@ -257,7 +267,7 @@ grammarly-patterns-path-to-project)))
   (defun helm-git-grep (sym-at-p)
     (interactive "P")
     (if sym-at-p
-        (helm-git-grep-at-point)
+        (helm-git-grep-at-point nil nil)
       (helm-git-grep-1))))
 
 (use-package magit :ensure t
@@ -486,6 +496,8 @@ isn't there and triggers an error"
 
 (use-package dockerfile-mode :ensure t :demand t)
 
+(use-package hcl-mode :ensure t :demand t)
+
 (use-package rockerfile-mode :demand t
   :config
   (use-package flycheck :ensure t :demand t)
@@ -549,8 +561,6 @@ isn't there and triggers an error"
 ;; Clojure
 
 (use-package clojure-mode :ensure t
-  :mode ("\\(?:build\\|profile\\)\\.boot\\'" . clojure-mode)
-  :mode ("\\.\\(clj[csx]?\\|dtm\\|edn\\)\\'" . clojure-mode)
   :config
   (add-hook 'clojure-mode-hook 'esk-pretty-fn)
   (add-hook 'clojure-mode-hook
@@ -761,6 +771,11 @@ isn't there and triggers an error"
   :keys (:local
          "c" vc-annotate-show-commit-at-line)
   :config
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+
   (defun vc-annotate-show-commit-at-line ()
     (interactive)
     (let* ((rev (car (vc-annotate-extract-revision-at-line)))
