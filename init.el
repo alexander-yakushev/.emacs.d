@@ -585,6 +585,18 @@ isn't there and triggers an error"
   (add-hook 'cider-mode-hook 'eldoc-mode)
   (setq nrepl-log-messages t)
 
+  (use-package company :ensure t :demand t
+    :keys (:global ;empty
+           :local company-mode-map
+           "TAB" company-indent-or-complete-common)
+    :config
+    (add-hook 'cider-repl-mode-hook #'company-mode)
+    (add-hook 'cider-mode-hook #'company-mode)
+
+    (use-package company-quickhelp :ensure t :demand t
+      :config
+      (company-quickhelp-mode 1)))
+
   (use-package cider-inspector
     :demand t
     :keys (:local
@@ -599,23 +611,24 @@ isn't there and triggers an error"
                                                        (cider-sexp-at-point))))
       (cider-inspect-expr expression (cider-current-ns))))
 
-  (use-package ac-cider :ensure t
-    :config
-    (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-    (add-hook 'cider-mode-hook 'ac-cider-setup)
-    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+  ;; (use-package ac-cider :ensure t
+  ;;   :config
+  ;;   (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  ;;   (add-hook 'cider-mode-hook 'ac-cider-setup)
+  ;;   (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
 
-    (eval-after-load "auto-complete"
-      '(progn
-         (add-to-list 'ac-modes 'cider-mode)
-         (add-to-list 'ac-modes 'cider-repl-mode)))
+  ;;   (eval-after-load "auto-complete"
+  ;;     '(progn
+  ;;        (add-to-list 'ac-modes 'cider-mode)
+  ;;        (add-to-list 'ac-modes 'cider-repl-mode)))
 
-    (defun set-auto-complete-as-completion-at-point-function ()
-      (setq completion-at-point-functions '(auto-complete)))
+  ;;   (defun set-auto-complete-as-completion-at-point-function ()
+  ;;     (setq completion-at-point-functions '(auto-complete)))
 
-    (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
-    (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
-    (add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function)))
+  ;;   (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+  ;;   (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
+  ;;   (add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function))
+  )
 
 (use-package aggressive-indent :ensure t
   :commands aggressive-indent-mode
