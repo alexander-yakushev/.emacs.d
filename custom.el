@@ -107,6 +107,12 @@
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
  '(org-reveal-root "../reveal-js")
+ '(package-archives
+   (quote
+    (("gnu" . "http://elpa.gnu.org/packages/")
+     ("SC" . "http://joseito.republika.pl/sunrise-commander/")
+     ("melpa" . "http://melpa.milkbox.net/packages/")
+     ("melpa-stable" . "https://stable.melpa.org/packages/"))))
  '(pop-up-windows nil)
  '(projectile-cache-file "/home/unlogic/.emacs.d/var/projectile.cache")
  '(projectile-enable-caching nil)
