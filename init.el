@@ -270,6 +270,21 @@ grammarly-patterns-path-to-project)))
         (helm-git-grep-at-point nil nil)
       (helm-git-grep-1))))
 
+(use-package helm-ag :ensure t
+  :keys (:override
+         "M-h" helm-do-ag-project-root-custom
+         "M-H" helm-do-ag
+         helm-ag-
+         helm-ag-mode-map
+         "C-;" helm-next-line
+         "M-;" helm-goto-next-file
+         "M-p" helm-goto-precedent-file)
+  :config
+  (defun helm-do-ag-project-root-custom (sym-at-p)
+    (interactive "P")
+    (let ((helm-ag-insert-at-point (when sym-at-p 'symbol)))
+      (helm-do-ag-project-root))))
+
 (use-package magit :ensure t
   :keys ("C-x g" magit-status
          "<f8>" magit-blame)
@@ -528,6 +543,12 @@ isn't there and triggers an error"
 
 (use-package groovy-mode :ensure t)
 
+(use-package rust-mode :ensure t)
+
+(use-package toml-mode :ensure t)
+
+(use-package terraform-mode :ensure t)
+
 ;; Smooth scrolling
 (progn
   (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
@@ -536,12 +557,6 @@ isn't there and triggers an error"
 
 (use-package paren :demand t
   :config (show-paren-mode 1))
-
-(use-package beacon :ensure t :demand t
-  :config
-  (beacon-mode 1)
-  (setq beacon-push-mark 35)
-  (setq beacon-color "maroon"))
 
 ;; Autocomplete in Clojure
 

@@ -27,6 +27,7 @@
  '(cider-lein-parameters "trampoline repl :headless")
  '(cider-prompt-for-symbol nil)
  '(cider-use-overlays nil)
+ '(cider-use-tooltips nil)
  '(clean-buffer-list-delay-general 1)
  '(cljr-eagerly-build-asts-on-startup nil)
  '(cljr-favor-prefix-notation nil)
