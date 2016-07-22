@@ -274,11 +274,12 @@ grammarly-patterns-path-to-project)))
   :keys (:override
          "M-h" helm-do-ag-project-root-custom
          "M-H" helm-do-ag
-         helm-ag-
+
          helm-ag-mode-map
          "C-;" helm-next-line
          "M-;" helm-goto-next-file
-         "M-p" helm-goto-precedent-file)
+         "M-p" helm-goto-precedent-file
+         "<right>" helm-execute-persistent-action)
   :config
   (defun helm-do-ag-project-root-custom (sym-at-p)
     (interactive "P")
@@ -545,6 +546,13 @@ isn't there and triggers an error"
 
 (use-package rust-mode :ensure t)
 
+(use-package go-mode :ensure t
+  :config
+  (add-hook 'go-mode-hook (lambda () (setq whitespace-style '(face trailing empty)
+                                      indent-tabs-mode t
+                                      tab-width 4)
+                            (whitespace-mode -1))))
+
 (use-package toml-mode :ensure t)
 
 (use-package terraform-mode :ensure t)
@@ -603,7 +611,8 @@ isn't there and triggers an error"
   (use-package company :ensure t :demand t
     :keys (:global ;empty
            :local company-mode-map
-           "TAB" company-indent-or-complete-common)
+           "TAB" company-indent-or-complete-common
+           "M-SPC" company-complete)
     :config
     (add-hook 'cider-repl-mode-hook #'company-mode)
     (add-hook 'cider-mode-hook #'company-mode)
@@ -749,7 +758,6 @@ isn't there and triggers an error"
           (setq mainline-color2 "#efefef")
           (setq mainline-color3 "#70c0b1")
           (setq mainline-color-fg "black")
-          (setq beacon-color "#c82829")
           (custom-set-faces
            '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
            '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000")))))
@@ -757,7 +765,6 @@ isn't there and triggers an error"
       (setq mainline-color1 "#444444")
       (setq mainline-color2 "#222222")
       (setq mainline-color3 "#293B3A")
-      (setq beacon-color "#f2777a")
       (setq mainline-color-fg "white")
       (custom-set-faces
        '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
