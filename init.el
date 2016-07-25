@@ -275,7 +275,7 @@ grammarly-patterns-path-to-project)))
          "M-h" helm-do-ag-project-root-custom
          "M-H" helm-do-ag
 
-         helm-ag-mode-map
+         helm-ag-map
          "C-;" helm-next-line
          "M-;" helm-goto-next-file
          "M-p" helm-goto-precedent-file
