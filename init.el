@@ -555,6 +555,28 @@ isn't there and triggers an error"
 
 (use-package toml-mode :ensure t)
 
+(use-package markdown-mode :ensure t
+  :keys (markdown-mode-map
+         "C-c C-l" markdown-smart-insert-link
+         "C-c C-c C-c" markdown-insert-gfm-code-block)
+  :config
+  (defun markdown-smart-insert-link ()
+    (interactive)
+    (let (link text)
+      (if (use-region-p)
+          (let ((bounds (markdown-wrap-or-insert "[" "]")))
+            (setq link (read-string "Link: "))
+            (goto-char (cdr bounds))
+            (insert (concat "("
+                            (if (string= link "")
+                                (buffer-substring-no-properties
+                                 (1+ (car bounds)) (1- (cdr bounds)))
+                              link)
+                            ")")))
+        (setq link (read-string "Link: "))
+        (setq text (read-string "Text: "))
+        (insert (concat "[" (if (string= text "") link text) "](" link ")"))))))
+
 (use-package terraform-mode :ensure t)
 
 ;; Smooth scrolling
