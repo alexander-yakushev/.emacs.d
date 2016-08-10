@@ -19,6 +19,7 @@
  '(backup-by-copying t)
  '(beacon-blink-delay 0.1)
  '(bibtex-dialect (quote biblatex))
+ '(browse-url-browser-function (quote browse-url-chromium))
  '(cider-auto-jump-to-error nil)
  '(cider-boot-parameters "cider repl -s wait")
  '(cider-cljs-lein-repl
