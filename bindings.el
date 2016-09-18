@@ -50,7 +50,7 @@
     "M-e" highlight-symbol-next
     "C-o" recenter-top-bottom
     "C-M-o" er/expand-region
-    ;; "C-q" narrow-or-widen-dwim
+    "C-M-q" narrow-or-widen-dwim
 
     "C-s" isearch-forward-regexp
     "\C-r" isearch-backward-regexp
