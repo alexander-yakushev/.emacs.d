@@ -542,7 +542,7 @@ isn't there and triggers an error"
 
 (use-package gradle-mode :ensure t)
 
-(use-package groovy-mode :ensure t)
+;; (use-package groovy-mode :ensure t) ;; BROKEN IN 25.1!
 
 (use-package rust-mode :ensure t)
 
@@ -875,6 +875,8 @@ isn't there and triggers an error"
   (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
 
 (use-package zencoding-mode :ensure t)
+
+(use-package sass-mode :ensure t :demand t)
 
 (use-package fill-column-indicator :ensure t :demand t
   :config
@@ -1220,3 +1222,17 @@ With a prefix argument N, (un)comment that many sexps."
 ;; eval: (hs-hide-all)
 ;; End:
 (put 'narrow-to-region 'disabled nil)
+
+;; XWidget Webkit
+(defun xwidget-webkit-new-session (url)
+  "Create a new webkit session buffer with URL."
+  (let*
+      ((bufname (generate-new-buffer-name "*xwidget-webkit*"))
+       xw)
+    (setq xwidget-webkit-last-session-buffer (switch-to-buffer
+                                              (get-buffer-create bufname)))
+    (insert " ")
+    (setq xw (xwidget-insert 0 'webkit  bufname 1000 1000))
+    (xwidget-put xw 'callback 'xwidget-webkit-callback)
+    (xwidget-webkit-mode)
+    (xwidget-webkit-goto-uri (xwidget-webkit-last-session) url)))

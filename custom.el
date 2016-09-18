@@ -1,8 +1,4 @@
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(LaTeX-command-style
    (quote
     (("" "%(PDF)%(latex) -file-line-error %S%(PDFout)"))))
@@ -17,7 +13,6 @@
  '(ansi-term-color-vector
    [unspecified "#001100" "#007700" "#00bb00" "#007700" "#009900" "#00bb00" "#009900" "#00bb00"] t)
  '(backup-by-copying t)
- '(beacon-blink-delay 0.1)
  '(bibtex-dialect (quote biblatex))
  '(browse-url-browser-function (quote browse-url-chromium))
  '(cider-auto-jump-to-error nil)
@@ -49,24 +44,21 @@
     (".cm/" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".dfsl" ".pfsl" ".d64fsl" ".p64fsl" ".lx64fsl" ".lx32fsl" ".dx64fsl" ".dx32fsl" ".fx64fsl" ".fx32fsl" ".sx64fsl" ".sx32fsl" ".wx64fsl" ".wx32fsl" ".fasl" ".ufsl" ".fsl" ".dxl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo" ".idx" ".lof" ".lot" ".glo" ".blg" ".bbl" ".cp" ".cps" ".fn" ".fns" ".ky" ".kys" ".pg" ".pgs" ".tp" ".tps" ".vr" ".vrs" ".bcf" ".out")))
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
- '(eldoc-idle-delay 1)
+ '(eldoc-idle-delay 0.5)
  '(electric-indent-mode nil)
  '(fci-rule-color "#282a2e")
  '(fill-column 80)
  '(find-directory-functions (quote (cvs-dired-noselect dired-noselect sr-dired)))
- '(floobits-python-executable "python2.7")
  '(flymake-start-syntax-check-on-newline nil)
  '(font-lock-maximum-decoration (quote ((dired-mode) (sunrise) (t . t))))
  '(frame-resize-pixelwise t)
  '(git-commit-finish-query-functions nil)
  '(global-whitespace-mode t)
- '(gradle-mode nil)
  '(helm-boring-buffer-regexp-list
    (quote
     ("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*magit" "\\*buffer-selection" "\\*Compile-log\\*" "\\*Quail" "\\*Minibuf" "\\*Completions" "\\*Shell" "\\*Customize" "\\*Help\\*" ".+ (Sunrise)")))
  '(indent-tabs-mode nil)
  '(indicate-empty-lines t)
- '(inferior-lisp-program "ccl" t)
  '(inhibit-startup-screen t)
  '(ispell-program-name "/usr/bin/aspell")
  '(kept-new-versions 6)
@@ -81,10 +73,6 @@
  '(magit-revision-insert-related-refs nil)
  '(magit-time-format-string "%b %d, %Y %T")
  '(midnight-mode t nil (midnight))
- '(minimap-display-semantic-overlays nil)
- '(minimap-update-delay 0.2)
- '(minimap-width-fraction 0.15)
- '(minimap-window-location (quote right))
  '(mouse-yank-at-point t)
  '(nrepl-log-messages t)
  '(openwith-associations
@@ -102,8 +90,6 @@
      ("\\.docx?\\'" "lowriter"
       (file))
      ("\\.xlsx?\\'" "localc"
-      (file))
-     ("\\.svg\\'" "display"
       (file)))))
  '(openwith-mode t)
  '(org-directory "~/Documents/Notes/")
