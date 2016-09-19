@@ -712,7 +712,7 @@ isn't there and triggers an error"
   (add-hook 'prog-mode-hook 'fci-mode)
   (add-hook 'clojure-mode-hook 'fci-mode))
 
-(use-package hideshow :ensure t
+(use-package hideshow :ensure t :demand t
   :config
   (add-hook 'c-mode-common-hook   'hs-minor-mode)
   (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
@@ -835,7 +835,7 @@ isn't there and triggers an error"
     (setq xwidget-webkit-last-session-buffer (switch-to-buffer
                                               (get-buffer-create bufname)))
     (insert " ")
-    (setq xw (xwidget-insert 0 'webkit  bufname 1000 1000))
+    (setq xw (xwidget-insert 0 'webkit  bufname 2560 1600))
     (xwidget-put xw 'callback 'xwidget-webkit-callback)
     (xwidget-webkit-mode)
     (xwidget-webkit-goto-uri (xwidget-webkit-last-session) url)))

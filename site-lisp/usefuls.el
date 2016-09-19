@@ -103,14 +103,6 @@ A prefix argument is handled like `recenter':
 	    ((floatp recenter-last-op)
 	     (recenter (round (* recenter-last-op (window-height))))))))))
 
-(let* ((height (window-body-height))
-       (pos (cdr (nth 6 (posn-at-point))))
-       (margin (/ (float pos) height))
-       )
-  margin)
-
-
-(window-body-height)
 (defun git-fix-url ()
   (interactive)
   (let* ((old-url (buffer-substring-no-properties (region-beginning) (region-end)))
