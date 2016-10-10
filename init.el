@@ -653,7 +653,25 @@ isn't there and triggers an error"
   (add-hook 'css-mode-hook 'rainbow-turn-on))
 
 (use-package projectile :ensure t
-  :keys ("M-f" projectile-find-file)
+  :keys ("M-f" projectile-find-file
+
+         ido-file-dir-completion-map
+         "M-f" projectile-find-file-from-ido)
+  :init
+  (defvar last-ido-dir nil)
+
+  (defun find-file-at-point (&optional _)
+    (interactive)
+    (let ((default-directory last-ido-dir))
+      (projectile-find-file)))
+
+  (defun projectile-find-file-from-ido ()
+    "Invoke p-f-file while interactively opening a file in ido."
+    (interactive)
+    (setq last-ido-dir ido-current-directory)
+    (setq ido-exit 'ffap)
+    (ido-exit-minibuffer))
+
   :config
   (projectile-global-mode)
   (add-hook 'find-file-hook
