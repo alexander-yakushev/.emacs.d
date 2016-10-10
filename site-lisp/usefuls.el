@@ -20,7 +20,7 @@
   (interactive)
   (indent-region (point-min) (point-max) nil))
 
-(let ((temp-buffer-counter 0))
+(lexical-let ((temp-buffer-counter 0))
   (defun create-temp-buffer ()
     (interactive)
     (setf temp-buffer-counter (+ temp-buffer-counter 1))

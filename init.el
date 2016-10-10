@@ -281,7 +281,9 @@ isn't there and triggers an error"
 
   (daycycle-init '-theme-set 'auto))
 
-(use-package usefuls :demand t)
+(use-package usefuls :demand t
+  :keys (:override
+         "C-M-q" narrow-or-widen-dwim))
 
 ;;; Programming/Version Control
 
@@ -794,6 +796,7 @@ isn't there and triggers an error"
   :config
   (setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*"))
 
+(use-package ascii-one-liners :demand t)
 ;; Customizations
 
 (progn ;; Smooth scrolling
