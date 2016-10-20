@@ -170,6 +170,26 @@
          "<C-M-down>" mc/mark-next-like-this-symbol
          "C-c m" mc/mark-all-like-this-dwim))
 
+(use-package visual-regexp :ensure t
+  :keys ("M-%" vr/query-replace)
+  :init
+  ;; Redefine dired search-and-replace
+  (defun dired-do-find-regexp-and-replace (from to arg)
+    (interactive
+     (let ((common
+            (query-replace-read-args
+             "Query replace regexp in marked files" t t)))
+       (list (nth 0 common) (nth 1 common) current-prefix-arg)))
+    (save-current-buffer
+      (dolist (file (dired-get-marked-files))
+        (find-file file)
+        (if arg
+            (replace-regexp from to nil (point-min) (point-max))
+          (query-replace-regexp from to nil (point-min) (point-max)))
+        ;; (vr/query-replace from to (point-min) (point-max))
+        (save-buffer)
+        (kill-buffer)))))
+
 (use-package ediff
   :keys ("C-c d" ediff-opened-buffers)
   :commands ediff
