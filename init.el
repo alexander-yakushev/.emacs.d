@@ -878,7 +878,8 @@ the (^:fold ...) expressions."
 (global-auto-revert-mode 1)
 
 ;; Don't litter my fs tree
-(setq backup-directory-alist '(("." . "~/.local/share/emacs-saves")))
+(setq backup-directory-alist '(("." . "~/.local/share/emacs-saves"))
+      auto-save-file-name-transforms '((".*" "~/.local/share/emacs-saves/" t)))
 
 ;; Advice yanking to auto-indent yank content
 (dolist (command '(yank yank-pop))
