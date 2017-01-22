@@ -754,13 +754,33 @@ isn't there and triggers an error"
 
 (use-package hideshow :ensure t :demand t
   :config
+  (defun hs-clojure-hide-namespace-and-folds ()
+    "Hide the first (ns ...) expression in the file, and also all
+the (^:fold ...) expressions."
+    (interactive)
+    (hs-life-goes-on
+     (save-excursion
+       (goto-char (point-min))
+       (when (ignore-errors (re-search-forward "^(ns "))
+         (hs-hide-block))
+
+       (while (ignore-errors (re-search-forward "\\^:fold"))
+         (hs-hide-block)
+         (next-line)))))
+
+  (defun hs-clojure-mode-hook ()
+    (interactive)
+    (hs-minor-mode 1)
+    (hs-clojure-hide-namespace-and-folds))
+
   (add-hook 'c-mode-common-hook   'hs-minor-mode)
   (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
   (add-hook 'java-mode-hook       'hs-minor-mode)
   (add-hook 'lisp-mode-hook       'hs-minor-mode)
   (add-hook 'perl-mode-hook       'hs-minor-mode)
   (add-hook 'sh-mode-hook         'hs-minor-mode)
-  (add-hook 'clojure-mode-hook    'hs-minor-mode))
+  (add-hook 'clojure-mode-hook    'hs-clojure-mode-hook)
+)
 
 ;;; Writing
 
