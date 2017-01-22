@@ -457,6 +457,11 @@ isn't there and triggers an error"
                                    (0 (progn (compose-region (match-beginning 1)
                                                              (match-end 1)
                                                              ?λ) nil)))))
+    (font-lock-add-keywords nil `(("(\\(atom\\>\\)"
+                                   (0 (progn (compose-region (match-beginning 1)
+                                                             (match-end 1)
+                                                             ?☢) nil)))))
+
     (font-lock-add-keywords
      'clojure-mode `(("\\(#\\)("
                       (0 (progn (compose-region (match-beginning 1)
@@ -477,66 +482,78 @@ isn't there and triggers an error"
               (put 'defactivity 'clojure-backtracking-indent '(4 (2)))
               (put 's/defn 'clojure-doc-string-elt 4)))
 
-  (use-package clj-refactor :ensure t
+  (use-package cider :ensure t :pin melpa
+    :keys (:global
+           :local cider-mode-map
+           "C-c C-t" cider-toggle-trace-var
+           "C-c i" cider-inspect-usual)
+    :commands (cider-connect cider-jack-in)
+    :config
+    (add-hook 'cider-mode-hook 'eldoc-mode)
+
+    (use-package company :ensure t :demand t
+      :keys (:global                    ;empty
+             :local company-mode-map
+             "TAB" company-indent-or-complete-common
+             "M-SPC" company-complete
+
+             :local company-active-map
+             "TAB" company-complete-selection
+             "<tab>" company-complete-selection)
+      :config
+      (add-hook 'cider-repl-mode-hook #'company-mode)
+      (add-hook 'cider-mode-hook #'company-mode)
+      (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
+      (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+      (add-hook 'cider-repl-mode-hook (lambda () (auto-complete-mode -1)))
+      (add-hook 'cider-mode-hook (lambda () (auto-complete-mode -1)))
+
+      (use-package company-quickhelp :ensure t :demand t
+        :config
+        (company-quickhelp-mode 1)))
+
+    (use-package cider-inspector
+      :demand t
+      :keys (:local
+             ";" cider-inspector-next-inspectable-object
+             "p" cider-inspector-previous-inspectable-object
+             "C-;" cider-inspector-operate-on-point
+             "C-p" cider-inspector-pop))
+
+    (defun cider-inspect-usual ()
+      (interactive)
+      (when-let ((expression (cider-read-from-minibuffer "Inspect expression: "
+                                                         (cider-sexp-at-point))))
+        (cider-inspect-expr expression (cider-current-ns))))
+
+    (use-package ac-cider :ensure t
+      :config
+      (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+      (add-hook 'cider-mode-hook 'ac-cider-setup)
+      (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+
+      (eval-after-load "auto-complete"
+        '(progn
+           (add-to-list 'ac-modes 'cider-mode)
+           (add-to-list 'ac-modes 'cider-repl-mode)))
+
+      (defun set-auto-complete-as-completion-at-point-function ()
+        (setq completion-at-point-functions '(auto-complete)))
+
+      (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+      (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
+      (add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function)))
+
+  (use-package clj-refactor :ensure t :pin melpa-stable
     :config
     (cljr-add-keybindings-with-prefix "C-c C-r")
     (add-hook 'clojure-mode-hook (lambda () (clj-refactor-mode 1)))
-    (add-hook 'clojure-mode-hook 'yas-minor-mode-on)))
+    (add-hook 'clojure-mode-hook 'yas-minor-mode-on)
 
-(use-package cider :ensure t
-  :keys (:global ;empty
-         :local cider-mode-map
-         "C-c C-t" cider-toggle-trace-var
-         "C-c i" cider-inspect-usual)
-  :commands (cider-connect cider-jack-in)
-  :config
-  (add-hook 'cider-mode-hook 'eldoc-mode)
-
-  (use-package company :ensure t :demand t
-    :keys (:global ;empty
-           :local company-mode-map
-           "TAB" company-indent-or-complete-common
-           "M-SPC" company-complete)
-    :config
-    (add-hook 'cider-repl-mode-hook #'company-mode)
-    (add-hook 'cider-mode-hook #'company-mode)
-
-    (use-package company-quickhelp :ensure t :demand t
-      :config
-      (company-quickhelp-mode 1)))
-
-  (use-package cider-inspector
-    :demand t
-    :keys (:local
-           ";" cider-inspector-next-inspectable-object
-           "p" cider-inspector-previous-inspectable-object
-           "C-;" cider-inspector-operate-on-point
-           "C-p" cider-inspector-pop))
-
-  (defun cider-inspect-usual ()
-    (interactive)
-    (when-let ((expression (cider-read-from-minibuffer "Inspect expression: "
-                                                       (cider-sexp-at-point))))
-      (cider-inspect-expr expression (cider-current-ns))))
-
-  ;; (use-package ac-cider :ensure t
-  ;;   :config
-  ;;   (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-  ;;   (add-hook 'cider-mode-hook 'ac-cider-setup)
-  ;;   (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-
-  ;;   (eval-after-load "auto-complete"
-  ;;     '(progn
-  ;;        (add-to-list 'ac-modes 'cider-mode)
-  ;;        (add-to-list 'ac-modes 'cider-repl-mode)))
-
-  ;;   (defun set-auto-complete-as-completion-at-point-function ()
-  ;;     (setq completion-at-point-functions '(auto-complete)))
-
-  ;;   (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
-  ;;   (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
-  ;;   (add-hook 'cider-repl-mode-hook 'set-auto-complete-as-completion-at-point-function))
-  )
+    (use-package yasnippet :demand t
+      :init
+      (define-key yas-minor-mode-map [(tab)] nil)
+      (define-key yas-minor-mode-map (kbd "TAB") nil))))
 
 (use-package auto-complete-config
   :commands ac-config-default
@@ -586,7 +603,11 @@ isn't there and triggers an error"
      indent-tabs-mode t))
 
   ;; (add-hook 'java-mode-hook 'java-clojure-compiler-formatting)
-  (add-hook 'java-mode-hook 'java-default-formatting))
+  (add-hook 'java-mode-hook 'java-default-formatting)
+
+  (use-package java-snippets :ensure t
+    :init
+    (add-hook 'java-mode-hook 'yas-minor-mode)))
 
 (use-package web-mode :ensure t
   :config
