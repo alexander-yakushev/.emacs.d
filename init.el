@@ -856,6 +856,17 @@ the (^:fold ...) expressions."
   (setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*"))
 
 (use-package ascii-one-liners :demand t)
+
+(defun grammarly ()
+  (interactive)
+  (find-file "~/grammarly/work.org"))
+
+(defun work-new-day ()
+  (interactive)
+  (org-insert-heading-respect-content)
+  (org-metaright)
+  (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
+
 ;; Customizations
 
 (progn ;; Smooth scrolling
