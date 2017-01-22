@@ -790,7 +790,8 @@ the (^:fold ...) expressions."
   (use-package ox-reveal :ensure t
     :demand t
     :config
-    (setq org-reveal-root (expand-file-name "~/Software/reveal-js"))))
+    (setq org-reveal-root (expand-file-name "~/Software/reveal-js")))
+  (setq org-inhibit-startup-visibility-stuff t))
 
 (use-package thesaurus :ensure t
   :keys ("C-x t" thesaurus-choose-synonym-and-replace)
