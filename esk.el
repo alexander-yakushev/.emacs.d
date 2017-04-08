@@ -5,10 +5,7 @@
   (mouse-wheel-mode t)
   (blink-cursor-mode -1))
 
-(setq color-theme-is-global t
-      uniquify-buffer-name-style 'forward
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      diff-switches "-u")
+(setq color-theme-is-global t)
 
 ;; ido-mode is like magic pixie dust!
 (ido-mode t)
@@ -26,22 +23,11 @@
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-(eval-after-load "ispell"
-  '(when (executable-find ispell-program-name)
-     (add-hook 'text-mode-hook 'turn-on-flyspell)))
-
-
-
-(defalias 'yes-or-no-p 'y-or-n-p)
 (defalias 'auto-tail-revert-mode 'tail-mode)
 
 (random t) ;; Seed the random-number generator
 
 ;; Cosmetics
-
-(defun esk-local-column-number-mode ()
-  (make-local-variable 'column-number-mode)
-  (column-number-mode t))
 
 (defun esk-local-comment-auto-fill ()
   (set (make-local-variable 'comment-auto-fill-only-comments) t)
@@ -63,7 +49,6 @@
    nil '(("\\<\\(TODO\\|FIXME\\)"
           1 font-lock-warning-face t))))
 
-(add-hook 'prog-mode-hook 'esk-local-column-number-mode)
 (add-hook 'prog-mode-hook 'esk-local-comment-auto-fill)
 (add-hook 'prog-mode-hook 'esk-turn-on-hl-line-mode)
 (add-hook 'prog-mode-hook 'esk-pretty-lambdas)
@@ -72,10 +57,6 @@
 
 (defun esk-prog-mode-hook ()
   (run-hooks 'prog-mode-hook))
-
-(defun esk-untabify-buffer ()
-  (interactive)
-  (untabify (point-min) (point-max)))
 
 ;; Commands
 (defun esk-sudo-edit (&optional arg)
@@ -127,15 +108,14 @@
                 (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
                 (paren-face-mode 1))))
 
+  (defun esk--enable-paredit-mode ()
+    (unless (equal major-mode 'cider-repl-history-mode)
+      (paredit-mode)))
+
   (dolist (mode '(scheme emacs-lisp lisp clojure clojurescript))
     (add-hook (intern (concat (symbol-name mode) "-mode-hook"))
-              'paredit-mode))
+              'esk--enable-paredit-mode))
 
-  (defun esk-pretty-fn ()
-    (font-lock-add-keywords nil `(("(\\(\\<fn\\>\\)"
-                                   (0 (progn (compose-region (match-beginning 1)
-                                                             (match-end 1)
-                                                             "\u0192"
-                                                             'decompose-region)))))))
-  (add-hook 'clojure-mode-hook 'esk-pretty-fn)
-  (add-hook 'clojurescript-mode-hook 'esk-pretty-fn))
+  (dolist (mode '(scheme emacs-lisp lisp clojure clojurescript))
+    (remove-hook (intern (concat (symbol-name mode) "-mode-hook"))
+                 'paredit-mode)))

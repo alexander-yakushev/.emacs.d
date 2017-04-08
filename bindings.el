@@ -40,10 +40,12 @@
     "M-l" backward-word
     "M-'" forward-word
 
-    "C-M-'" forward-list
-    "C-M-l" backward-list
+    "C-M-'" forward-sexp
+    "C-M-l" backward-sexp
 
-    "C-a" move-beginning-of-line
+    "M-G M-G" goto-line
+
+    "C-a" smart-move-beginning-of-line
 
     "M-o" helm-swoop
     "M-a" highlight-symbol-prev
@@ -58,11 +60,15 @@
     "C-x C-i" imenu
 
     ;;; Editing
-    "C-w" backward-kill-word
+    "C-w" backward-delete-word
+    "<C-backspace>" backward-delete-word
     "M-d" kill-region
     "C-b" kill-whole-line
+    "C-S-k" (lambda () (interactive) (delete-region (point) (line-end-position)))
+    "C-M-d" delete-region
     "C-c q" join-line
     "C-c C-q" join-line
+    "C-M-j" join-line
     "C-=" comment-or-uncomment-region
     "C-f" fill-paragraph
     "<f6>" whitespace-cleanup
@@ -76,19 +82,21 @@
     "C-c r" revert-buffer
     "C-M-=" comment-or-uncomment-sexp
     "C-c C-l" goto-last-change
+    "s--" (lambda () (interactive) (insert "—"))
 
     ;;; Buffer manipulation
     "C-x <C-return>" other-window
     "C-\\" kill-this-buffer
 
     "C-n" create-temp-buffer
-    "C-+" text-scale-increase
-    "C--" text-scale-decrease
     "C-x 0" (lambda () (interactive) (other-window -1))
     "<S-left>" windmove-left
     "<S-right>" windmove-right
     "<S-up>" windmove-up
     "<S-down>" windmove-down
+    "C-x O" swap-buffers-in-windows
+    "<f2>" nil
+    "C-x C-z" nil
 
     ;;; Miscellaneous
     "C-/" toggle-input-method
@@ -96,13 +104,9 @@
     "M-SPC" auto-complete
     "M-=" count-words
 
-    ;; Undo-tree-mode
-    :global
-    "C-z" undo-tree-undo
-    "C-]" undo-tree-redo
-
-    :local undo-tree-map "undo-tree"
-    "C-/" toggle-input-method
+    ;; Undo
+    "C-z" undo-only
+    "C-]" undo-redo
 
     ;; Paredit
     :local paredit-mode-map paredit-mode-hook
@@ -113,18 +117,16 @@
     "M-;" paredit-forward-down
     "C-M-p" paredit-backward-up
     "C-M-;" paredit-forward-up
+    "C-M-'" forward-sexp
+    "C-M-l" backward-sexp
     ;; "C-M-q" beginning-of-defun
     "M-a" highlight-symbol-prev
     ;; "M-q" highlight-symbol-prev
     "M-k" kill-line
     "M-d" kill-region
+    "C-M-d" delete-region
     "C-w" paredit-backward-kill-word
     "<C-backspace>" paredit-backward-kill-word
-
-    ;; cider
-    :local cider-mode-map cider-mode-hook
-    "C-c C-t" cider-toggle-trace-var
-    "C-c i" cider-inspect
 
     :local cider-inspector-mode-map "cider-inspect.el"
     ";" cider-inspector-next-inspectable-object
@@ -231,5 +233,4 @@
     ;; Langtool
     "C-x 4 l" langtool-check
     "C-x 4 L" langtool-check-done
-    "C-x 4 s" langtool-show-message-at-point
-    ))
+    "C-x 4 s" langtool-show-message-at-point))

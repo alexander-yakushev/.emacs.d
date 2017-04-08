@@ -1,30 +1,21 @@
 (defvar unlogic-installed-packages
   '(
     aggressive-indent
-    auctex
     auto-complete
-    clj-refactor
     color-theme-sanityinc-tomorrow
     dash
     elisp-slime-nav
     expand-region
     find-file-in-project
-    floobits
-    gh
-    gist
     goto-last-change
     helm
-    helm-git-grep
     helm-swoop
     highlight
     highlight-symbol
     htmlize
-    idle-highlight-mode
     ido-completing-read+
     ido-ubiquitous
     lua-mode
-    markdown-mode
-    multiple-cursors
     openwith
     org
     paredit
@@ -32,9 +23,5 @@
     refheap
     s
     thesaurus
-    undo-tree
-    use-package
-    wakatime-mode
     xmlgen
-    yasnippet
     ))

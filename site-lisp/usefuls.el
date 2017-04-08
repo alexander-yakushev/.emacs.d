@@ -3,18 +3,22 @@
   (interactive (if (use-region-p)
                    (list (region-beginning) (region-end))
                  (list nil nil)))
-  (let ((p (point))
-        (beg (or beg (progn
-                       (move-beginning-of-line 1)
-                       (point))))
-        (end (or end (progn
-                       (move-end-of-line 1)
-                       (point)))))
-    (copy-region-as-kill beg end)
-    (comment-region beg end)
-    (goto-char beg)
-    (open-line 1)
-    (yank)))
+  (save-excursion
+   (let ((beg (or beg (progn
+                        (move-beginning-of-line 1)
+                        (point))))
+         (end (or end (progn
+                        (move-end-of-line 1)
+                        (point)))))
+     (copy-region-as-kill beg end)
+     (comment-region beg end)
+     (goto-char beg)
+     (open-line 1)
+     (yank))))
+
+(defun backward-delete-word (&optional arg)
+  (interactive "p")
+  (delete-region (point) (progn (backward-word) (point))))
 
 (defun indent-buffer ()
   (interactive)
@@ -131,5 +135,57 @@ A prefix argument is handled like `recenter':
          (count-words--message "Region" (region-beginning) (region-end)))
         (t
          (count-words--buffer-message))))
+
+(defun usefuls-zone-out ()
+  (interactive)
+  (let ((zone-programs '(zone-pgm-jitter
+                         zone-pgm-putz-with-case
+                         zone-pgm-dissolve
+                         zone-pgm-explode
+                         zone-pgm-rotate
+                         zone-pgm-rotate-LR-lockstep
+                         zone-pgm-rotate-RL-lockstep
+                         zone-pgm-rotate-LR-variable
+                         zone-pgm-rotate-RL-variable
+                         zone-pgm-drip
+                         zone-pgm-drip-fretfully
+                         zone-pgm-five-oclock-swan-dive
+                         zone-pgm-martini-swan-dive
+                         zone-pgm-rat-race
+                         zone-pgm-stress
+                         zone-pgm-random-life)))
+    (zone)))
+
+(defun swap-buffers-in-windows ()
+  "Put the buffer from the selected window in next window, and vice versa"
+  (interactive)
+  (let* ((this (selected-window))
+         (other (other-window 1))
+         (this-buffer (window-buffer this))
+         (other-buffer (window-buffer other)))
+    (set-window-buffer other this-buffer)
+    (set-window-buffer this other-buffer)))
+
+(defun smart-move-beginning-of-line (arg)
+  "Move point back to indentation of beginning of line.
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character and
+the beginning of the line.
+If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+point reaches the beginning or end of the buffer, stop there."
+  (interactive "^p")
+  (setq arg (or arg 1))
+
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+
+  (let ((orig-point (point)))
+    (move-beginning-of-line nil)
+    (search-forward-regexp "^[[:space:]]*" (line-end-position) t)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
 
 (provide 'usefuls)

@@ -8,11 +8,11 @@
 
 (defvar stesla-hated-buffer-regexps)
 (setq stesla-hated-buffer-regexps '("^ " "*Buffer" "^\\*trace" "^\\*tramp"
-                                    " (Sunrise)" "^\\*magit" "^\\*Customize" "^*Find*"
+                                    " (Sunrise)" "^\\*magit" "^magit" "^\\*Customize" "^*Find*"
                                     "^*Quail" "^\\*slime-repl" "^\\*SLIME" "^\\*"
                                     "\\(Sunrise\\)$" "\\(Sunrise\\)<..?>$"))
 
-(setq iswitchb-buffer-ignore (append stesla-hated-buffer-regexps  stesla-hated-buffers))
+(setq iswitchb-buffer-ignore (append stesla-hated-buffer-regexps stesla-hated-buffers))
 
 (defmacro stesla-buffer-regexp-mapcar (regexp buffers)
   "Find BUFFERS whose name matches REGEXP"

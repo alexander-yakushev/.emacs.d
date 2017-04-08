@@ -151,4 +151,29 @@ argument, also push the image."
 
 (provide 'rockerfile-mode)
 
+;;;; Linting
+;; (use-package flycheck :ensure t :demand t)
+;; (defconst flycheck-rockerlint-form
+;;   (flycheck-prepare-emacs-lisp-form
+;;    (require 'package)
+;;    (package-initialize)
+;;    (require 'rockerlint)
+
+;;    (let ((source (car command-line-args-left))
+;;          ;; Remember the default directory of the process
+;;          (process-default-directory default-directory))
+;;      (rockerlint-lint source))))
+
+;; (flycheck-define-checker rockerlint-checker
+;;                          "Rockerfile checker."
+;;                          :command ("emacs" "-Q" "-batch" "-L" "~/.emacs.d/site-lisp/"
+;;                                    "--eval" (eval flycheck-rockerlint-form)
+;;                                    "--" source)
+;;                          :error-patterns
+;;                          ((error line-start line ":" column ": " (message) line-end))
+;;                          :modes (rockerfile-mode))
+
+;; (push 'rockerlint-checker flycheck-checkers)
+;; (add-hook 'rockerfile-mode-hook (lambda () (flycheck-mode 1)))
+
 ;;; rockerfile-mode.el ends here
