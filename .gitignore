@@ -2,6 +2,7 @@ auto-save-list/
 backups/
 elpa/
 slime/
+eln-cache/
 snippets/
 swank/
 nrepl.el/
@@ -9,6 +10,7 @@ games/
 eshell/
 thumbs/
 image-dired/
+transient/
 url/
 var/
 ac-comphist.dat
