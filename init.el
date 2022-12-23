@@ -37,12 +37,12 @@
 
   (when (not (file-exists-p "~/.emacs.d/.initialized"))
     (package-refresh-contents)
-    (load-file "~/.emacs.d/installed-packages.el")
-    (mapc
-     (lambda (package)
-       (or (package-installed-p package)
-           (package-install package)))
-     unlogic-installed-packages)
+    ;; (load-file "~/.emacs.d/installed-packages.el")
+    ;; (mapc
+    ;;  (lambda (package)
+    ;;    (or (package-installed-p package)
+    ;;        (package-install package)))
+    ;;  unlogic-installed-packages)
 
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
@@ -153,10 +153,10 @@
   (setq global-auto-revert-non-file-buffers t)
   (setq auto-revert-verbose nil)
 
-  (use-package javad
+  (use-package java-decompiler
     :config
     (use-package javap-mode :ensure t)
-    (add-hook 'find-file-hook 'javad-find-class))
+    (add-hook 'find-file-hook 'java-decompiler-find-class))
 
   (openwith-mode t))
 
@@ -296,6 +296,8 @@ isn't there and triggers an error"
   (setq mainline-arrow-shape 'arrow)
   (mainline-activate))
 
+(use-package color-theme-sanityinc-tomorrow :ensure t)
+
 (use-package daycycle :demand t ;; set theme and switch it during the day
   :config
   (defun -theme-set (time)
@@ -421,6 +423,8 @@ isn't there and triggers an error"
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
+(use-package unicode-fonts :ensure t)
+
 ;;; Programming/Version Control
 
 (use-package magit :ensure t
@@ -455,9 +459,9 @@ isn't there and triggers an error"
 
   (defun magit-section-highlight-less (section _)
     (magit-section-case
-      ((untracked unstaged staged unpushed unpulled pulls branch)
-       nil
-       t)))
+     ((untracked unstaged staged unpushed unpulled pulls branch)
+      nil
+      t)))
 
   (add-hook 'magit-section-highlight-hook 'magit-section-highlight-less)
   (setq magit-section-goto-successor-hook #'magit-hunk-recenter-top))
@@ -579,7 +583,9 @@ isn't there and triggers an error"
 
 (use-package clojure-mode :ensure t)
 
-(use-package cider :ensure t ; :pin melpa-stable
+(use-package paredit :ensure t)
+
+(use-package cider :ensure t
   :bind (:map
          cider-mode-map
          ("C-c t" . cider-toggle-trace-var)
@@ -831,6 +837,8 @@ part if there is prefix."
   (add-hook 'lisp-mode-hook 'highlight-parentheses-mode)
   (add-hook 'clojure-mode-hook 'highlight-parentheses-mode))
 
+(use-package elisp-slime-nav :ensure t)
+
 ;;; Programming/Other languages
 
 (use-package java-mode
@@ -866,7 +874,7 @@ part if there is prefix."
 
 (use-package hcl-mode :ensure t :demand t)
 
-(use-package rockerfile-mode :demand t)
+(use-package rust-mode :ensure t)
 
 (use-package rustic :ensure t)
 
@@ -933,9 +941,13 @@ part if there is prefix."
 
 (use-package groovy-mode :ensure t)
 
-(use-package json-mode :ensure t)
+(use-package json-mode :ensure t
+  :init
+  (use-package json-reformat :ensure t))
 
 (use-package csv-mode :ensure t)
+
+(use-package lua-mode :ensure t)
 
 (use-package fish-mode :ensure t)
 
@@ -992,6 +1004,8 @@ part if there is prefix."
     (interactive "P")
     (let ((helm-ag-insert-at-point (when sym-at-p 'symbol)))
       (helm-do-ag-project-root))))
+
+(use-package helm-swoop :ensure t)
 
 (use-package hippie-exp
   :bind (("M-/" . hippie-expand))
@@ -1068,6 +1082,8 @@ the (^:fold ...) expressions."
 (use-package dumb-jump :ensure t
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+(use-package string-edit :ensure t)
 
 ;;; Writing
 

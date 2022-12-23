@@ -142,7 +142,7 @@
      ("melpa" . "https://melpa.org/packages/")
      ("melpa-stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(dumb-jump elisp-benchmarks fish-mode helm-cider rustic lsp-mode highlight lua-mode clj-decompiler csv-mode gnu-elpa-keyring-update helm-rg smartparens deft highlight-parentheses json-mode markdown-preview-mode helm-ag git-gutter haskell-mode fireplace docker-tramp ac-cider company-flx java-snippets sunrise-x-tabs sunrise-x-mirror sunrise-x-loop sunrise-x-checkpoints pcre2el openwith nlinum nginx-mode names javap-mode inform7-mode ido-ubiquitous idle-highlight-mode highlight-symbol graphviz-dot-mode gradle-mode company-quickhelp centered-window-mode base16-theme))
+   '(fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode deft docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el phi-search projectile rainbow-mode rust-mode rustic sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
  '(pixel-scroll-mode nil)
  '(pop-up-windows nil)
  '(projectile-cache-file "/home/unlogic/.emacs.d/var/projectile.cache")
@@ -221,7 +221,7 @@
  '(wakatime-api-key "1eb79483-57c5-4467-bdf9-1db892e2c3e4")
  '(wakatime-cli-path "wakatime-cli")
  '(wakatime-python-bin "")
- '(warning-suppress-types '((undo discard-info)))
+ '(warning-suppress-types '((comp) (undo discard-info)))
  '(whitespace-global-modes '(not magit-status-mode))
  '(whitespace-style '(face trailing tabs empty))
  '(world-clock-list
