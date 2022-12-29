@@ -1,14 +1,5 @@
 ;;; mainline.el --- modeline replacement forked from powerline.el, much simplified
 
-;; Author: Jason Milkins
-;; Version: 1.0.2
-;; Keywords: statusline / modeline
-
-;;; Add a require to .emacs (or install from elpa/marmalade which will
-;;; setup autoloads)
-;;;
-;;;     (require 'mainline)
-
 (require 'projectile)
 
 (defcustom mainline-color1 "#123550"
@@ -56,7 +47,9 @@
      (mainline-make ,string color1)))
 
 (defmainline major-mode
-  (propertize (if (stringp mode-name) mode-name "SGML")
+  (propertize (cond ((stringp mode-name) mode-name)
+                    ((listp mode-name) (car mode-name))
+                    (t "SGML"))
               'help-echo "Major mode\n\ mouse-1: Display major mode menu\n\ mouse-2: Show help for major mode\n\ mouse-3: Toggle minor modes"
               'local-map (let ((map (make-sparse-keymap)))
                            (define-key map [mode-line down-mouse-1]
@@ -85,6 +78,8 @@
                                         (eq mm-sym 'git-gutter-mode)
                                         (eq mm-sym 'hi-lock-mode)
                                         (eq mm-sym 'wakatime-mode)
+                                        (eq mm-sym 'yas-minor-mode)
+                                        (eq mm-sym 'highlight-parentheses-mode)
                                         (eq mm-sym 'hs-minor-mode))))
                                 minor-mode-alist)))))
           (puthash full-mode-line (if (> (length mms) 0)

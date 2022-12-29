@@ -108,41 +108,9 @@
     "C-z" undo-only
     "C-]" undo-redo
 
-    ;; Paredit
-    :local paredit-mode-map paredit-mode-hook
-    "M-(" paredit-wrap-sexp
-    "M-[" paredit-wrap-square
-    "M-{" paredit-wrap-curly
-    "M-p" paredit-backward-down
-    "M-;" paredit-forward-down
-    "C-M-p" paredit-backward-up
-    "C-M-;" paredit-forward-up
-    "C-M-'" forward-sexp
-    "C-M-l" backward-sexp
-    ;; "C-M-q" beginning-of-defun
-    "M-a" highlight-symbol-prev
-    ;; "M-q" highlight-symbol-prev
-    "M-k" kill-line
-    "M-d" kill-region
-    "C-M-d" delete-region
-    "C-w" paredit-backward-kill-word
-    "<C-backspace>" paredit-backward-kill-word
-
-    :local cider-inspector-mode-map "cider-inspect.el"
-    ";" cider-inspector-next-inspectable-object
-    "p" cider-inspector-previous-inspectable-object
-    "C-;" cider-inspector-operate-on-point
-    "C-p" cider-inspector-pop
-    "SPC" cider-inspector-next-page
-    "M-SPC" cider-inspector-prev-page
-
     ;; Flyspell mode
     :local flyspell-mode-map "flyspell"
     "C-;" next-line
-
-    ;; Flymake mode
-    :global
-    "C-x ," flymake-goto-next-error
 
     ;; Org-mode
     :local org-mode-map org-mode-hook
@@ -155,31 +123,9 @@
     "<C-tab>" hs-toggle-hiding
 
     ;; Magit mode
-    :local magit-mode-map magit-mode-hook
-    ";" magit-section-forward
-    "M-;" magit-section-forward-sibling
-    "X" magit-reset-hard
-
-    :local magit-refs-mode-map magit-refs-mode-hook
-    ";" magit-section-forward
-
-    :local magit-log-mode-map magit-log-mode-hook
-    "p" previous-line
-    ";" next-line
-
     :local git-rebase-mode-map git-rebase-mode-hook
     ";" forward-line
     "M-;" git-rebase-move-line-down
-
-    :local magit-status-mode-map magit-status-mode-hook
-    "W" magit-toggle-whitespace
-
-    :local magit-blame-mode-map magit-blame-mode-hook
-    ";" magit-blame-next-chunk
-
-    :global
-    "C-M-." git-gutter:next-hunk
-    "C-M-," git-gutter:previous-hunk
 
     ;; bs mode
     :global
@@ -209,11 +155,6 @@
     :local grep-mode-map grep-mode-hook
     "q" kill-buffer-and-its-windows
 
-    ;; Elisp-mode
-    :local emacs-lisp-mode-map emacs-lisp-mode-hook
-    "C-c C-e" eval-defun
-    "C-c M-e" eval-and-replace
-
     ;; Package mode
     :local package-menu-mode-map package-menu-mode-hook
     ";" next-line
@@ -225,10 +166,6 @@
     "C-c [" (lambda () (interactive)
               (LaTeX-add-all-bibitems-from-bibtex)
               (reftex-citation))
-
-    :local zencoding-mode-keymap zencoding-mode-hook
-    "C-j" electric-newline-and-maybe-indent
-    "C-c C-z" zencoding-expand-line
 
     ;; Langtool
     "C-x 4 l" langtool-check

@@ -118,3 +118,63 @@ If there is still something left do do start the next latex-command."
   :init
   (add-hook 'prog-mode-hook 'nlinum-mode)
   (add-hook 'org-mode-hook 'nlinum-mode))
+
+(use-package slime :ensure t
+  :commands slime
+  :config
+  (setq-default slime-lisp-implementations
+                '((sbcl ("sbcl" "--dynamic-space-size" "9500"))))
+
+  (use-package ac-slime :ensure t :demand t
+    :init
+    (add-hook 'slime-mode-hook 'set-up-slime-ac)
+    (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+    (eval-after-load "auto-complete"
+      '(add-to-list 'ac-modes 'slime-repl-mode)))
+  (setq slime-contribs '(slime-asdf))
+  (slime-setup '(slime-autodoc))
+  (slime-setup '(slime-fancy slime-scratch slime-editing-commands
+                             slime-fuzzy slime-repl slime-fancy-inspector
+                             slime-presentations slime-asdf
+                             slime-indentation))
+  (require 'slime-autoloads))
+
+(use-package ivy :ensure t :demand t
+  :bind (("M-x" . counsel-M-x)
+         ;; ("C-x C-f" . counsel-find-file)
+         )
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t))
+
+(use-package unicode-fonts :ensure t :demand t
+  :config
+  (unicode-fonts-setup))
+
+(defun cider-decompile-last-form ()
+  (interactive)
+  (let* ((form (concat "(with-out-str (clj-java-decompiler.core/decompile "
+                       (cider-last-sexp)
+                       "))"))
+         (result (nrepl-dict-get (cider-nrepl-sync-request:eval
+                                  form nil (cider-current-ns))
+                                 "value")))
+    (pop-to-buffer "*cider-decompiler*")
+    (read-only-mode -1)
+    (delete-region (point-min) (point-max))
+    (insert result)
+    (let* ((result (car (read-from-string (buffer-substring-no-properties
+                                           (point-min) (point-max)))))
+           (result (replace-regexp-in-string "__auto__[0-9]+" "" result))
+           (classnames (-map 'cadr (s-match-strings-all "class \\([^ ]+\\) " result)))
+           (result (-reduce-from (lambda (r classname)
+                                   (s-replace (concat classname ".") "" r))
+                                 result classnames)))
+      (delete-region (point-min) (point-max))
+      (insert result)
+      (java-mode)
+      (whitespace-mode -1)
+      (whitespace-cleanup)
+      (beginning-of-buffer)
+      (read-only-mode 1))))

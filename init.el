@@ -2,17 +2,6 @@
       (append default-frame-alist '((inhibit-double-buffering . t))))
 
 (when (string-equal system-type "darwin") ;; Emacs Mac Port config
-
-  ;; Keybonds
-  ;; (global-set-key [(hyper a)] 'mark-whole-buffer)
-  ;; (global-set-key [(hyper v)] 'yank)
-  ;; (global-set-key [(hyper c)] 'kill-ring-save)
-  ;; (global-set-key [(hyper s)] 'save-buffer)
-  ;; (global-set-key [(hyper l)] 'goto-line)
-  ;; (global-set-key [(hyper w)]
-  ;;                 (lambda () (interactive) (delete-window)))
-  ;; (global-set-key [(hyper z)] 'undo)
-
   ;; If menu bar is off, Emacs will always stay on top and frustrate the shit
   ;; out of you.
   (menu-bar-mode 1)
@@ -37,15 +26,7 @@
 
   (when (not (file-exists-p "~/.emacs.d/.initialized"))
     (package-refresh-contents)
-    ;; (load-file "~/.emacs.d/installed-packages.el")
-    ;; (mapc
-    ;;  (lambda (package)
-    ;;    (or (package-installed-p package)
-    ;;        (package-install package)))
-    ;;  unlogic-installed-packages)
-
     (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
       (package-install 'use-package))
     (write-region "" nil "~/.emacs.d/.initialized"))
 
@@ -58,20 +39,29 @@
 
 (load-file "~/.emacs.d/bindings.el") ;; Load bindings
 
-(load-file "~/.emacs.d/esk.el") ;; Load Emacs starter kit leftovers
+(progn             ; misc initialization
+  (cd "~") ;; start from userdir
+
+  ;; Turn off mouse interface early in startup to avoid momentary display
+  (dolist (mode '(tool-bar-mode scroll-bar-mode))
+    (when (fboundp mode) (funcall mode -1)))
+
+  (when window-system
+    (tooltip-mode 1)
+    (mouse-wheel-mode t)
+    (blink-cursor-mode -1))
+
+  (random t) ;; Seed the random-number generator
+
+  (defun -mode-hook (mode-sym)
+    (intern (concat (symbol-name mode-sym) "-mode-hook")))
+
+  ;; Set GC threshold high (100 MB), but periodically autocollect when idle.
+  ;; (setq gc-cons-threshold (* 800 1024))
+  (setq gc-cons-threshold (* 100 1024 1024))
+  (run-with-idle-timer 5 t (lambda () (garbage-collect))))
 
 (load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
-
-;; Turn off mouse interface early in startup to avoid momentary display
-(dolist (mode '(tool-bar-mode scroll-bar-mode))
-  (when (fboundp mode) (funcall mode -1)))
-
-(cd "~") ;; start from userdir
-
-;; Set GC threshold high (100 MB), but periodically autocollect when idle.
-;; (setq gc-cons-threshold (* 800 1024))
-(setq gc-cons-threshold (* 100 1024 1024))
-(run-with-idle-timer 5 t (lambda () (garbage-collect)))
 
 ;;; Day-to-day usage
 
@@ -160,11 +150,15 @@
 
   (openwith-mode t))
 
-(use-package multiple-cursors :ensure t
+(use-package multiple-cursors :ensure t :demand t
   :bind (("C-M-<mouse-1>" . mc/add-cursor-on-click)
          ("<C-down>" . mc/mark-next-like-this)
          ("<C-M-down>" . mc/mark-next-like-this-symbol)
-         ("C-c m" . mc/mark-all-like-this-dwim)))
+         ("C-c m" . mc/mark-all-like-this-dwim)
+
+         :map mc/keymap
+         ("C-'" . forward-char)
+         ("C-h" . mc-hide-unmatched-lines-mode)))
 
 (use-package phi-search :ensure t
   :bind (("C-c s s" . phi-search)
@@ -289,7 +283,10 @@ isn't there and triggers an error"
   :config
   (recentf-mode 1))
 
-(use-package vundo :ensure t)
+(use-package ido :demand t
+  :config
+  (ido-mode t)
+  (ido-ubiquitous-mode))
 
 (use-package mainline :demand t ;; custom status line
   :config
@@ -423,15 +420,28 @@ isn't there and triggers an error"
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
-(use-package unicode-fonts :ensure t)
-
 ;;; Programming/Version Control
 
 (use-package magit :ensure t
   :bind (("C-x g" . magit-status)
          ("M-g" . magit-status)
          ("<f8>" . magit-blame-addition)
-         ("<M-f8>" . magit-blame))
+         ("<M-f8>" . magit-blame)
+
+         :map magit-mode-map
+         (";" . magit-section-forward)
+         ("M-;" . magit-section-forward-sibling)
+         ("X" . magit-reset-hard)
+
+         :map magit-refs-mode-map
+         (";" . magit-section-forward)
+
+         :map magit-log-mode-map
+         ("p" . previous-line)
+         (";" . next-line)
+
+         :map magit-blame-mode-map
+         (";" . magit-blame-next-chunk))
   :commands (magit-show-commit)
   :config
   (setq magit-last-seen-setup-instructions "1.4.0")
@@ -524,6 +534,8 @@ isn't there and triggers an error"
                        date-full date-relative)))))
 
 (use-package git-gutter :ensure t :demand t
+  :bind (("C-M-." . git-gutter:next-hunk)
+         ("C-M-," . git-gutter:previous-hunk))
   :config
   (global-git-gutter-mode 1)
   (setq-default git-gutter:modified-sign "~"))
@@ -583,7 +595,27 @@ isn't there and triggers an error"
 
 (use-package clojure-mode :ensure t)
 
-(use-package paredit :ensure t)
+(use-package paredit :ensure t
+  :bind (:map
+         paredit-mode-map
+         ("M-(" . paredit-wrap-sexp)
+         ("M-[" . paredit-wrap-square)
+         ("M-{" . paredit-wrap-curly)
+         ("M-p" . paredit-backward-down)
+         ("M-;" .  paredit-forward-down)
+         ("C-M-p" . paredit-backward-up)
+         ("C-M-;" . paredit-forward-up)
+         ("C-M-'" . forward-sexp)
+         ("C-M-l" . backward-sexp)
+         ;; ("M-a" . highlight-symbol-prev)
+         ("M-k" . kill-line)
+         ("M-d" . kill-region)
+         ("C-M-d" . delete-region)
+         ("C-w" . paredit-backward-kill-word)
+         ("<C-backspace>" . paredit-backward-kill-word))
+  :config
+  (dolist (mode '(scheme emacs-lisp lisp clojure clojurescript))
+    (add-hook (-mode-hook mode) 'paredit-mode)))
 
 (use-package cider :ensure t
   :bind (:map
@@ -601,9 +633,6 @@ isn't there and triggers an error"
          ("C-c C-l" . cider-repl-clear-buffer))
   :commands (cider-connect cider-jack-in)
   :config
-  ;; TEMP
-  ;; (setq cider-jack-in-lein-plugins '(("refactor-nrepl" "2.4.0" :predicate cljr--inject-middleware-p)))
-
   (add-hook 'cider-mode-hook 'eldoc-mode)
 
   (add-hook 'cider-repl-mode-hook #'company-mode)
@@ -617,6 +646,8 @@ isn't there and triggers an error"
                 ("p" . cider-inspector-previous-inspectable-object)
                 ("C-;" . cider-inspector-operate-on-point)
                 ("C-p" . cider-inspector-pop)
+                ("SPC" . cider-inspector-next-page)
+                ("M-SPC" . cider-inspector-prev-page)
                 ("r" . cider-reinspect)))
 
   (use-package sesman
@@ -629,8 +660,8 @@ isn't there and triggers an error"
       (when sesman--window-config-coming-from
         (let ((frame (selected-frame)))
           (unwind-protect
-	      (set-window-configuration sesman--window-config-coming-from)
-	    (select-frame frame)))
+              (set-window-configuration sesman--window-config-coming-from)
+            (select-frame frame)))
         (setq bs--window-config-coming-from nil)))
 
     (defun sesman-browser ()
@@ -706,33 +737,6 @@ See `sesman-browser-mode' for more details."
                                    "value")))
       (message "*warn-on-reflection*: %s" result)))
 
-  (defun cider-decompile-last-form ()
-    (interactive)
-    (let* ((form (concat "(with-out-str (clj-java-decompiler.core/decompile "
-                         (cider-last-sexp)
-                         "))"))
-           (result (nrepl-dict-get (cider-nrepl-sync-request:eval
-                                    form nil (cider-current-ns))
-                                   "value")))
-      (pop-to-buffer "*cider-decompiler*")
-      (read-only-mode -1)
-      (delete-region (point-min) (point-max))
-      (insert result)
-      (let* ((result (car (read-from-string (buffer-substring-no-properties
-                                             (point-min) (point-max)))))
-             (result (replace-regexp-in-string "__auto__[0-9]+" "" result))
-             (classnames (-map 'cadr (s-match-strings-all "class \\([^ ]+\\) " result)))
-             (result (-reduce-from (lambda (r classname)
-                                     (s-replace (concat classname ".") "" r))
-                                   result classnames)))
-        (delete-region (point-min) (point-max))
-        (insert result)
-        (java-mode)
-        (whitespace-mode -1)
-        (whitespace-cleanup)
-        (beginning-of-buffer)
-        (read-only-mode 1))))
-
   ;; Prevent CIDER from jumping to source in other window.
   (defun cider--jump-to-loc-from-info-always-same-window (orig-fn info &rest _)
     (funcall orig-fn info))
@@ -771,11 +775,6 @@ See `sesman-browser-mode' for more details."
               (cljr--indent-defun)
               (cljr--post-command-message "Required %s" libspec)))))))
 
-  ;; Temp hack for setting boot.user namespace on startup.
-  (defun cider-repl--set-initial-ns (buffer)
-    (with-current-buffer buffer
-      (cider-set-buffer-ns "boot.user")))
-
   (defun cider-test-macroexpand-are ()
     (interactive)
     (cider-macroexpand-1-inplace)
@@ -810,7 +809,7 @@ part if there is prefix."
     (interactive)
     (if (looking-at "\\_>")
         (company-indent-or-complete-common nil)
-      (call-interactively #'indent-for-tab-command)))  
+      (call-interactively #'indent-for-tab-command)))
 
   (use-package company-quickhelp :ensure t :demand t
     :config
@@ -819,13 +818,8 @@ part if there is prefix."
 (use-package clj-refactor :ensure t
   :config
   (cljr-add-keybindings-with-prefix "C-c C-r")
-  (add-hook 'clojure-mode-hook (lambda () (clj-refactor-mode 1)))
-  (add-hook 'clojure-mode-hook 'yas-minor-mode-on)
-
-  (use-package yasnippet :demand t
-    :init
-    (define-key yas-minor-mode-map [(tab)] nil)
-    (define-key yas-minor-mode-map (kbd "TAB") nil)))
+  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  (add-hook 'clojure-mode-hook 'yas-minor-mode-on))
 
 (use-package clj-decompiler :ensure t)
 
@@ -837,7 +831,41 @@ part if there is prefix."
   (add-hook 'lisp-mode-hook 'highlight-parentheses-mode)
   (add-hook 'clojure-mode-hook 'highlight-parentheses-mode))
 
-(use-package elisp-slime-nav :ensure t)
+(use-package elisp-mode
+  :bind (:map
+         emacs-lisp-mode-map
+         ("C-c C-e" . eval-defun)
+         ("C-c M-e" . eval-and-replace)
+
+         :map read-expression-map
+         ("TAB" . lisp-complete-symbol))
+  :config
+  (use-package elisp-slime-nav :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode))
+
+  (defun elisp-mode-pretty-lambdas ()
+    (font-lock-add-keywords
+     nil `(("(?\\(lambda\\>\\)"
+            (0 (progn (compose-region (match-beginning 1) (match-end 1)
+                                      ,(make-char 'greek-iso8859-7 107))
+                      nil))))))
+
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook 'elisp-mode-pretty-lambdas))
+
+(use-package paren-face :ensure t :demand t
+  :config
+  (dolist (mode '(scheme emacs-lisp lisp))
+    (add-hook (-mode-hook mode) 'paren-face-mode))
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
+              (paren-face-mode 1)))
+  (add-hook 'clojurescript-mode-hook
+            (lambda ()
+              (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
+              (paren-face-mode 1))))
 
 ;;; Programming/Other languages
 
@@ -870,24 +898,12 @@ part if there is prefix."
   :config
   (add-hook 'web-mode-hook (lambda () (setq  web-mode-markup-indent-offset 2))))
 
-(use-package dockerfile-mode :ensure t :demand t)
-
-(use-package hcl-mode :ensure t :demand t)
-
-(use-package rust-mode :ensure t)
-
-(use-package rustic :ensure t)
-
-(use-package lsp-mode :ensure t)
-
 (use-package go-mode :ensure t
   :config
   (add-hook 'go-mode-hook (lambda () (setq whitespace-style '(face trailing empty)
                                       indent-tabs-mode t
                                       tab-width 4)
                             (whitespace-mode -1))))
-
-(use-package toml-mode :ensure t)
 
 (use-package markdown-mode :ensure t
   :bind (:map markdown-mode-map
@@ -929,29 +945,32 @@ part if there is prefix."
         (delete-region (region-beginning) (region-end))
         (insert (format "[%s](https://github.com/%s/issues/%s)" issue repo number))))))
 
-(use-package terraform-mode :ensure t)
-
-(use-package zencoding-mode :ensure t)
-
-(use-package sass-mode :ensure t)
-
-(use-package systemd :ensure t)
-
-(use-package yaml-mode :ensure t)
-
-(use-package groovy-mode :ensure t)
-
-(use-package json-mode :ensure t
-  :init
-  (use-package json-reformat :ensure t))
-
-(use-package csv-mode :ensure t)
-
-(use-package lua-mode :ensure t)
-
-(use-package fish-mode :ensure t)
+(use-package zencoding-mode :ensure t
+  :bind (:map zencoding-mode-keymap
+         ("C-j" . electric-newline-and-maybe-indent)
+         ("C-c C-z" . zencoding-expand-line)))
 
 ;;; Programming/Miscellaneous
+
+(use-package yasnippet :demand t
+  :init
+  (define-key yas-minor-mode-map [(tab)] nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil))
+
+(use-package prog-mode
+  :config
+  (defun prog-mode-local-comment-auto-fill ()
+    (set (make-local-variable 'comment-auto-fill-only-comments) t)
+    (auto-fill-mode t))
+
+  (defun prog-mode-add-watchwords ()
+    (font-lock-add-keywords
+     nil '(("\\<\\(TODO\\|FIXME\\)"
+            1 font-lock-warning-face t))))
+
+  (add-hook 'prog-mode-hook 'prog-mode-local-comment-auto-fill)
+  (add-hook 'prog-mode-hook 'hl-line-mode)
+  (add-hook 'prog-mode-hook 'prog-mode-add-watchwords))
 
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
@@ -1070,26 +1089,18 @@ the (^:fold ...) expressions."
     (hs-minor-mode 1)
     (hs-clojure-hide-namespace-and-folds))
 
-  (add-hook 'c-mode-common-hook   'hs-minor-mode)
-  (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-  (add-hook 'java-mode-hook       'hs-minor-mode)
-  (add-hook 'lisp-mode-hook       'hs-minor-mode)
-  (add-hook 'perl-mode-hook       'hs-minor-mode)
-  (add-hook 'sh-mode-hook         'hs-minor-mode)
-  (add-hook 'clojure-mode-hook    'hs-clojure-mode-hook)
-  )
+  (add-hook 'c-mode-common-hook      'hs-minor-mode)
+  (add-hook 'emacs-lisp-mode-hook    'hs-minor-mode)
+  (add-hook 'java-mode-hook          'hs-minor-mode)
+  (add-hook 'lisp-mode-hook          'hs-minor-mode)
+  (add-hook 'clojure-mode-hook       'hs-clojure-mode-hook)
+  (add-hook 'clojurescript-mode-hook 'hs-clojure-mode-hook))
 
 (use-package dumb-jump :ensure t
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
-(use-package string-edit :ensure t)
-
 ;;; Writing
-
-;; (use-package unicode-fonts :ensure t :demand t
-;;   :config
-;;   (unicode-fonts-setup))
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
@@ -1169,6 +1180,8 @@ the (^:fold ...) expressions."
 ;; Auto refresh buffers
 (global-auto-revert-mode 1)
 
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
 ;; Don't litter my fs tree
 (setq backup-directory-alist '(("." . "~/.local/share/emacs-saves"))
       auto-save-file-name-transforms '((".*" "~/.local/share/emacs-saves/" t)))
@@ -1191,57 +1204,6 @@ the (^:fold ...) expressions."
 (put 'upcase-region 'disabled nil)
 (put 'ido-exit-minibuffer 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
-
-(setq browse-url-browser-function (quote browse-url-generic))
-(setq browse-url-generic-program "open")
-
-;; Disabled
-
-;; (use-package slime :ensure t
-;;   :commands slime
-;;   :config
-;;   (setq-default slime-lisp-implementations
-;;                 '((sbcl ("sbcl" "--dynamic-space-size" "9500"))))
-
-;;   (use-package ac-slime :ensure t :demand t
-;;     :init
-;;     (add-hook 'slime-mode-hook 'set-up-slime-ac)
-;;     (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-;;     (eval-after-load "auto-complete"
-;;       '(add-to-list 'ac-modes 'slime-repl-mode)))
-;;   (setq slime-contribs '(slime-asdf))
-;;   (slime-setup '(slime-autodoc))
-;;   (slime-setup '(slime-fancy slime-scratch slime-editing-commands
-;;                              slime-fuzzy slime-repl slime-fancy-inspector
-;;                              slime-presentations slime-asdf
-;;                              slime-indentation))
-;;   (require 'slime-autoloads))
-
-;; (use-package ivy :ensure t :demand t
-;;   :bind (("M-x" . counsel-M-x)
-;;          ;; ("C-x C-f" . counsel-find-file)
-;;          )
-;;   :config
-;;   (ivy-mode 1)
-;;   (setq ivy-use-virtual-buffers t)
-;;   (setq enable-recursive-minibuffers t)
-;;   ;; (global-set-key "\C-s" 'swiper)
-;;   ;; (global-set-key (kbd "C-c C-r") 'ivy-resume)
-;;   ;; (global-set-key (kbd "<f6>") 'ivy-resume)
-;;   ;; (global-set-key (kbd "M-x") 'counsel-M-x)
-;;   ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-;;   ;; (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-;;   ;; (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-;;   ;; (global-set-key (kbd "<f1> l") 'counsel-find-library)
-;;   ;; (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-;;   ;; (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-;;   ;; (global-set-key (kbd "C-c g") 'counsel-git)
-;;   ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
-;;   ;; (global-set-key (kbd "C-c k") 'counsel-ag)
-;;   ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-;;   ;; (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-;;   ;; (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
-;;   )
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)
