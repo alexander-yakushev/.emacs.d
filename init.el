@@ -1,6 +1,3 @@
-(setq default-frame-alist
-      (append default-frame-alist '((inhibit-double-buffering . t))))
-
 (when (string-equal system-type "darwin") ;; Emacs Mac Port config
   ;; If menu bar is off, Emacs will always stay on top and frustrate the shit
   ;; out of you.
@@ -18,10 +15,8 @@
   (require 'package)
 
   (setq load-prefer-newer t)
-  (add-to-list 'package-archives
-               '("melpa" . "https://melpa.org/packages/"))
-  (add-to-list 'package-archives
-               '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
   (package-initialize)
 
   (when (not (file-exists-p "~/.emacs.d/.initialized"))
@@ -35,9 +30,9 @@
 
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (add-to-list 'load-path "~/.emacs.d/site-lisp/sunrise-commander/")
-(add-to-list 'load-path "~/.emacs.d/site-lisp/org-reveal/")
 
 (load-file "~/.emacs.d/bindings.el") ;; Load bindings
+(load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
 
 (progn             ; misc initialization
   (cd "~") ;; start from userdir
@@ -61,11 +56,7 @@
   (setq gc-cons-threshold (* 100 1024 1024))
   (run-with-idle-timer 5 t (lambda () (garbage-collect))))
 
-(load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
-
 ;;; Day-to-day usage
-
-(use-package s :ensure t :demand t)
 
 (use-package sudo :commands sudo-find-file)
 
@@ -86,7 +77,10 @@
 
          :map sr-tabs-mode-map
          ("C-j" . sr-cycle-bookmark)
-         ("C-p" . sr-dired-prev-subdir))
+         ("C-p" . sr-dired-prev-subdir)
+         ("C-M-;" . sr-tabs-add)
+         ("C-M-l" . sr-tabs-prev)
+         ("C-M-'" . sr-tabs-next))
   :config
   (use-package sunrise-x-checkpoints)
   (use-package sunrise-x-loop)
@@ -98,7 +92,8 @@
     (setq sr-panes-height (* 2 (/ (frame-height) 3)))
     (sunrise-cd))
 
-  (setq bookmarks '("~/.emacs.d/" "~/clojure/" "~/grammarly/" "~/Games/World of Warcraft/_classic_/Interface/AddOns/"))
+  (setq bookmarks '("~/.emacs.d/" "~/clojure/" "~/grammarly/"
+                    "~/Games/World of Warcraft/_classic_/Interface/AddOns/"))
 
   (lexical-let ((bookmark-counter 0))
     (defun sr-cycle-bookmark ()
@@ -138,15 +133,6 @@
     (setq sr-left-directory "~")
     (setq sr-right-directory "~")
     (sunrise))
-
-  ;; Also auto refresh dired, but be quiet about it
-  (setq global-auto-revert-non-file-buffers t)
-  (setq auto-revert-verbose nil)
-
-  (use-package java-decompiler
-    :config
-    (use-package javap-mode :ensure t)
-    (add-hook 'find-file-hook 'java-decompiler-find-class))
 
   (openwith-mode t))
 
@@ -276,7 +262,6 @@ isn't there and triggers an error"
 
 (use-package saveplace :demand t
   :init
-  (setq save-place-file (concat user-emacs-directory "var/places"))
   (save-place-mode 1))
 
 (use-package recentf :demand t
@@ -290,7 +275,6 @@ isn't there and triggers an error"
 
 (use-package mainline :demand t ;; custom status line
   :config
-  (setq mainline-arrow-shape 'arrow)
   (mainline-activate))
 
 (use-package color-theme-sanityinc-tomorrow :ensure t)
@@ -456,16 +440,13 @@ isn't there and triggers an error"
                           'replace)
 
   (defun magit-hunk-recenter-top (section &rest _)
-    (when t ;; (and (eq this-command 'magit-stage))
-      (goto-char (--if-let (magit-section-goto-successor-1 section)
-                     (if (eq (oref it type) 'button)
-                         (point-min)
-                       (oref it start))
-                   (point-min)))
-      (recenter)
-      ;; (recenter (min (max 0 scroll-margin)
-      ;;                (truncate (/ (window-body-height) 4.0))))
-      t))
+    (goto-char (--if-let (magit-section-goto-successor-1 section)
+                   (if (eq (oref it type) 'button)
+                       (point-min)
+                     (oref it start))
+                 (point-min)))
+    (recenter)
+    t)
 
   (defun magit-section-highlight-less (section _)
     (magit-section-case
@@ -490,46 +471,26 @@ isn't there and triggers an error"
     "How to display the minibuffer detail"
     :group 'git-timemachine)
 
-  ;; Overriden because I don't remember why ¯\_(ツ)_/¯
-  (defun git-timemachine--revisions ()
-    "List git revisions of current buffers file."
-    (if git-timemachine--revisions-cache
-        git-timemachine--revisions-cache
-      (setq git-timemachine--revisions-cache
-            (prog2
-                (message "Fetching Revisions...")
-                (let ((default-directory git-timemachine-directory)
-                      (file git-timemachine-file))
-                  (with-temp-buffer
-                    (unless (zerop (process-file vc-git-program nil t nil "--no-pager" "log" "--name-only" "--follow" "--date=short" "--pretty=format:%H:%ar:%ad:%an:%s" file))
-                      (error "Git log command exited with non-zero exit status for file: %s" file))
-                    (goto-char (point-min))
-                    (let ((lines)
-                          (commit-number (/ (1+ (count-lines (point-min) (point-max))) 3)))
-                      (while (not (eobp))
-                        (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-                          (string-match "\\([^:]*\\):\\([^:]*\\):\\(.*\\):\\(.*\\):\\(.*\\)" line)
-                          (let ((commit (match-string 1 line))
-                                (date-relative (match-string 2 line))
-                                (date-full (match-string 3 line))
-                                (author (match-string 4 line))
-                                (subject (match-string 5 line)))
-                            (forward-line 1)
-                            (let ((file-name (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-                              (push (list commit file-name commit-number date-relative date-full subject author) lines))))
-                        (setq commit-number (1- commit-number))
-                        (forward-line 2))
-                      (nreverse lines))))
-              (message "Fetching Revisions...done")))))
+  ;; Show shorter date in the minibuffer.
+  (defun advise-git-timemachine--process-file (orig &rest args)
+    (if (equal (car args) "log")
+        (let* ((flags-end (-elem-index "--" args))
+               (new-args (-insert-at flags-end "--date=short" args)))
+          (apply orig new-args))
+      (apply orig args)))
+  (advice-add 'git-timemachine--process-file :around #'advise-git-timemachine--process-file)
 
-  ;; Overriden to customize m
+  ;; Overriden to customize minibuffer message.
   (defun git-timemachine--show-minibuffer-details (revision)
     "Show details for REVISION in minibuffer."
-    (let ((detail (nth 5 revision))
+    (let ((commit (subseq (nth 0 revision) 0 7))
+          (subject (nth 5 revision))
           (date-relative (nth 3 revision))
           (date-full (nth 4 revision))
           (author (nth 6 revision)))
-      (message (format "%s (%s) [%s (%s)]" (propertize detail 'face 'git-timemachine-minibuffer-detail-face)
+      (message (format "%s: %s (%s) [%s (%s)]"
+                       (propertize commit 'face 'git-timemachine-commit)
+                       (propertize subject 'face 'git-timemachine-minibuffer-detail-face)
                        (propertize author 'face 'git-timemachine-minibuffer-author-face)
                        date-full date-relative)))))
 
@@ -540,56 +501,18 @@ isn't there and triggers an error"
   (global-git-gutter-mode 1)
   (setq-default git-gutter:modified-sign "~"))
 
-(use-package vc-annotate :demand t
+(use-package vc-annotate
   :commands vc-annotate
   :bind (:map vc-annotate-mode-map
               ("c" . vc-annotate-show-commit-at-line))
   :config
-  (setq vc-ignore-dir-regexp
-        (format "\\(%s\\)\\|\\(%s\\)"
-                vc-ignore-dir-regexp
-                tramp-file-name-regexp))
-
   (defun vc-annotate-show-commit-at-line ()
     (interactive)
     (let* ((rev (car (vc-annotate-extract-revision-at-line)))
            (rev (if (string= (substring rev 0 1) "^")
                     (substring rev 1)
                   rev)))
-      (magit-show-commit rev)))
-
-  (defun vc-git-annotate-command (file buf &optional rev)
-    (let ((name (file-relative-name file)))
-      (vc-git-command buf 'async nil "blame" "--date=iso" rev "--" name)))
-
-  (defun vc-annotate-get-time-set-line-props ()
-    (let ((bol (point))
-          (date (vc-call-backend vc-annotate-backend 'annotate-time))
-          (inhibit-read-only t))
-      (cl-assert (>= (point) bol))
-      (put-text-property bol (point) 'invisible 'vc-annotate-annotation)
-      (let ((boc (point)))
-        (save-excursion
-          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9] +[0-9]+)")
-          (when (< (- boc (point)) 40)
-            (put-text-property (point) boc 'invisible t))
-          (search-backward-regexp "(")
-          (let ((paren-point (point)))
-            (beginning-of-line)
-            (when (> (- paren-point (point) 10))
-              (put-text-property (+ (point) 9) paren-point 'invisible t)))))
-      date))
-
-  (defvar --vc-annotate-current-rev nil)
-
-  (defun --vc-annotate-post-hook (file rev &rest rst)
-    (setq --vc-annotate-current-rev rev)
-    (vc-run-delayed
-      (unless (active-minibuffer-window)
-        (message (vc-git--run-command-string
-                  nil "log" "--pretty=format:[%an] %s (%ar)" "-n 1" --vc-annotate-current-rev)))))
-
-  (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
+      (magit-show-commit rev))))
 
 ;;; Programming/Clojure & Lisps
 
@@ -801,8 +724,6 @@ See `sesman-browser-mode' for more details."
               ("TAB" . company-complete-selection)
               ("<tab>" . company-complete-selection))
   :config
-  (add-hook 'emacs-lisp-mode-hook 'company-mode)
-
   (defun company-indent-or-complete-must-have-prefix ()
     "Indent the current line or region, or complete the common
 part if there is prefix."
@@ -851,6 +772,7 @@ part if there is prefix."
                                       ,(make-char 'greek-iso8859-7 107))
                       nil))))))
 
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
   (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
   (add-hook 'emacs-lisp-mode-hook 'elisp-mode-pretty-lambdas))
 
@@ -1010,7 +932,7 @@ part if there is prefix."
               (when (file-remote-p default-directory)
                 (setq-local projectile-mode-line "Projectile")))))
 
-(use-package helm-ag :ensure t ;; helm-grep with silver searcher
+(use-package helm-ag :ensure t
   :bind* (("M-h" . helm-do-ag-project-root-custom)
           ("M-H" . helm-do-ag))
   :bind (:map helm-ag-map
@@ -1107,10 +1029,6 @@ the (^:fold ...) expressions."
   :bind (:map org-mode-map
               ("C-'" . forward-char))
   :config
-  (use-package ox-reveal
-    :demand t
-    :config
-    (setq org-reveal-root (expand-file-name "~/Software/reveal-js")))
   (setq org-inhibit-startup-visibility-stuff t))
 
 (use-package centered-window-mode :ensure t
@@ -1182,23 +1100,7 @@ the (^:fold ...) expressions."
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
-;; Don't litter my fs tree
-(setq backup-directory-alist '(("." . "~/.local/share/emacs-saves"))
-      auto-save-file-name-transforms '((".*" "~/.local/share/emacs-saves/" t)))
-
-;; Advice yanking to auto-indent yank content
-(dolist (command '(yank yank-pop))
-  (eval `(defadvice ,command (after indent-region activate)
-           (and (not current-prefix-arg)
-                (member major-mode '(emacs-lisp-mode lisp-mode
-                                                     clojure-mode    scheme-mode
-                                                     haskell-mode    ruby-mode
-                                                     rspec-mode      python-mode
-                                                     c-mode          c++-mode
-                                                     objc-mode       latex-mode
-                                                     plain-tex-mode  lua-mode))
-                (let ((mark-even-if-inactive transient-mark-mode))
-                  (indent-region (region-beginning) (region-end) nil))))))
+(advice-yank-auto-indent)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

@@ -205,4 +205,19 @@ point reaches the beginning or end of the buffer, stop there."
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
 
+;; Advice yanking to auto-indent yank content
+(defun advice-yank-auto-indent ()
+  (dolist (command '(yank yank-pop))
+    (eval `(defadvice ,command (after indent-region activate)
+             (and (not current-prefix-arg)
+                  (member major-mode '(emacs-lisp-mode lisp-mode
+                                                       clojure-mode    scheme-mode
+                                                       haskell-mode    ruby-mode
+                                                       rspec-mode      python-mode
+                                                       c-mode          c++-mode
+                                                       objc-mode       latex-mode
+                                                       plain-tex-mode  lua-mode))
+                  (let ((mark-even-if-inactive transient-mark-mode))
+                    (indent-region (region-beginning) (region-end) nil)))))))
+
 (provide 'usefuls)

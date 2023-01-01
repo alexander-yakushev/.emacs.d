@@ -178,3 +178,68 @@ If there is still something left do do start the next latex-command."
       (whitespace-cleanup)
       (beginning-of-buffer)
       (read-only-mode 1))))
+
+(add-to-list 'load-path "~/.emacs.d/site-lisp/org-reveal/")
+(use-package ox-reveal
+  :demand t
+  :config
+  (setq org-reveal-root (expand-file-name "~/Software/reveal-js")))
+
+;; Don't litter my fs tree
+(setq backup-directory-alist '(("." . "~/.local/share/emacs-saves"))
+      auto-save-file-name-transforms '((".*" "~/.local/share/emacs-saves/" t)))
+
+;; Also auto refresh dired, but be quiet about it
+(setq global-auto-revert-non-file-buffers t)
+(setq auto-revert-verbose nil)
+
+(use-package vc-annotate :demand t
+  :commands vc-annotate
+  :bind (:map vc-annotate-mode-map
+              ("c" . vc-annotate-show-commit-at-line))
+  :config
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp))
+
+  (defun vc-annotate-show-commit-at-line ()
+    (interactive)
+    (let* ((rev (car (vc-annotate-extract-revision-at-line)))
+           (rev (if (string= (substring rev 0 1) "^")
+                    (substring rev 1)
+                  rev)))
+      (magit-show-commit rev)))
+
+  (defun vc-git-annotate-command (file buf &optional rev)
+    (let ((name (file-relative-name file)))
+      (vc-git-command buf 'async nil "blame" "--date=iso" rev "--" name)))
+
+  (defun vc-annotate-get-time-set-line-props ()
+    (let ((bol (point))
+          (date (vc-call-backend vc-annotate-backend 'annotate-time))
+          (inhibit-read-only t))
+      (cl-assert (>= (point) bol))
+      (put-text-property bol (point) 'invisible 'vc-annotate-annotation)
+      (let ((boc (point)))
+        (save-excursion
+          (search-backward-regexp "[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \\+[0-9][0-9][0-9][0-9] +[0-9]+)")
+          (when (< (- boc (point)) 40)
+            (put-text-property (point) boc 'invisible t))
+          (search-backward-regexp "(")
+          (let ((paren-point (point)))
+            (beginning-of-line)
+            (when (> (- paren-point (point) 10))
+              (put-text-property (+ (point) 9) paren-point 'invisible t)))))
+      date))
+
+  (defvar --vc-annotate-current-rev nil)
+
+  (defun --vc-annotate-post-hook (file rev &rest rst)
+    (setq --vc-annotate-current-rev rev)
+    (vc-run-delayed
+      (unless (active-minibuffer-window)
+        (message (vc-git--run-command-string
+                  nil "log" "--pretty=format:[%an] %s (%ar)" "-n 1" --vc-annotate-current-rev)))))
+
+  (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
