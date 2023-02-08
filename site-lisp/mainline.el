@@ -59,34 +59,6 @@
                            (define-key map [mode-line down-mouse-3] mode-line-mode-menu)
                            map)))
 
-(defvar mms-cache (make-hash-table :test 'equal))
-
-
-(defun mainline-interesting-minor-modes ()
-  (let ((full-mode-line (format-mode-line minor-mode-alist)))
-    (or (gethash full-mode-line mms-cache)
-        (let ((mms (propertize
-                    (format-mode-line
-                     (remove-if (lambda (mm)
-                                  (let ((mm-sym (car mm)))
-                                    (or (eq mm-sym 'auto-fill-function)
-                                        (eq mm-sym 'auto-revert-mode)
-                                        (eq mm-sym 'global-whitespace-mode)
-                                        (eq mm-sym 'projectile-mode)
-                                        (eq mm-sym 'eldoc-mode)
-                                        (eq mm-sym 'elisp-slime-nav-mode)
-                                        (eq mm-sym 'git-gutter-mode)
-                                        (eq mm-sym 'hi-lock-mode)
-                                        (eq mm-sym 'wakatime-mode)
-                                        (eq mm-sym 'yas-minor-mode)
-                                        (eq mm-sym 'highlight-parentheses-mode)
-                                        (eq mm-sym 'hs-minor-mode))))
-                                minor-mode-alist)))))
-          (puthash full-mode-line (if (> (length mms) 0)
-                                      (substring mms 1)
-                                    mms)
-                   mms-cache)))))
-
 (defun mainline-center-format (str c)
   (let* ((l (length str)))
     (if (< l c)
@@ -116,7 +88,7 @@
                   (ww (window-width))
                   (full-buffer-name (mainline-center-format (buffer-name) classic-bn-length))
                   (position-length 16)
-                  (mms (mainline-interesting-minor-modes))
+                  (mms (format-mode-line minor-mode-alist))
                   (mms-length (if (> (length mms) 0) (length mms) -1))
                   (total-length (+ 3 (length full-buffer-name) 3 position-length 3
                                    (length mode-name)
@@ -137,7 +109,8 @@
               (mainline-major-mode mainline-color2)
               (mainline-make "﻿" mainline-color2)
               (if compact? ""
-               (mainline-make mms mainline-color1))))))))
+                (mainline-make mms mainline-color1))))))))
+
 ;; (mainline-activate)
 
 (provide 'mainline)

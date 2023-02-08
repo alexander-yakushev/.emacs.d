@@ -243,3 +243,13 @@ If there is still something left do do start the next latex-command."
                   nil "log" "--pretty=format:[%an] %s (%ar)" "-n 1" --vc-annotate-current-rev)))))
 
   (add-function :after (symbol-function 'vc-annotate) #'--vc-annotate-post-hook))
+
+(use-package flyspell :ensure t
+  :config
+  (flyspell-mode 0) ;; Off flyspell by default
+  ;; Enable flyspell-prog-mode for programming languages
+  ;; (add-hook 'clojure-mode-hook 'flyspell-prog-mode)
+  ;; (add-hook 'java-mode-hook 'flyspell-prog-mode)
+  ;; (add-hook 'lua-mode-hook 'flyspell-prog-mode)
+  ;; (add-hook 'lisp-mode-hook 'flyspell-prog-mode)
+  )

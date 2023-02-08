@@ -3,18 +3,19 @@
   (interactive (if (use-region-p)
                    (list (region-beginning) (region-end))
                  (list nil nil)))
-  (save-excursion
-   (let ((beg (or beg (progn
-                        (move-beginning-of-line 1)
-                        (point))))
-         (end (or end (progn
-                        (move-end-of-line 1)
-                        (point)))))
-     (copy-region-as-kill beg end)
-     (comment-region beg end)
-     (goto-char beg)
-     (open-line 1)
-     (yank))))
+  (let ((p (point))
+        (beg (or beg (progn
+                       (move-beginning-of-line 1)
+                       (point))))
+        (end (or end (progn
+                       (move-end-of-line 1)
+                       (point)))))
+    (copy-region-as-kill beg end)
+    (comment-region beg end)
+    (goto-char beg)
+    (open-line 1)
+    (yank)
+    (goto-char p)))
 
 (defun backward-delete-word (&optional arg)
   (interactive "p")
@@ -188,6 +189,15 @@ point reaches the beginning or end of the buffer, stop there."
     (when (= orig-point (point))
       (move-beginning-of-line 1))))
 
+(defun close-curly-brace ()
+  (interactive)
+  (electric-newline-and-maybe-indent)
+  (insert "}")
+  (funcall indent-line-function)
+  (previous-line)
+  (end-of-line)
+  (electric-newline-and-maybe-indent))
+
 (defun sudo-edit (&optional arg)
   (interactive "p")
   (if (or arg (not buffer-file-name))
@@ -210,7 +220,7 @@ point reaches the beginning or end of the buffer, stop there."
   (dolist (command '(yank yank-pop))
     (eval `(defadvice ,command (after indent-region activate)
              (and (not current-prefix-arg)
-                  (member major-mode '(emacs-lisp-mode lisp-mode
+                  (member major-mode '(emacs-lisp-mode lisp-mode rust-mode
                                                        clojure-mode    scheme-mode
                                                        haskell-mode    ruby-mode
                                                        rspec-mode      python-mode

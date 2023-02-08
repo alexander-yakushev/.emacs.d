@@ -51,7 +51,7 @@
     "M-a" highlight-symbol-prev
     "M-e" highlight-symbol-next
     "C-o" recenter-top-bottom
-    "C-M-o" er/expand-region
+    ;; "C-M-o" er/expand-region
     "C-M-q" narrow-or-widen-dwim
 
     "C-s" isearch-forward-regexp
@@ -66,8 +66,6 @@
     "C-b" kill-whole-line
     "C-S-k" (lambda () (interactive) (delete-region (point) (line-end-position)))
     "C-M-d" delete-region
-    "C-c q" join-line
-    "C-c C-q" join-line
     "C-M-j" join-line
     "C-=" comment-or-uncomment-region
     "C-f" fill-paragraph
@@ -75,17 +73,15 @@
     "C-c C-r" eval-and-replace
     "M-\\" indent-region
     "C-M-\\" indent-buffer
-    "C-c TAB" quoted-insert
     "C-c c" clone-and-comment-line
     "M-c" just-one-space
     "M-/" hippie-expand
     "C-c r" revert-buffer
     "C-M-=" comment-or-uncomment-sexp
-    "C-c C-l" goto-last-change
+    "C-}" close-curly-brace
     "s--" (lambda () (interactive) (insert "—"))
 
     ;;; Buffer manipulation
-    "C-x <C-return>" other-window
     "C-\\" kill-this-buffer
 
     "C-n" create-temp-buffer
@@ -101,16 +97,11 @@
     ;;; Miscellaneous
     "C-/" toggle-input-method
     "C-c M-r" query-replace
-    "M-SPC" auto-complete
     "M-=" count-words
 
     ;; Undo
     "C-z" undo-only
     "C-]" undo-redo
-
-    ;; Flyspell mode
-    :local flyspell-mode-map "flyspell"
-    "C-;" next-line
 
     ;; Org-mode
     :local org-mode-map org-mode-hook
@@ -138,11 +129,6 @@
     ";" bs-down
     "<C-down-mouse-1>" mouse-bs-show
 
-    ;; Occur mode
-    :local occur-mode-map occur-mode-hook
-    ";" occur-next
-    "p" occur-prev
-
     ;; Helm-swoop mode
     :local helm-swoop-map "helm-swoop"
     "C-;" helm-next-line
@@ -165,9 +151,4 @@
     :local reftex-mode-map reftex-mode-hook
     "C-c [" (lambda () (interactive)
               (LaTeX-add-all-bibitems-from-bibtex)
-              (reftex-citation))
-
-    ;; Langtool
-    "C-x 4 l" langtool-check
-    "C-x 4 L" langtool-check-done
-    "C-x 4 s" langtool-show-message-at-point))
+              (reftex-citation))))

@@ -20,6 +20,11 @@
  '(bibtex-dialect 'biblatex)
  '(browse-url-browser-function 'browse-url-default-browser)
  '(browse-url-generic-program "open")
+ '(c-default-style
+   '((c++-mode . "cc-mode")
+     (java-mode . "java")
+     (awk-mode . "awk")
+     (other . "gnu")))
  '(cider-auto-jump-to-error nil)
  '(cider-boot-parameters "repl -s wait")
  '(cider-cljs-lein-repl
@@ -63,7 +68,7 @@
  '(custom-safe-themes
    '("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default))
  '(debug-on-error nil)
- '(default-frame-alist '((inhibit-double-buffering . t) (vertical-scroll-bars)))
+ '(default-frame-alist '((inhibit-double-buffering . t)))
  '(default-input-method "ukrainian-computer")
  '(deft-directory "/Users/alex/mega/Docs/Text/deft/")
  '(deft-extensions '("org" "txt" "md"))
@@ -152,7 +157,7 @@
      ("melpa" . "https://melpa.org/packages/")
      ("melpa-stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode deft docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el phi-search projectile rainbow-mode rust-mode rustic sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
+   '(diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode deft docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el phi-search projectile rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
  '(pixel-scroll-mode nil)
  '(pop-up-windows nil)
  '(projectile-cache-file "/home/unlogic/.emacs.d/var/projectile.cache")
@@ -190,6 +195,7 @@
  '(sentence-end-double-space nil)
  '(shift-select-mode nil)
  '(show-paren-mode t)
+ '(smex-save-file "~/.emacs.d/.smex-items")
  '(sr-attributes-display-mask '(nil nil nil nil t nil nil nil t))
  '(sr-avfs-root "~/.avfs")
  '(sr-cursor-follows-mouse nil)
@@ -227,6 +233,7 @@
  '(wakatime-cli-path "wakatime-cli")
  '(wakatime-python-bin "")
  '(warning-suppress-types '((comp) (undo discard-info)))
+ '(web-mode-markup-indent-offset 2)
  '(whitespace-global-modes '(not magit-status-mode))
  '(whitespace-style '(face trailing tabs empty))
  '(world-clock-list
@@ -264,5 +271,6 @@
  '(sr-passive-path-face ((t (:foreground "#008888" :weight bold :height 120))))
  '(sr-tabs-active-face ((t (:inherit variable-pitch :weight bold :height 0.9))))
  '(sr-tabs-inactive-face ((t (:inherit variable-pitch :height 0.9))))
+ '(whitespace-empty ((t (:extend t :background "dark gray" :foreground "#f5871f"))))
  '(whitespace-space ((t (:background "#dd0000" :foreground "#999999"))))
  '(whitespace-trailing ((t (:background "deep sky blue" :foreground "deep sky blue")))))

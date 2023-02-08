@@ -48,8 +48,9 @@
 
   (random t) ;; Seed the random-number generator
 
-  (defun -mode-hook (mode-sym)
-    (intern (concat (symbol-name mode-sym) "-mode-hook")))
+  (defun add-hook-for-modes (hook mode-list)
+    (dolist (mode mode-list)
+      (add-hook (intern (concat (symbol-name mode) "-mode-hook")) hook)))
 
   ;; Set GC threshold high (100 MB), but periodically autocollect when idle.
   ;; (setq gc-cons-threshold (* 800 1024))
@@ -73,6 +74,7 @@
          ("C-;" . sr-advertised-find-file)
          ("C-h" . sr-go-home)
          ("j" . ido-sunrise)
+         ("M-r" . sr-toggle-date-order)
          ("C-c C-o" . sr-open-custom-terminal)
 
          :map sr-tabs-mode-map
@@ -107,6 +109,13 @@
   (defun sr-go-home ()
     (interactive)
     (sr-goto-dir "~"))
+
+  (defun sr-toggle-date-order ()
+    (interactive)
+    (if (equal (get sr-selected-window 'sorting-order) "NAME")
+        (sr-sort-by-time)
+      (sr-sort-by-name))
+    (beginning-of-buffer) (next-line) (next-line))
 
   (defun sr-nova ()
     (interactive)
@@ -174,7 +183,7 @@
   :bind (("C-c d" . ediff-opened-buffers))
   :commands ediff
   :config
-  (add-hook 'ediff-startup-hook (lambda () (ediff-toggle-split)))
+  (add-hook 'ediff-startup-hook 'ediff-toggle-split)
 
   (defun ediff-opened-buffers ()
     "Run Ediff on a pair of buffers, BUFFER-A and BUFFER-B."
@@ -241,24 +250,13 @@ isn't there and triggers an error"
 (use-package smex :ensure t
   :bind (("M-x" . my-smex))
   :config
-  (setq smex-save-file (concat user-emacs-directory ".smex-items"))
   (smex-initialize)
 
   (defun my-smex ()
     (interactive)
     ;; Ensure that GC doesn't happen in SMEX.
     (let ((gc-cons-threshold most-positive-fixnum))
-      (smex)))
-  ;; ;; Ensure that GC doesn't happen in minibuffer.
-  ;; (defun my-minibuffer-setup-hook ()
-  ;;   (setq gc-cons-threshold most-positive-fixnum))
-
-  ;; (defun my-minibuffer-exit-hook ()
-  ;;   (setq gc-cons-threshold 800000))
-
-  ;; (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-  ;; (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
-  )
+      (smex))))
 
 (use-package saveplace :demand t
   :init
@@ -276,6 +274,15 @@ isn't there and triggers an error"
 (use-package mainline :demand t ;; custom status line
   :config
   (mainline-activate))
+
+(use-package diminish :ensure t :demand t
+  :config
+  (dolist (mode '(eldoc-mode auto-fill-function auto-revert-mode hi-lock-mode
+                             global-whitespace-mode yas-minor-mode wakatime-mode
+                             elisp-slime-nav-mode projectile-mode hs-minor-mode
+                             git-gutter-mode highlight-parentheses-mode))
+    (diminish mode))
+  (diminish 'paredit-mode " Par"))
 
 (use-package color-theme-sanityinc-tomorrow :ensure t)
 
@@ -537,8 +544,7 @@ isn't there and triggers an error"
          ("C-w" . paredit-backward-kill-word)
          ("<C-backspace>" . paredit-backward-kill-word))
   :config
-  (dolist (mode '(scheme emacs-lisp lisp clojure clojurescript))
-    (add-hook (-mode-hook mode) 'paredit-mode)))
+  (add-hook-for-modes 'paredit-mode '(scheme emacs-lisp lisp clojure clojurescript)))
 
 (use-package cider :ensure t
   :bind (:map
@@ -778,8 +784,7 @@ part if there is prefix."
 
 (use-package paren-face :ensure t :demand t
   :config
-  (dolist (mode '(scheme emacs-lisp lisp))
-    (add-hook (-mode-hook mode) 'paren-face-mode))
+  (add-hook-for-modes 'paren-face-mode '(scheme emacs-lisp lisp))
   (add-hook 'clojure-mode-hook
             (lambda ()
               (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
@@ -816,9 +821,7 @@ part if there is prefix."
     :init
     (add-hook 'java-mode-hook 'yas-minor-mode)))
 
-(use-package web-mode :ensure t
-  :config
-  (add-hook 'web-mode-hook (lambda () (setq  web-mode-markup-indent-offset 2))))
+(use-package web-mode :ensure t)
 
 (use-package go-mode :ensure t
   :config
@@ -897,11 +900,7 @@ part if there is prefix."
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
   :init
-  (add-hook 'prog-mode-hook 'rainbow-turn-on)
-  (add-hook 'nxml-mode-hook 'rainbow-turn-on)
-  (add-hook 'sgml-mode-hook 'rainbow-turn-on)
-  (add-hook 'web-mode-hook 'rainbow-turn-on)
-  (add-hook 'css-mode-hook 'rainbow-turn-on))
+  (add-hook-for-modes 'rainbow-turn-on '(prog nxml sgml web css)))
 
 (use-package projectile :ensure t
   :bind (("M-f" . projectile-find-file)
@@ -1029,6 +1028,7 @@ the (^:fold ...) expressions."
   :bind (:map org-mode-map
               ("C-'" . forward-char))
   :config
+  (add-hook 'org-mode-hook #'org-indent-mode)
   (setq org-inhibit-startup-visibility-stuff t))
 
 (use-package centered-window-mode :ensure t
@@ -1071,19 +1071,6 @@ the (^:fold ...) expressions."
         (centered-window-mode 1)
         (hidden-mode-line-mode 1)
         (set-fringe-mode "no-fringes")))))
-
-(use-package flyspell :ensure t
-  :config
-  (flyspell-mode 0) ;; Off flyspell by default
-  ;; (add-hook 'org-mode-hook (lambda () (flyspell-mode 1) (flyspell-buffer)))
-  ;; (add-hook 'LaTeX-mode-hook (lambda () (flyspell-mode 1) (flyspell-buffer)))
-
-  ;; ;; Enable flyspell-prog-mode for programming languages
-  ;; (add-hook 'clojure-mode-hook 'flyspell-prog-mode)
-  ;; (add-hook 'java-mode-hook 'flyspell-prog-mode)
-  ;; (add-hook 'lua-mode-hook 'flyspell-prog-mode)
-  ;; (add-hook 'lisp-mode-hook 'flyspell-prog-mode)
-  )
 
 ;; Grammarly-related
 (use-package grammarly :demand t)
