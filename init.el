@@ -62,8 +62,10 @@
 (use-package sudo :commands sudo-find-file)
 
 (use-package stesla
-  :bind* (("C-." . stesla-rotate-buffers)
-          ("C-," . stesla-rotate-backwards)))
+  :bind* (("C-." . stesla-rotate-forward)
+          ("C-," . stesla-rotate-backward)
+          ("C->" . stesla-project-rotate-forward)
+          ("C-<" . stesla-project-rotate-backward)))
 
 (use-package sunrise-commander
   :bind (("<f7>" . sunrise)
@@ -278,11 +280,8 @@ isn't there and triggers an error"
 (use-package diminish :ensure t :demand t
   :config
   (dolist (mode '(eldoc-mode auto-fill-function auto-revert-mode hi-lock-mode
-                             global-whitespace-mode yas-minor-mode wakatime-mode
-                             elisp-slime-nav-mode projectile-mode hs-minor-mode
-                             git-gutter-mode highlight-parentheses-mode))
-    (diminish mode))
-  (diminish 'paredit-mode " Par"))
+                             global-whitespace-mode))
+    (diminish mode)))
 
 (use-package color-theme-sanityinc-tomorrow :ensure t)
 
@@ -506,6 +505,7 @@ isn't there and triggers an error"
          ("C-M-," . git-gutter:previous-hunk))
   :config
   (global-git-gutter-mode 1)
+  (diminish 'git-gutter-mode)
   (setq-default git-gutter:modified-sign "~"))
 
 (use-package vc-annotate
@@ -544,6 +544,7 @@ isn't there and triggers an error"
          ("C-w" . paredit-backward-kill-word)
          ("<C-backspace>" . paredit-backward-kill-word))
   :config
+  (diminish 'paredit-mode "Par")
   (add-hook-for-modes 'paredit-mode '(scheme emacs-lisp lisp clojure clojurescript)))
 
 (use-package cider :ensure t
@@ -755,6 +756,7 @@ part if there is prefix."
 (use-package highlight-parentheses :ensure t
   :config
   (set-face-attribute 'hl-paren-face nil :weight 'ultra-bold)
+  (diminish 'highlight-parentheses-mode)
   (add-hook 'lisp-mode-hook 'highlight-parentheses-mode)
   (add-hook 'clojure-mode-hook 'highlight-parentheses-mode))
 
@@ -769,6 +771,7 @@ part if there is prefix."
   :config
   (use-package elisp-slime-nav :ensure t
     :config
+    (diminish 'elisp-slime-nav-mode)
     (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode))
 
   (defun elisp-mode-pretty-lambdas ()
@@ -879,6 +882,7 @@ part if there is prefix."
 
 (use-package yasnippet :demand t
   :init
+  (diminish 'yas-minor-mode)
   (define-key yas-minor-mode-map [(tab)] nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil))
 
@@ -902,34 +906,21 @@ part if there is prefix."
   :init
   (add-hook-for-modes 'rainbow-turn-on '(prog nxml sgml web css)))
 
-(use-package projectile :ensure t
-  :bind (("M-f" . projectile-find-file)
+(use-package project :demand t
+  :bind (("M-f" . project-find-file)
 
-         :map ido-file-dir-completion-map
-         ("M-f" . projectile-find-file-from-ido))
-  :init
-  (defvar last-ido-dir nil)
-
-  ;; (defun find-file-at-point (&optional _)
-  ;;   (interactive)
-  ;;   (let ((projectile-cached-project-root nil)
-  ;;         (projectile-cached-project-name nil)
-  ;;         (default-directory last-ido-dir))
-  ;;     (projectile-find-file)))
-
-  (defun projectile-find-file-from-ido ()
-    "Invoke p-f-file while interactively opening a file in ido."
-    (interactive)
-    (setq last-ido-dir ido-current-directory)
-    (setq ido-exit 'ffap)
-    (ido-exit-minibuffer))
-
+         ;; :map ido-file-dir-completion-map
+         ;; ("M-f" . projectile-find-file-from-ido)
+         )
   :config
-  (projectile-global-mode)
-  (add-hook 'find-file-hook
-            (lambda ()
-              (when (file-remote-p default-directory)
-                (setq-local projectile-mode-line "Projectile")))))
+  ;;;; To replace in 'project--read-file-cpd-relative
+  ;; (concat (format "[%s] " (cadr (s-match ".+/\\([^/]+\\)/?$" common-parent-directory))) prompt)
+
+  ;; (add-hook 'find-file-hook
+  ;;           (lambda ()
+  ;;             (when (file-remote-p default-directory)
+  ;;               (setq-local projectile-mode-line "Projectile"))))
+  )
 
 (use-package helm-ag :ensure t
   :bind* (("M-h" . helm-do-ag-project-root-custom)
@@ -977,7 +968,9 @@ part if there is prefix."
 (use-package paren :demand t :config (show-paren-mode 1))
 
 (use-package wakatime-mode :ensure t :demand t
-  :config (global-wakatime-mode))
+  :config
+  (diminish 'wakatime-mode)
+  (global-wakatime-mode))
 
 (use-package display-fill-column-indicator :demand t
   :config
@@ -1010,6 +1003,7 @@ the (^:fold ...) expressions."
     (hs-minor-mode 1)
     (hs-clojure-hide-namespace-and-folds))
 
+  (diminish 'hs-minor-mode)
   (add-hook 'c-mode-common-hook      'hs-minor-mode)
   (add-hook 'emacs-lisp-mode-hook    'hs-minor-mode)
   (add-hook 'java-mode-hook          'hs-minor-mode)

@@ -47,29 +47,45 @@
            (mapcar 'get-buffer stesla-hated-buffers)
            (stesla-hated-buffer-from-regexps stesla-hated-buffer-regexps))))
 
+(defun stesla-project-buffers ()
+  (let* ((project (project-current))
+         (root (file-truename (file-name-as-directory (project-root project))))
+         bufs)
+    (dolist (buf (buffer-list))
+      (when (string-prefix-p root (file-truename
+                                   (buffer-local-value 'default-directory buf)))
+        (push buf bufs)))
+    (nreverse bufs)))
+
+(defun stesla-rotate-buffers* (buffer-list &optional reverse)
+  (let* ((bl (stesla-delete-from-list (stesla-hated-buffers) buffer-list))
+         (switch-to (nth (if reverse (- (length bl) 1) 1) bl)))
+    (when switch-to
+      (when (not reverse)
+        (bury-buffer))
+      (switch-to-buffer switch-to))))
+
 ;; `stesla-rotate-buffers': Like `bury-buffer' but with the capability to
 ;; exclude certain specified buffers.
 
-(defun stesla-rotate-buffers (&optional n)
-  "Switch to the Nth next buffer.  Negative arguments move backwards."
+(defun stesla-rotate-forward ()
+  "Switch to the next buffer."
   (interactive)
-  (unless n
-    (setq n 1))
-  (let ((my-buffer-list
-         (stesla-delete-from-list (stesla-hated-buffers)
-                                  (buffer-list (selected-frame)))))
-    (switch-to-buffer
-     (if (< n 0)
-         (nth (+ (length my-buffer-list) n)
-              my-buffer-list)
-       (bury-buffer)
-       (nth n my-buffer-list)))))
+  (stesla-rotate-buffers* (buffer-list (selected-frame))))
 
-(defun stesla-rotate-backwards (&optional n)
-  "Switch to the -Nth next buffer."
+(defun stesla-rotate-backward ()
+  "Switch to the previous buffer."
   (interactive)
-  (unless n
-    (setq n 1))
-  (stesla-rotate-buffers (- n)))
+  (stesla-rotate-buffers* (buffer-list (selected-frame)) t))
+
+(defun stesla-project-rotate-forward ()
+  "Switch to the next buffer of the current project."
+  (interactive)
+  (stesla-rotate-buffers* (stesla-project-buffers)))
+
+(defun stesla-project-rotate-backward ()
+  "Switch to the previous buffer of the current project."
+  (interactive)
+  (stesla-rotate-buffers* (stesla-project-buffers) t))
 
 (provide 'stesla)

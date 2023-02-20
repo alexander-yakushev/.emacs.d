@@ -1,7 +1,5 @@
 ;;; mainline.el --- modeline replacement forked from powerline.el, much simplified
 
-(require 'projectile)
-
 (defcustom mainline-color1 "#123550"
   "Mainline color 1 info blocks background")
 
@@ -89,6 +87,7 @@
                   (full-buffer-name (mainline-center-format (buffer-name) classic-bn-length))
                   (position-length 16)
                   (mms (format-mode-line minor-mode-alist))
+                  (mms (if (> (length mms) 0) (substring (format-mode-line minor-mode-alist) 1) mms))
                   (mms-length (if (> (length mms) 0) (length mms) -1))
                   (total-length (+ 3 (length full-buffer-name) 3 position-length 3
                                    (length mode-name)
