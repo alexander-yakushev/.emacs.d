@@ -324,7 +324,8 @@ isn't there and triggers an error"
 
 (use-package calc
   :config
-  (setq math-additional-units '((GiB "1024 * MiB" "Giga Byte")
+  (setq math-additional-units '((TiB "1024 * GiB" "Tera Byte")
+                                (GiB "1024 * MiB" "Giga Byte")
                                 (MiB "1024 * KiB" "Mega Byte")
                                 (KiB "1024 * B" "Kilo Byte")
                                 (B nil "Byte")
@@ -560,7 +561,7 @@ isn't there and triggers an error"
 
          :map
          cider-repl-mode-map
-         ("C-c C-l" . cider-repl-clear-buffer))
+         ("C-c C-l" . cider-clear-repl-buffer-with-shift))
   :commands (cider-connect cider-jack-in)
   :config
   (add-hook 'cider-mode-hook 'eldoc-mode)
@@ -643,6 +644,13 @@ See `sesman-browser-mode' for more details."
       (interactive)
       (kill-buffer (current-buffer))
       (sesman--restore-window-config)))
+
+  (defun cider-clear-repl-buffer-with-shift ()
+    "Needed to side-step https://github.com/clojure-emacs/cider/issues/2595."
+    (interactive)
+    (cider-repl-clear-buffer)
+    (insert "(symbol \"\")")
+    (cider-repl-return))
 
   (defvar cider-inspect-last-inspected-expr nil)
 
@@ -832,6 +840,10 @@ part if there is prefix."
                                       indent-tabs-mode t
                                       tab-width 4)
                             (whitespace-mode -1))))
+
+(use-package rust-mode :ensure t
+  :config
+  (add-hook 'rust-mode-hook 'yas-minor-mode))
 
 (use-package markdown-mode :ensure t
   :bind (:map markdown-mode-map

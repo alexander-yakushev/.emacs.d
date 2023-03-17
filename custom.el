@@ -89,6 +89,7 @@
  '(fill-column 80)
  '(find-directory-functions '(cvs-dired-noselect dired-noselect sr-dired))
  '(fish-indent-offset 2)
+ '(flycheck-check-syntax-automatically '(save mode-enabled))
  '(font-lock-maximum-decoration '((dired-mode) (sunrise) (t . t)))
  '(frame-resize-pixelwise t)
  '(git-commit-finish-query-functions nil)
@@ -157,7 +158,7 @@
      ("melpa" . "https://melpa.org/packages/")
      ("melpa-stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode deft docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el phi-search projectile rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
+   '(deft diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el phi-search rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
  '(pixel-scroll-mode nil)
  '(pop-up-windows nil)
  '(projectile-cache-file "/home/unlogic/.emacs.d/var/projectile.cache")
