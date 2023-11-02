@@ -70,10 +70,8 @@
     "C-=" comment-or-uncomment-region
     "C-f" fill-paragraph
     "<f6>" whitespace-cleanup
-    "C-c C-r" eval-and-replace
     "M-\\" indent-region
     "C-M-\\" indent-buffer
-    "C-c c" clone-and-comment-line
     "M-c" just-one-space
     "M-/" hippie-expand
     "C-c r" revert-buffer

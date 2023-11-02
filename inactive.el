@@ -185,9 +185,6 @@ If there is still something left do do start the next latex-command."
   :config
   (setq org-reveal-root (expand-file-name "~/Software/reveal-js")))
 
-;; Don't litter my fs tree
-(setq backup-directory-alist '(("." . "~/.local/share/emacs-saves"))
-      auto-save-file-name-transforms '((".*" "~/.local/share/emacs-saves/" t)))
 
 ;; Also auto refresh dired, but be quiet about it
 (setq global-auto-revert-non-file-buffers t)

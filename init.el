@@ -2,8 +2,6 @@
   ;; If menu bar is off, Emacs will always stay on top and frustrate the shit
   ;; out of you.
   (menu-bar-mode 1)
-  ;; Likely unnecessary in Emacs 29
-  (customize-set-variable 'native-comp-driver-options '("-Wl,-w"))
   ;; mac switch meta key
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super)
@@ -11,7 +9,6 @@
   (mac-auto-operator-composition-mode))
 
 (progn             ; packages initialization
-  ;; (setq gc-cons-threshold 50000000) ;; GC threshold to 50 Mb
   (require 'package)
 
   (setq load-prefer-newer t)
@@ -31,7 +28,7 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (add-to-list 'load-path "~/.emacs.d/site-lisp/sunrise-commander/")
 
-(load-file "~/.emacs.d/bindings.el") ;; Load bindings
+(load-file (locate-user-emacs-file "bindings.el")) ;; Load bindings
 (load (setq custom-file (expand-file-name (locate-user-emacs-file "custom.el"))))
 
 (progn             ; misc initialization
@@ -44,6 +41,8 @@
   (when window-system
     (tooltip-mode 1)
     (mouse-wheel-mode t)
+    (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
+    (setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
     (blink-cursor-mode -1))
 
   (random t) ;; Seed the random-number generator
@@ -55,7 +54,17 @@
   ;; Set GC threshold high (100 MB), but periodically autocollect when idle.
   ;; (setq gc-cons-threshold (* 800 1024))
   (setq gc-cons-threshold (* 100 1024 1024))
-  (run-with-idle-timer 5 t (lambda () (garbage-collect))))
+  (run-with-idle-timer 5 t (lambda () (garbage-collect)))
+
+  ;; Auto refresh buffers
+  (global-auto-revert-mode 1)
+
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+  (put 'downcase-region 'disabled nil)
+  (put 'upcase-region 'disabled nil)
+  (put 'ido-exit-minibuffer 'disabled nil)
+  (put 'narrow-to-region 'disabled nil))
 
 ;;; Day-to-day usage
 
@@ -64,8 +73,8 @@
 (use-package stesla
   :bind* (("C-." . stesla-rotate-forward)
           ("C-," . stesla-rotate-backward)
-          ("C->" . stesla-project-rotate-forward)
-          ("C-<" . stesla-project-rotate-backward)))
+          ("C-M-." . stesla-project-rotate-forward)
+          ("C-M-," . stesla-project-rotate-backward)))
 
 (use-package sunrise-commander
   :bind (("<f7>" . sunrise)
@@ -85,6 +94,9 @@
          ("C-M-;" . sr-tabs-add)
          ("C-M-l" . sr-tabs-prev)
          ("C-M-'" . sr-tabs-next))
+  :init
+  (defun sr-detect-switch ()) ;; To fix weird intermittent bug.
+
   :config
   (use-package sunrise-x-checkpoints)
   (use-package sunrise-x-loop)
@@ -123,6 +135,18 @@
     (interactive)
     (sr-goto-dir "/sshx:nova:/hdd/"))
 
+  (defun sr-nova-local ()
+    (interactive)
+    (sr-goto-dir "/sshx:nova-local:/hdd/"))
+
+  (defun sr-osprey ()
+    (interactive)
+    (sr-goto-dir "/sshx:osprey:~"))
+
+  (defun sr-stella ()
+    (interactive)
+    (sr-goto-dir "/sshx:deck@192.168.1.172:/home/deck/"))
+
   (defun sr-open-custom-terminal ()
     (interactive)
     (shell-command (concat "osascript -e 'tell application \"iTerm2\" to activate' -e 'tell application \"iTerm2\"' -e 'tell current window' -e 'create tab with default profile' -e 'tell current session' -e 'write text \"cd \\\"" (expand-file-name (sr-choose-cd-target)) "\\\"\"' -e 'end tell' -e 'end tell' -e 'end tell'"))
@@ -145,6 +169,11 @@
     (setq sr-right-directory "~")
     (sunrise))
 
+  (use-package java-decompiler
+    :config
+    (use-package javap-mode :ensure t)
+    (add-hook 'find-file-hook 'java-decompiler-find-class))
+
   (openwith-mode t))
 
 (use-package multiple-cursors :ensure t :demand t
@@ -156,10 +185,6 @@
          :map mc/keymap
          ("C-'" . forward-char)
          ("C-h" . mc-hide-unmatched-lines-mode)))
-
-(use-package phi-search :ensure t
-  :bind (("C-c s s" . phi-search)
-         ("C-c s r" . phi-search-backward)))
 
 (use-package visual-regexp :ensure t
   :bind (("M-%" . vr/query-replace))
@@ -269,47 +294,56 @@ isn't there and triggers an error"
   (recentf-mode 1))
 
 (use-package ido :demand t
+  :bind (:map ido-file-dir-completion-map
+              ("M-f" . ido-project-find-file))
   :config
+  (defun ido-project-find-file (&optional file)
+    (interactive)
+    (setq ido-exit 'fallback)
+    (setq ido-fallback 'project-find-file)
+    (setq ido-text-init file)
+    (setq ido-rotate-temp t)
+    (exit-minibuffer))
+
   (ido-mode t)
   (ido-ubiquitous-mode))
 
-(use-package mainline :demand t ;; custom status line
+(use-package mainline :demand t
   :config
-  (mainline-activate))
+  (use-package diminish :ensure t :demand t
+    :config
+    (dolist (mode '(eldoc-mode auto-fill-function auto-revert-mode hi-lock-mode
+                               global-whitespace-mode))
+      (diminish mode)))
 
-(use-package diminish :ensure t :demand t
-  :config
-  (dolist (mode '(eldoc-mode auto-fill-function auto-revert-mode hi-lock-mode
-                             global-whitespace-mode))
-    (diminish mode)))
+  (mainline-activate))
 
 (use-package color-theme-sanityinc-tomorrow :ensure t)
 
 (use-package daycycle :demand t ;; set theme and switch it during the day
   :config
   (defun -theme-set (time)
-    (if (eq time 'day)
-        (progn
-          (setq mainline-color1 "#d6d6d6")
-          (setq mainline-color2 "#efefef")
-          (setq mainline-color3 "#70c0b1")
-          (setq mainline-color-fg "black")
-          ;; (set-face-background 'mode-line "#d6d6d6")
-          (custom-set-faces
-           '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
-           '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000"))))
-           '(mode-line ((t (:background "#d6d6d6" :box nil)))))
-          (color-theme-sanityinc-tomorrow-day))
-      (setq mainline-color1 "#444444")
-      (setq mainline-color2 "#222222")
-      (setq mainline-color3 "#293B3A")
-      (setq mainline-color-fg "white")
-      ;; (set-face-background 'mode-line "#444444")
-      (custom-set-faces
-       '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
-       '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified))))
-       '(mode-line ((t (:background "#444444" :box nil)))))
-      (color-theme-sanityinc-tomorrow-eighties))
+    (cond ((eq time 'day)
+           (setq mainline-color1 "#d6d6d6")
+           (setq mainline-color2 "#efefef")
+           (setq mainline-color3 "#70c0b1")
+           (setq mainline-color-fg "black")
+           (custom-set-faces
+            '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
+            '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000"))))
+            '(mode-line ((t (:background "#d6d6d6" :box nil)))))
+           (color-theme-sanityinc-tomorrow-day))
+
+          ((eq time 'night)
+           (setq mainline-color1 "#444444")
+           (setq mainline-color2 "#222222")
+           (setq mainline-color3 "#293B3A")
+           (setq mainline-color-fg "white")
+           (custom-set-faces
+            '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
+            '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified))))
+            '(mode-line ((t (:background "#444444" :box nil)))))
+           (color-theme-sanityinc-tomorrow-eighties)))
     (setq fci-rule-color "sienna")
     (setq-default fci-rule-color "sienna")
     (custom-set-faces
@@ -318,7 +352,10 @@ isn't there and triggers an error"
   (daycycle-init '-theme-set 'auto))
 
 (use-package usefuls :demand t
-  :bind* (("C-M-q" . narrow-or-widen-dwim)))
+  :bind* (("C-M-q" . narrow-or-widen-dwim)
+          ("C-c c" . clone-and-comment-line))
+  :config
+  (advice-yank-auto-indent))
 
 ;; (use-package vlf :ensure t)
 
@@ -502,8 +539,8 @@ isn't there and triggers an error"
                        date-full date-relative)))))
 
 (use-package git-gutter :ensure t :demand t
-  :bind (("C-M-." . git-gutter:next-hunk)
-         ("C-M-," . git-gutter:previous-hunk))
+  :bind (("C->" . git-gutter:next-hunk)
+         ("C-<" . git-gutter:previous-hunk))
   :config
   (global-git-gutter-mode 1)
   (diminish 'git-gutter-mode)
@@ -843,7 +880,14 @@ part if there is prefix."
 
 (use-package rust-mode :ensure t
   :config
-  (add-hook 'rust-mode-hook 'yas-minor-mode))
+  (add-hook 'rust-mode-hook 'yas-minor-mode)
+
+  (defun rust-wrap-debug-println ()
+    (interactive)
+    (goto-char (region-beginning))
+    (insert "println!(\"{:?}\", ")
+    (goto-char (region-end))
+    (insert ");")))
 
 (use-package markdown-mode :ensure t
   :bind (:map markdown-mode-map
@@ -919,19 +963,9 @@ part if there is prefix."
   (add-hook-for-modes 'rainbow-turn-on '(prog nxml sgml web css)))
 
 (use-package project :demand t
-  :bind (("M-f" . project-find-file)
-
-         ;; :map ido-file-dir-completion-map
-         ;; ("M-f" . projectile-find-file-from-ido)
-         )
-  :config
-  ;;;; To replace in 'project--read-file-cpd-relative
-  ;; (concat (format "[%s] " (cadr (s-match ".+/\\([^/]+\\)/?$" common-parent-directory))) prompt)
-
-  ;; (add-hook 'find-file-hook
-  ;;           (lambda ()
-  ;;             (when (file-remote-p default-directory)
-  ;;               (setq-local projectile-mode-line "Projectile"))))
+  :bind (("M-f" . project-find-file))
+  ;; To replace in 'project--read-file-cpd-relative
+  ;; (concat (format "[%s] " (cadr (s-match ".+/\\([^/]+\\)/?$" common-parent-directory))) prompt))
   )
 
 (use-package helm-ag :ensure t
@@ -1079,26 +1113,7 @@ the (^:fold ...) expressions."
         (set-fringe-mode "no-fringes")))))
 
 ;; Grammarly-related
-(use-package grammarly :demand t)
-
-;; Customizations
-
-(progn                             ;; Smooth scrolling
-  (setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
-  (setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
-  )
-
-;; Auto refresh buffers
-(global-auto-revert-mode 1)
-
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
-
-(advice-yank-auto-indent)
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'ido-exit-minibuffer 'disabled nil)
-(put 'narrow-to-region 'disabled nil)
+;; (use-package grammarly :demand t)
 
 ;; Local Variables:
 ;; eval: (hs-hide-all)

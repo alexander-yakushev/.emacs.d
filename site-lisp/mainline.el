@@ -46,7 +46,9 @@
 
 (defmainline major-mode
   (propertize (cond ((stringp mode-name) mode-name)
-                    ((listp mode-name) (car mode-name))
+                    ((listp mode-name) (if (listp (car mode-name))
+                                           (cadar mode-name)
+                                         (car mode-name)))
                     (t "SGML"))
               'help-echo "Major mode\n\ mouse-1: Display major mode menu\n\ mouse-2: Show help for major mode\n\ mouse-3: Toggle minor modes"
               'local-map (let ((map (make-sparse-keymap)))
@@ -69,7 +71,7 @@
     (replace-regexp-in-string "|" "%%"
                               (format (concat "%" (number-to-string padding) "s")
                                       (cond ((= p 0) "Top")
-                                            ((> p 98) "Bot")
+                                            ((> p 99) "Bot")
                                             (t (concat (number-to-string p) "|")))))))
 
 (defun mainline-trimmed-buffer-name (bn n)
@@ -87,7 +89,7 @@
                   (full-buffer-name (mainline-center-format (buffer-name) classic-bn-length))
                   (position-length 16)
                   (mms (format-mode-line minor-mode-alist))
-                  (mms (if (> (length mms) 0) (substring (format-mode-line minor-mode-alist) 1) mms))
+                  (mms (if (> (length mms) 0) (substring mms 1) mms))
                   (mms-length (if (> (length mms) 0) (length mms) -1))
                   (total-length (+ 3 (length full-buffer-name) 3 position-length 3
                                    (length mode-name)
@@ -106,6 +108,7 @@
               (mainline-make (mainline-percentage 4) mainline-color1)
               (mainline-make "(%4l : %3c) " mainline-color1)
               (mainline-major-mode mainline-color2)
+              (mainline-make (spinner-print spinner-current) mainline-color2)
               (mainline-make "﻿" mainline-color2)
               (if compact? ""
                 (mainline-make mms mainline-color1))))))))

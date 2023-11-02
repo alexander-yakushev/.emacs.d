@@ -10,30 +10,21 @@
 (require 'solar)
 
 (defun daycycle-convert-time-format-of-sunriseset ()
-  (let (rise_set a b c d e f)
-    (setq rise_set (solar-sunrise-sunset-string (calendar-current-date)))
-    (if (string-match "(0:00 hours daylight" rise_set) ;If polar-night
+  (let* ((sss (solar-sunrise-sunset (calendar-current-date)))
+         (sunrisef (caar sss))
+         (sunsetf (caadr sss))
+         (dur (caddr sss)))
+    (if (string-match "^0:00$" dur)
         (progn
           (setq daycycle-24h-sunrise 'polar-night
                 daycycle-24h-sunset 'polar-night))
-      (if (string-match "24:00 hours daylight" rise_set) ;If midnight-sun
+      (if (string-match "24:00" dur)
           (progn
             (setq daycycle-24h-sunrise 'midnight-sun
                   daycycle-24h-sunset 'midnight-sun))
         (progn                          ;Convert 12hr to 24hr
-          (string-match "\\([0-9][0-9]?\\):\\([0-9][0-9]\\)\\([ap]m\\)[^0-9]+\\([0-9][0-9]?\\):\\([0-9][0-9]\\)\\([ap]m\\)" rise_set)
-          (setq a (string-to-number (match-string 1 rise_set))
-                b (string-to-number (match-string 2 rise_set))
-                c (match-string 3 rise_set)
-                d (string-to-number (match-string 4 rise_set))
-                e (string-to-number (match-string 5 rise_set))
-                f (match-string 6 rise_set))
-          (if (equal c "pm")
-              (setq daycycle-24h-sunrise (list (+ 12 a) b))
-            (setq daycycle-24h-sunrise (list a b)))
-          (if (equal f "pm")
-              (setq daycycle-24h-sunset (list (+ 12 d) e))
-            (setq daycycle-24h-sunset (list d e))))))))
+          (setq daycycle-24h-sunrise (list (floor sunrisef) (round (* 60 (mod sunrisef 1.0)))))
+          (setq daycycle-24h-sunset (list (floor sunsetf) (round (* 60 (mod sunsetf 1.0))))))))))
 
 (defun daycycle-start-daily-recalc-timer ()
   (when (and (boundp 'calendar-longitude)
@@ -46,14 +37,14 @@
 (defun daycycle-theme-auto-switch ()
   "Automatically switch between dark and light theme."
   (interactive)
-  (let* ((now (list (string-to-number (format-time-string "%H"))
-                    (string-to-number (format-time-string "%M"))))
-         (now-type (if (and (or (> (car now) (car daycycle-24h-sunrise))
-                                (and (= (car now) (car daycycle-24h-sunrise))
-                                     (>= (second now) (second daycycle-24h-sunrise))))
-                            (or (< (car now) (car daycycle-24h-sunset))
-                                (and (= (car now) (car daycycle-24h-sunset))
-                                     (< (second now) (second daycycle-24h-sunset)))))
+  (let* ((hrs (string-to-number (format-time-string "%H")))
+         (mins (string-to-number (format-time-string "%M")))
+         (now-type (if (and (or (> hrs (car daycycle-24h-sunrise))
+                                (and (= hrs (car daycycle-24h-sunrise))
+                                     (>= mins (second daycycle-24h-sunrise))))
+                            (or (< hrs (car daycycle-24h-sunset))
+                                (and (= hrs (car daycycle-24h-sunset))
+                                     (< mins (second daycycle-24h-sunset)))))
                        'day 'night)))
     (unless (eql now-type daycycle-theme-current-theme-type)
       (setq daycycle-theme-current-theme-type now-type)
