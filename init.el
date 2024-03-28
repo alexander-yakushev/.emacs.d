@@ -14,6 +14,7 @@
   (setq load-prefer-newer t)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
   (package-initialize)
 
   (when (not (file-exists-p "~/.emacs.d/.initialized"))
@@ -134,10 +135,6 @@
   (defun sr-nova ()
     (interactive)
     (sr-goto-dir "/sshx:nova:/hdd/"))
-
-  (defun sr-nova-local ()
-    (interactive)
-    (sr-goto-dir "/sshx:nova-local:/hdd/"))
 
   (defun sr-osprey ()
     (interactive)
@@ -308,6 +305,117 @@ isn't there and triggers an error"
   (ido-mode t)
   (ido-ubiquitous-mode))
 
+(use-package bs
+  :bind (:map bs-mode-map
+              ("M-;" . bs-down-next-project)
+              ("M-p" . bs-up-next-project))
+  :config
+  (font-lock-add-keywords
+   'bs-mode '(("\\[.+\\]" . font-lock-function-name-face)))
+
+  (font-lock-add-keywords
+   nil `(("(?\\(lambda\\>\\)"
+          (0 (progn (compose-region (match-beginning 1) (match-end 1)
+                                    ,(make-char 'greek-iso8859-7 107))
+                    nil)))))
+
+  (defun bs--get-buffer-project (buffer)
+    (let ((fname (buffer-file-name buffer)))
+      (if (and fname
+               (not (s-starts-with? "/sshx" fname)))
+          (if-let (p (project-current nil (file-name-directory fname)))
+              (project-name p)
+            "<none>")
+        "<none>")))
+
+  ;; (defun bs--sort-by-project (b1 b2)
+  ;;   "Compare buffers B1 and B2 by buffer name."
+  ;;   (string< (bs--get-buffer-project b1)
+  ;;            (bs--get-buffer-project b2)))
+
+  (defun advise-bs-buffer-list (orig &rest _)
+    (let ((og (funcall orig))
+          (prev nil)
+          (res nil))
+      (dolist (buf og)
+        (let ((pr (bs--get-buffer-project buf)))
+          (when (not (equal pr prev))
+            (when (not (null prev))
+              (push "" res))
+            (push (format "[%s]" pr) res)
+            (setq prev pr))
+          (push buf res)))
+      (nreverse res)))
+
+  (advice-add 'bs-buffer-list :around #'advise-bs-buffer-list)
+
+  (defun bs-show-in-buffer (list)
+    "Display buffer list LIST in buffer *buffer-selection*.
+Select buffer *buffer-selection* and display buffers according to current
+configuration `bs-current-configuration'.  Set window height, fontify buffer
+and move point to current buffer."
+    (setq bs-current-list list)
+    (switch-to-buffer (get-buffer-create "*buffer-selection*"))
+    (bs-mode)
+    (let* ((inhibit-read-only t)
+           (map-fun (lambda (entry)
+                      (if (bufferp entry)
+                          (string-width (buffer-name entry))
+                        0)))
+           (max-length-of-names (apply 'max
+                                       (cons 0 (mapcar map-fun list))))
+           (name-entry-length (min bs-maximal-buffer-name-column
+                                   (max bs-minimal-buffer-name-column
+                                        max-length-of-names))))
+      (erase-buffer)
+      (setq bs--name-entry-length name-entry-length)
+      (bs--show-header)
+      (let ((fst t))
+        (dolist (buffer list)
+          (if (stringp buffer)
+              (let ((str (format "   %s" buffer)))
+                (put-text-property 0 (length str) 'face 'bold str)
+                (insert str)
+                (insert "\n"))
+            (bs--insert-one-entry buffer)
+            (insert "\n"))
+          (setq fst nil)))
+      (delete-char -1)
+      (bs--set-window-height)
+      (bs--goto-current-buffer)
+      (font-lock-ensure)
+      (bs-apply-sort-faces)
+      (set-buffer-modified-p nil)))
+
+  (defun advise-bs-up-down (orig &rest args)
+    (apply orig args)
+    (while (stringp (bs--current-buffer))
+      (apply orig args)))
+
+  (advice-add 'bs-down :around #'advise-bs-up-down)
+  (advice-add 'bs-up :around #'advise-bs-up-down)
+
+  (advice-add 'bs-show :after #'recenter-top-bottom)
+
+  (defun bs-down-next-project ()
+    (interactive)
+    (bs--down)
+    (while (not (stringp (bs--current-buffer)))
+      (bs--down))
+    (while (stringp (bs--current-buffer))
+      (bs--down)))
+
+  (defun bs-up-next-project ()
+    (interactive)
+    (bs--up)
+    (while (not (stringp (bs--current-buffer)))
+      (bs--up))
+    (while (stringp (bs--current-buffer))
+      (bs--up))
+    (while (not (stringp (bs--current-buffer)))
+      (bs--up))
+    (bs--down)))
+
 (use-package mainline :demand t
   :config
   (use-package diminish :ensure t :demand t
@@ -448,6 +556,17 @@ isn't there and triggers an error"
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
+(use-package goto-chg :ensure t :demand t
+  :bind (("C-x C-x" . goto-last-change)))
+
+(use-package anzu :ensure t :demand t
+  :config
+  (setq anzu-cons-mode-line-p nil)
+  (setcar (cdr (assq 'isearch-mode minor-mode-alist))
+          '(:eval (anzu--update-mode-line)))
+  (global-anzu-mode +1)
+  (diminish 'anzu-mode))
+
 ;;; Programming/Version Control
 
 (use-package magit :ensure t
@@ -539,8 +658,8 @@ isn't there and triggers an error"
                        date-full date-relative)))))
 
 (use-package git-gutter :ensure t :demand t
-  :bind (("C->" . git-gutter:next-hunk)
-         ("C-<" . git-gutter:previous-hunk))
+  :bind (("C-M-," . git-gutter:next-hunk)
+         ("C-M-." . git-gutter:previous-hunk))
   :config
   (global-git-gutter-mode 1)
   (diminish 'git-gutter-mode)
@@ -942,6 +1061,8 @@ part if there is prefix."
   (define-key yas-minor-mode-map [(tab)] nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil))
 
+(use-package rainbow-numbers-mode :demand t)
+
 (use-package prog-mode
   :config
   (defun prog-mode-local-comment-auto-fill ()
@@ -955,7 +1076,8 @@ part if there is prefix."
 
   (add-hook 'prog-mode-hook 'prog-mode-local-comment-auto-fill)
   (add-hook 'prog-mode-hook 'hl-line-mode)
-  (add-hook 'prog-mode-hook 'prog-mode-add-watchwords))
+  (add-hook 'prog-mode-hook 'prog-mode-add-watchwords)
+  (add-hook 'prog-mode-hook 'rainbow-numbers-mode))
 
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
@@ -1111,6 +1233,12 @@ the (^:fold ...) expressions."
         (centered-window-mode 1)
         (hidden-mode-line-mode 1)
         (set-fringe-mode "no-fringes")))))
+
+;; Nova related
+
+(defun tramp-nova-docker-compose ()
+  (interactive)
+  (find-file "/sshx:nova:/hdd/raid/services/docker-compose.yml"))
 
 ;; Grammarly-related
 ;; (use-package grammarly :demand t)

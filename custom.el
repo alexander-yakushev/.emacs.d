@@ -21,6 +21,17 @@
  '(blink-cursor-mode nil)
  '(browse-url-browser-function 'browse-url-default-browser)
  '(browse-url-generic-program "open")
+ '(bs-attributes-list
+   '(("" 1 1 left bs--get-marked-string)
+     ("M" 1 1 left bs--get-modified-string)
+     ("R" 2 2 left bs--get-readonly-string)
+     ("Buffer" bs--get-name-length 10 left bs--get-name)
+     ("" 1 1 left " ")
+     ("Size" 8 8 right bs--get-size-string)
+     ("" 2 2 left "  ")
+     ("File" 12 12 left bs--get-file-name)
+     ("" 2 2 left "  ")))
+ '(bs-default-sort-name "by filename")
  '(c-default-style
    '((c++-mode . "cc-mode")
      (java-mode . "java")
@@ -30,8 +41,9 @@
  '(cider-boot-parameters "repl -s wait")
  '(cider-cljs-lein-repl
    "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
- '(cider-clojure-cli-aliases ":dev:user:hotload")
+ '(cider-clojure-cli-aliases ":dev:user")
  '(cider-clojure-cli-command "clojure")
+ '(cider-clojure-compilation-error-phases 'nil)
  '(cider-default-repl-command "boot")
  '(cider-enlighten-mode nil)
  '(cider-enrich-classpath nil)
@@ -46,12 +58,10 @@
  '(cider-prompt-for-symbol nil)
  '(cider-repl-history-file "~/.emacs.d/.cider-history")
  '(cider-repl-history-size 10000)
- '(cider-repl-init-code
-   '("(do (clojure.core/apply clojure.core/require clojure.main/repl-requires) (load-file (str (System/getProperty \"user.home\") \"/.clojure/user.clj\")) (in-ns 'user))"))
  '(cider-repl-use-pretty-printing nil)
  '(cider-use-overlays nil)
  '(cider-use-tooltips nil)
- '(clean-buffer-list-delay-general 1)
+ '(clean-buffer-list-delay-general 3)
  '(clj-decompiler-inject-dependencies-at-jack-in nil)
  '(cljr-cljc-clojure-test-declaration
    "#?(:clj [clojure.test :refer :all]\12:cljs [cljs.test :as t :include-macros true])")
@@ -165,7 +175,7 @@
      ("melpa" . "https://melpa.org/packages/")
      ("melpa-stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(logview deft diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
+   '(typescript-mode anzu goto-chg git-modes eat adoc-mode logview deft diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clj-refactor clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
  '(pixel-scroll-mode nil)
  '(pop-up-windows nil)
  '(recentf-auto-cleanup 'never)
