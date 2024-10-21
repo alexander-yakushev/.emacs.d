@@ -43,7 +43,7 @@
     "C-M-'" forward-sexp
     "C-M-l" backward-sexp
 
-    "M-G M-G" goto-line
+    "C-t" goto-line
 
     "C-a" smart-move-beginning-of-line
 
@@ -99,7 +99,7 @@
 
     ;; Undo
     "C-z" undo-only
-    "C-]" undo-redo
+    "C-M-z" undo-redo
 
     ;; Org-mode
     :local org-mode-map org-mode-hook

@@ -52,9 +52,9 @@
     (dolist (mode mode-list)
       (add-hook (intern (concat (symbol-name mode) "-mode-hook")) hook)))
 
-  ;; Set GC threshold high (100 MB), but periodically autocollect when idle.
-  ;; (setq gc-cons-threshold (* 800 1024))
-  (setq gc-cons-threshold (* 100 1024 1024))
+  ;; Set GC threshold high, but periodically autocollect when idle.
+  (setq gc-cons-threshold (* 50 1024 1024))
+  (setq gc-cons-percentage 0.2)
   (run-with-idle-timer 5 t (lambda () (garbage-collect)))
 
   ;; Auto refresh buffers
@@ -74,8 +74,9 @@
 (use-package stesla
   :bind* (("C-." . stesla-rotate-forward)
           ("C-," . stesla-rotate-backward)
-          ("C-M-." . stesla-project-rotate-forward)
-          ("C-M-," . stesla-project-rotate-backward)))
+          ;; ("C-M-." . stesla-project-rotate-forward)
+          ;; ("C-M-," . stesla-project-rotate-backward)
+          ))
 
 (use-package sunrise-commander
   :bind (("<f7>" . sunrise)
@@ -88,6 +89,7 @@
          ("j" . ido-sunrise)
          ("M-r" . sr-toggle-date-order)
          ("C-c C-o" . sr-open-custom-terminal)
+         ("o" . sr-dired-xdg-open)
 
          :map sr-tabs-mode-map
          ("C-j" . sr-cycle-bookmark)
@@ -140,6 +142,10 @@
     (interactive)
     (sr-goto-dir "/sshx:osprey:~"))
 
+  (defun sr-condor ()
+    (interactive)
+    (sr-goto-dir "/sshx:condor:~"))
+
   (defun sr-stella ()
     (interactive)
     (sr-goto-dir "/sshx:deck@192.168.1.172:/home/deck/"))
@@ -149,6 +155,10 @@
     (shell-command (concat "osascript -e 'tell application \"iTerm2\" to activate' -e 'tell application \"iTerm2\"' -e 'tell current window' -e 'create tab with default profile' -e 'tell current session' -e 'write text \"cd \\\"" (expand-file-name (sr-choose-cd-target)) "\\\"\"' -e 'end tell' -e 'end tell' -e 'end tell'"))
     ;; (shell-command (concat "urxvt -cd \"" (expand-file-name (sr-choose-cd-target)) "\" -e zsh"))
     )
+
+  (defun sr-dired-xdg-open ()
+    (interactive)
+    (dired-do-shell-command "open" nil (dired-get-marked-files t nil nil nil t)))
 
   (defun ido-sunrise ()
     "Call `sunrise' the ido way.
@@ -461,7 +471,11 @@ and move point to current buffer."
 
 (use-package usefuls :demand t
   :bind* (("C-M-q" . narrow-or-widen-dwim)
-          ("C-c c" . clone-and-comment-line))
+          ("C-c c" . clone-and-comment-line)
+          ("C-+" . inc-frame-font-size)
+          ("C-_" . dec-frame-font-size)
+          ("C-M-+" . set-frame-font-size-monitor)
+          ("C-M-_" . set-frame-font-size-laptop))
   :config
   (advice-yank-auto-indent))
 
@@ -592,7 +606,6 @@ and move point to current buffer."
   :commands (magit-show-commit)
   :config
   (setq magit-last-seen-setup-instructions "1.4.0")
-  (setq magit-section-visibility-indicator nil)
   (remove-hook 'magit-status-sections-hook 'magit-insert-stashes)
   (magit-add-section-hook 'magit-status-sections-hook
                           'magit-insert-stashes 'magit-insert-untracked-files)
@@ -658,8 +671,8 @@ and move point to current buffer."
                        date-full date-relative)))))
 
 (use-package git-gutter :ensure t :demand t
-  :bind (("C-M-," . git-gutter:next-hunk)
-         ("C-M-." . git-gutter:previous-hunk))
+  :bind (("C-M-." . git-gutter:next-hunk)
+         ("C-M-," . git-gutter:previous-hunk))
   :config
   (global-git-gutter-mode 1)
   (diminish 'git-gutter-mode)
@@ -682,7 +695,7 @@ and move point to current buffer."
 
 (use-package clojure-mode :ensure t)
 
-(use-package paredit :ensure t
+(use-package paredit :ensure t :demand t
   :bind (:map
          paredit-mode-map
          ("M-(" . paredit-wrap-sexp)
@@ -731,11 +744,15 @@ and move point to current buffer."
     :bind (:map cider-inspector-mode-map
                 (";" . cider-inspector-next-inspectable-object)
                 ("p" . cider-inspector-previous-inspectable-object)
-                ("C-;" . cider-inspector-operate-on-point)
-                ("C-p" . cider-inspector-pop)
-                ("SPC" . cider-inspector-next-page)
-                ("M-SPC" . cider-inspector-prev-page)
-                ("r" . cider-reinspect)))
+                ;; ("C-;" . cider-inspector-operate-on-point)
+                ;; ("C-p" . cider-inspector-pop)
+                ("r" . cider-reinspect))
+    :config
+    (defun cider-inspect-last-sexp ()
+      (interactive)
+      (if-let (type-tag (cider-symbol-at-point))
+          (cider-inspect-expr type-tag (cider-current-ns))
+        (cider-inspect-expr (cider-last-sexp) (cider-current-ns)))))
 
   (use-package sesman
     :bind (:map sesman-browser-mode-map
@@ -884,7 +901,24 @@ See `sesman-browser-mode' for more details."
     (search-forward "\"")
     (backward-char)
     (paredit-wrap-curly)
-    (insert ":mvn/version ")))
+    (insert ":mvn/version "))
+
+  (defun clojure-capture-args ()
+    (interactive)
+    (let ((args (buffer-substring-no-properties (region-beginning)
+                                                (region-end))))
+      (forward-sexp)
+      (paredit-C-j)
+      (insert (format "(swap! -args conj %s)" args))
+      (beginning-of-defun)
+      (previous-line)
+      (insert "(def -args (atom []))"))))
+
+(use-package clj-refactor :ensure t
+  :config
+  (cljr-add-keybindings-with-prefix "C-c C-r")
+  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  (add-hook 'clojure-mode-hook 'yas-minor-mode-on))
 
 (use-package company :ensure t :demand t
   :bind (:map company-mode-map
@@ -906,12 +940,6 @@ part if there is prefix."
   (use-package company-quickhelp :ensure t :demand t
     :config
     (company-quickhelp-mode 1)))
-
-(use-package clj-refactor :ensure t
-  :config
-  (cljr-add-keybindings-with-prefix "C-c C-r")
-  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-  (add-hook 'clojure-mode-hook 'yas-minor-mode-on))
 
 (use-package clj-decompiler :ensure t)
 
@@ -1099,6 +1127,12 @@ part if there is prefix."
               ("M-p" . helm-goto-precedent-file)
               ("<right>" . helm-execute-persistent-action))
   :config
+  (defun helm-ag--insert-thing-at-point (thing)
+    "Not documented, THING."
+    (helm-aif (thing-at-point thing)
+        (s-replace-all '(("-" . "\\-")) (regexp-quote (substring-no-properties it)))
+      ""))
+
   (defun helm-do-ag-project-root-custom (sym-at-p)
     (interactive "P")
     (let ((helm-ag-insert-at-point (when sym-at-p 'symbol)))

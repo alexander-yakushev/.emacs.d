@@ -218,7 +218,8 @@ point reaches the beginning or end of the buffer, stop there."
 (defun profile-for-10-secs ()
   (interactive)
   (profiler-start 'cpu)
-  (run-with-timer 10 nil 'profiler-report))
+  (run-with-timer 10 nil 'profiler-report)
+  (profiler-cpu-stop))
 
 ;; Advice yanking to auto-indent yank content
 (defun advice-yank-auto-indent ()
@@ -234,5 +235,31 @@ point reaches the beginning or end of the buffer, stop there."
                                                        plain-tex-mode  lua-mode))
                   (let ((mark-even-if-inactive transient-mark-mode))
                     (indent-region (region-beginning) (region-end) nil)))))))
+
+(defun alter-frame-font-size (fn)
+  (let* ((current-font-name (frame-parameter nil 'font))
+         (decomposed-font-name (x-decompose-font-name current-font-name))
+         (font-size (string-to-number (aref decomposed-font-name 5)))
+         (new-font-size (number-to-string (funcall fn font-size))))
+    (aset decomposed-font-name 5 new-font-size)
+    (set-frame-font (x-compose-font-name decomposed-font-name))
+    (let ((message-log-max nil))
+      (message "Font size: %s, frame height: %s" new-font-size (frame-height)))))
+
+(defun inc-frame-font-size ()
+  (interactive)
+  (alter-frame-font-size '1+))
+
+(defun dec-frame-font-size ()
+  (interactive)
+  (alter-frame-font-size '1-))
+
+(defun set-frame-font-size-laptop ()
+  (interactive)
+  (alter-frame-font-size (lambda (sz) 14)))
+
+(defun set-frame-font-size-monitor ()
+  (interactive)
+  (alter-frame-font-size (lambda (sz) 20)))
 
 (provide 'usefuls)
