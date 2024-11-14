@@ -308,6 +308,7 @@
  '(sr-cursor-follows-mouse nil)
  '(sr-listing-switches "-alh")
  '(sr-show-file-attributes nil)
+ '(tab-width 2)
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style 'forward nil (uniquify))

@@ -215,11 +215,15 @@ point reaches the beginning or end of the buffer, stop there."
           "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in "
           "culpa qui officia deserunt mollit anim id est laborum."))
 
+(defun profiler-stop-and-report ()
+  (interactive)
+  (profiler-report)
+  (profiler-stop))
+
 (defun profile-for-10-secs ()
   (interactive)
   (profiler-start 'cpu)
-  (run-with-timer 10 nil 'profiler-report)
-  (profiler-cpu-stop))
+  (run-with-timer 10 nil 'profiler-stop-and-report))
 
 ;; Advice yanking to auto-indent yank content
 (defun advice-yank-auto-indent ()

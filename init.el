@@ -72,8 +72,9 @@
 (use-package sudo :commands sudo-find-file)
 
 (use-package stesla
-  :bind* (("C-." . stesla-rotate-forward)
-          ("C-," . stesla-rotate-backward)
+  ;; Intentionally reversed
+  :bind* (("C-." . stesla-rotate-backward)
+          ("C-," . stesla-rotate-forward)
           ;; ("C-M-." . stesla-project-rotate-forward)
           ;; ("C-M-," . stesla-project-rotate-backward)
           ))
@@ -737,8 +738,7 @@ and move point to current buffer."
 
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
-  (add-hook 'cider-repl-mode-hook #'cider-company-enable-fuzzy-completion)
-  (add-hook 'cider-mode-hook #'cider-company-enable-fuzzy-completion)
+  (cider-enable-cider-completion-style)
 
   (use-package cider-inspector :demand t
     :bind (:map cider-inspector-mode-map
@@ -746,13 +746,7 @@ and move point to current buffer."
                 ("p" . cider-inspector-previous-inspectable-object)
                 ;; ("C-;" . cider-inspector-operate-on-point)
                 ;; ("C-p" . cider-inspector-pop)
-                ("r" . cider-reinspect))
-    :config
-    (defun cider-inspect-last-sexp ()
-      (interactive)
-      (if-let (type-tag (cider-symbol-at-point))
-          (cider-inspect-expr type-tag (cider-current-ns))
-        (cider-inspect-expr (cider-last-sexp) (cider-current-ns)))))
+                ("r" . cider-reinspect)))
 
   (use-package sesman
     :bind (:map sesman-browser-mode-map
@@ -912,7 +906,20 @@ See `sesman-browser-mode' for more details."
       (insert (format "(swap! -args conj %s)" args))
       (beginning-of-defun)
       (previous-line)
-      (insert "(def -args (atom []))"))))
+      (insert "(def -args (atom []))")))
+
+  (defun cider-require-ns-at-point ()
+    "Like refresh, but re-evaluates the last expression."
+    (interactive)
+    (save-excursion
+      (let* ((bounds (bounds-of-thing-at-point 'symbol))
+             (symbol (when bounds
+                       (buffer-substring-no-properties (car bounds) (cdr bounds))))
+             (ns (when (and symbol (string-match "\\(.+\\)/" symbol))
+                   (match-string 1 symbol))))
+        (if ns
+            (cider-interactive-eval (format "(require '%s)" ns))
+          (user-error "No namespace found in symbol at point"))))))
 
 (use-package clj-refactor :ensure t
   :config
