@@ -59,6 +59,8 @@
     "M-%" query-replace-regexp
     "C-x C-i" imenu
 
+    "s-<mouse-1>" rainbow-numbers-mode
+
     ;;; Editing
     "C-w" backward-delete-word
     "<C-backspace>" backward-delete-word
@@ -80,7 +82,7 @@
     "s--" (lambda () (interactive) (insert "—"))
 
     ;;; Buffer manipulation
-    "C-\\" kill-this-buffer
+    "C-\\" kill-current-buffer
 
     "C-n" create-temp-buffer
     "C-x 0" (lambda () (interactive) (other-window -1))

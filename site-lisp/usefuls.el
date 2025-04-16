@@ -266,4 +266,10 @@ point reaches the beginning or end of the buffer, stop there."
   (interactive)
   (alter-frame-font-size (lambda (sz) 20)))
 
+(defun dedicate-window-to-buffer ()
+  (interactive)
+  (let ((new-val (not (window-dedicated-p (selected-window)))))
+    (set-window-dedicated-p (selected-window) new-val)
+    (message "Window dedication: %s" new-val)))
+
 (provide 'usefuls)

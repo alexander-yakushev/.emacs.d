@@ -1,63 +1,36 @@
 ;;; mainline.el --- modeline replacement forked from powerline.el, much simplified
 
-(defcustom mainline-color1 "#123550"
-  "Mainline color 1 info blocks background")
+(defface mainline-face1
+  `((t :foreground "black" :background "#123550" :box nil))
+  "")
+(defface mainline-face2
+  `((t :foreground "black" :background "#112230" :box nil))
+  "")
+(defface mainline-face3
+  `((t :foreground "black" :background "#112230" :box nil))
+  "")
 
-(defcustom mainline-color2 "#112230"
-  "Mainline color 2 vcs info middle block background")
+(defun mainline-make (string plface)
+  (if (or (not string) (string= string ""))
+      ""
+    (propertize (concat " " string) 'face plface)))
 
-(defun mainline-make-face
-    (bg &optional fg)
-  (if bg
-      (let ((fg mainline-color-fg)
-            (cface (intern (concat "mainline-"
-                                   bg
-                                   "-"
-                                   (if fg
-                                       (format "%s" fg)
-                                     "white")))))
-        (make-face cface)
-        (if fg
-            (if (eq fg 0)
-                (set-face-attribute cface nil
-                                    :background bg
-                                    :box nil)
-              (set-face-attribute cface nil
-                                  :foreground fg
-                                  :background bg
-                                  :box nil))
-          (set-face-attribute cface nil
-                              :foreground "white"
-                              :background bg
-                              :box nil))
-        cface)
-    nil))
-
-(defun mainline-make (string color1)
-  (let ((plface (mainline-make-face color1)))
-    (if (or (not string) (string= string ""))
-        ""
-      (propertize (concat " " string) 'face plface))))
-
-(defmacro defmainline (name string)
-  `(defun ,(intern (concat "mainline-" (symbol-name name)))
-       (color1)
-     (mainline-make ,string color1)))
-
-(defmainline major-mode
-  (propertize (cond ((stringp mode-name) mode-name)
-                    ((listp mode-name) (if (listp (car mode-name))
-                                           (cadar mode-name)
-                                         (car mode-name)))
-                    (t "SGML"))
-              'help-echo "Major mode\n\ mouse-1: Display major mode menu\n\ mouse-2: Show help for major mode\n\ mouse-3: Toggle minor modes"
-              'local-map (let ((map (make-sparse-keymap)))
-                           (define-key map [mode-line down-mouse-1]
-                             `(menu-item ,(purecopy "Menu Bar") ignore
-                                         :filter (lambda (_) (mouse-menu-major-mode-map))))
-                           (define-key map [mode-line mouse-2] 'describe-mode)
-                           (define-key map [mode-line down-mouse-3] mode-line-mode-menu)
-                           map)))
+(defun mainline-major-mode (face)
+  (mainline-make
+   (propertize (cond ((stringp mode-name) mode-name)
+                     ((listp mode-name) (if (listp (car mode-name))
+                                            (cadar mode-name)
+                                          (car mode-name)))
+                     (t "SGML"))
+               'help-echo "Major mode\n\ mouse-1: Display major mode menu\n\ mouse-2: Show help for major mode\n\ mouse-3: Toggle minor modes"
+               'local-map (let ((map (make-sparse-keymap)))
+                            (define-key map [mode-line down-mouse-1]
+                                        `(menu-item ,(purecopy "Menu Bar") ignore
+                                                    :filter (lambda (_) (mouse-menu-major-mode-map))))
+                            (define-key map [mode-line mouse-2] 'describe-mode)
+                            (define-key map [mode-line down-mouse-3] mode-line-mode-menu)
+                            map))
+   face))
 
 (defun mainline-center-format (str c)
   (let* ((l (length str)))
@@ -102,16 +75,16 @@
                                                                 (min classic-bn-length space-for-buffer-name))
                                       full-buffer-name)))
              (concat
-              (mainline-make current-input-method-title mainline-color3)
-              (mainline-make "%*" mainline-color3)
-              (mainline-make real-buffer-name mainline-color3)
-              (mainline-make (mainline-percentage 4) mainline-color1)
-              (mainline-make "(%4l : %3c) " mainline-color1)
-              (mainline-major-mode mainline-color2)
-              (mainline-make (spinner-print spinner-current) mainline-color2)
-              (mainline-make "﻿" mainline-color2)
+              (mainline-make current-input-method-title 'mainline-face3)
+              (mainline-make "%*" 'mainline-face3)
+              (mainline-make real-buffer-name 'mainline-face3)
+              (mainline-make (mainline-percentage 4) 'mainline-face1)
+              (mainline-make "(%4l : %3c) " 'mainline-face1)
+              (mainline-major-mode 'mainline-face2)
+              (mainline-make (spinner-print spinner-current) 'mainline-face2)
+              (mainline-make "﻿" 'mainline-face2)
               (if compact? ""
-                (mainline-make mms mainline-color1))))))))
+                (mainline-make mms 'mainline-face1))))))))
 
 ;; (mainline-activate)
 

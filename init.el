@@ -3,10 +3,11 @@
   ;; out of you.
   (menu-bar-mode 1)
   ;; mac switch meta key
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'super)
-  (setq mac-mouse-wheel-smooth-scroll nil)
-  (mac-auto-operator-composition-mode))
+  ;; (setq mac-option-modifier 'meta)
+  ;; (setq mac-command-modifier 'super)
+  ;; (setq mac-mouse-wheel-smooth-scroll nil)
+  ;; (mac-auto-operator-composition-mode)
+  )
 
 (progn             ; packages initialization
   (require 'package)
@@ -235,18 +236,17 @@
   (defvar ediff-do-hexl-diff nil
     "variable used to store trigger for doing diff in hexl-mode")
 
-  (defadvice ediff-files-internal (around ediff-files-internal-for-binary-files activate)
+  (defun ediff-files-internal-advice (orig-fun &rest args)
     "catch the condition when the binary files differ
 the reason for catching the error out here (when re-thrown from the inner advice)
 is to let the stack continue to unwind before we start the new diff
 otherwise some code in the middle of the stack expects some output that
 isn't there and triggers an error"
-    (let ((file-A (ad-get-arg 0))
-          (file-B (ad-get-arg 1))
+    (let ((file-A (nth args 0))
+          (file-B (nth args 1))
           ediff-do-hexl-diff)
       (condition-case err
-          (progn
-            ad-do-it)
+          (apply orig-fun args)
         (error
          (if ediff-do-hexl-diff
              (let ((buf-A (find-file-noselect file-A))
@@ -257,12 +257,12 @@ isn't there and triggers an error"
                  (hexl-mode 1))
                (ediff-buffers buf-A buf-B))
            (error (error-message-string err)))))))
+  (advice-add 'ediff-files-internal :around #'ediff-files-internal-advice)
 
-  (defadvice ediff-setup-diff-regions (around ediff-setup-diff-regions-for-binary-files activate)
+  (defun ediff-setup-diff-regions-advice (orig-fun &rest args)
     "when binary files differ, set the variable "
     (condition-case err
-        (progn
-          ad-do-it)
+        (apply orig-fun args)
       (error
        (setq ediff-do-hexl-diff
              (and (string-match-p "^Errors in diff output.  Diff output is in.*"
@@ -272,7 +272,8 @@ isn't there and triggers an error"
                                    (line-beginning-position)
                                    (line-end-position)))
                   (y-or-n-p "The binary files differ, look at the differences in hexl-mode? ")))
-       (error (error-message-string err))))))
+       (error (error-message-string err)))))
+  (advice-add 'ediff-setup-diff-regions :around #'ediff-setup-diff-regions-advice))
 
 (use-package midnight :demand t
   :config (midnight-delay-set 'midnight-delay "11:59pm"))
@@ -366,8 +367,20 @@ Select buffer *buffer-selection* and display buffers according to current
 configuration `bs-current-configuration'.  Set window height, fontify buffer
 and move point to current buffer."
     (setq bs-current-list list)
-    (switch-to-buffer (get-buffer-create "*buffer-selection*"))
+    (let* ((window-combination-limit 'window-size)
+           (bs-buf (get-buffer-create "*buffer-selection*"))
+           (bs-win (progn
+                     (pop-to-buffer bs-buf bs-default-action-list)
+                     (selected-window))))
+      ;; Delete other windows showing *buffer-selection*.
+      ;; Done after pop-to-buffer, instead of just calling delete-windows-on,
+      ;; to allow display-buffer-reuse(-mode)?-window to be used in ALIST.
+      (dolist (w (get-buffer-window-list bs-buf 'not t))
+        (unless (eq w bs-win)
+          (with-demoted-errors "Error deleting window: %S"
+            (delete-window w)))))
     (bs-mode)
+    (text-scale-set -1)
     (let* ((inhibit-read-only t)
            (map-fun (lambda (entry)
                       (if (bufferp entry)
@@ -443,10 +456,9 @@ and move point to current buffer."
   :config
   (defun -theme-set (time)
     (cond ((eq time 'day)
-           (setq mainline-color1 "#d6d6d6")
-           (setq mainline-color2 "#efefef")
-           (setq mainline-color3 "#70c0b1")
-           (setq mainline-color-fg "black")
+           (set-face-attribute 'mainline-face1 nil :foreground "black" :background "#d6d6d6")
+           (set-face-attribute 'mainline-face2 nil :foreground "black" :background "#efefef")
+           (set-face-attribute 'mainline-face3 nil :foreground "black" :background "#70c0b1")
            (custom-set-faces
             '(show-paren-match ((t (:foreground "grey70" :bold nil :background "#008800"))))
             '(show-paren-mismatch ((t (:foreground "grey70" :bold nil :background "#880000"))))
@@ -454,10 +466,9 @@ and move point to current buffer."
            (color-theme-sanityinc-tomorrow-day))
 
           ((eq time 'night)
-           (setq mainline-color1 "#444444")
-           (setq mainline-color2 "#222222")
-           (setq mainline-color3 "#293B3A")
-           (setq mainline-color-fg "white")
+           (set-face-attribute 'mainline-face1 nil :foreground "white" :background "#444444")
+           (set-face-attribute 'mainline-face2 nil :foreground "white" :background "#222222")
+           (set-face-attribute 'mainline-face3 nil :foreground "white" :background "#293B3A")
            (custom-set-faces
             '(show-paren-match ((t (:foreground "#00ff00" :bold t :background unspecified))))
             '(show-paren-mismatch ((t (:foreground "#ff0000" :bold t :background unspecified))))
@@ -738,7 +749,6 @@ and move point to current buffer."
 
   (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-mode-hook #'company-mode)
-  (cider-enable-cider-completion-style)
 
   (use-package cider-inspector :demand t
     :bind (:map cider-inspector-mode-map
@@ -903,10 +913,9 @@ See `sesman-browser-mode' for more details."
                                                 (region-end))))
       (forward-sexp)
       (paredit-C-j)
-      (insert (format "(swap! -args conj %s)" args))
-      (beginning-of-defun)
-      (previous-line)
-      (insert "(def -args (atom []))")))
+      (insert "#_(reset! -args [])")
+      (paredit-C-j)
+      (insert (format "(-/capture -args %s)" args))))
 
   (defun cider-require-ns-at-point ()
     "Like refresh, but re-evaluates the last expression."
@@ -925,7 +934,10 @@ See `sesman-browser-mode' for more details."
   :config
   (cljr-add-keybindings-with-prefix "C-c C-r")
   (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-  (add-hook 'clojure-mode-hook 'yas-minor-mode-on))
+  (add-hook 'clojure-mode-hook 'yas-minor-mode-on)
+  ;; (add-hook 'clojure-ts-mode-hook #'clj-refactor-mode)
+  ;; (add-hook 'clojure-ts-mode-hook #'yas-minor-mode-on)
+  )
 
 (use-package company :ensure t :demand t
   :bind (:map company-mode-map
@@ -957,7 +969,9 @@ part if there is prefix."
   (set-face-attribute 'hl-paren-face nil :weight 'ultra-bold)
   (diminish 'highlight-parentheses-mode)
   (add-hook 'lisp-mode-hook 'highlight-parentheses-mode)
-  (add-hook 'clojure-mode-hook 'highlight-parentheses-mode))
+  (add-hook 'clojure-mode-hook 'highlight-parentheses-mode)
+  ;; (add-hook 'clojure-ts-mode-hook 'highlight-parentheses-mode)
+  )
 
 (use-package elisp-mode
   :bind (:map
@@ -989,12 +1003,17 @@ part if there is prefix."
   (add-hook-for-modes 'paren-face-mode '(scheme emacs-lisp lisp))
   (add-hook 'clojure-mode-hook
             (lambda ()
-              (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
+              (setq-local paren-face-regexp "[][(){}]")
               (paren-face-mode 1)))
   (add-hook 'clojurescript-mode-hook
             (lambda ()
-              (setq-local paren-face-regexp "[(){}]\\|\\[\\|\\]")
-              (paren-face-mode 1))))
+              (setq-local paren-face-regexp "[][(){}]")
+              (paren-face-mode 1)))
+  ;; (add-hook 'clojure-ts-mode-hook
+  ;;           (lambda ()
+  ;;             (setq-local paren-face-regexp "[][(){}]")
+  ;;             (paren-face-mode 1)))
+  )
 
 ;;; Programming/Other languages
 
@@ -1112,7 +1131,8 @@ part if there is prefix."
   (add-hook 'prog-mode-hook 'prog-mode-local-comment-auto-fill)
   (add-hook 'prog-mode-hook 'hl-line-mode)
   (add-hook 'prog-mode-hook 'prog-mode-add-watchwords)
-  (add-hook 'prog-mode-hook 'rainbow-numbers-mode))
+  ;; (add-hook 'prog-mode-hook 'rainbow-numbers-mode)
+  )
 
 (use-package rainbow-mode :ensure t
   :commands rainbow-turn-on
@@ -1127,7 +1147,7 @@ part if there is prefix."
 
 (use-package helm-ag :ensure t
   :bind* (("M-h" . helm-do-ag-project-root-custom)
-          ("M-H" . helm-do-ag))
+          ("M-H" . helm-do-ag-non-parallel))
   :bind (:map helm-ag-map
               ("C-;" . helm-next-line)
               ("M-;" . helm-goto-next-file)
@@ -1142,8 +1162,19 @@ part if there is prefix."
 
   (defun helm-do-ag-project-root-custom (sym-at-p)
     (interactive "P")
-    (let ((helm-ag-insert-at-point (when sym-at-p 'symbol)))
-      (helm-do-ag-project-root))))
+    (let ((helm-ag-base-command (if (equal current-prefix-arg '(16))
+                                    helm-ag-base-command
+                                  (concat helm-ag-base-command " -j1")))
+          (helm-ag-insert-at-point (when sym-at-p 'symbol)))
+      (helm-do-ag-project-root)))
+
+  (defun helm-do-ag-non-parallel (sym-at-p)
+    (interactive "P")
+    (let ((helm-ag-base-command (if (equal current-prefix-arg '(16))
+                                    helm-ag-base-command
+                                  (concat helm-ag-base-command " -j1")))
+          (helm-ag-insert-at-point (when sym-at-p 'symbol)))
+      (helm-do-ag))))
 
 (use-package helm-swoop :ensure t)
 
@@ -1183,10 +1214,13 @@ part if there is prefix."
 
 (use-package display-fill-column-indicator :demand t
   :config
-  (add-hook 'prog-mode-hook 'display-fill-column-indicator--turn-on)
-  (add-hook 'clojure-mode-hook 'display-fill-column-indicator--turn-on))
+  (add-hook 'prog-mode-hook 'display-fill-column-indicator--turn-on))
 
-(use-package hideshow :ensure t :demand t
+(use-package hideshow :demand t
+  :hook ((prog-mode          . hs-minor-mode)
+         (clojure-mode       . hs-clojure-hide-namespace-and-folds)
+         ;; (clojure-ts-mode    . hs-clojure-hide-namespace-and-folds)
+         (clojurescript-mode . hs-clojure-hide-namespace-and-folds))
   :config
   (defun hs-clojure-hide-namespace-and-folds ()
     "Hide the first (ns ...) expression in the file, and also all
@@ -1207,18 +1241,7 @@ the (^:fold ...) expressions."
          (hs-hide-block)
          (next-line)))))
 
-  (defun hs-clojure-mode-hook ()
-    (interactive)
-    (hs-minor-mode 1)
-    (hs-clojure-hide-namespace-and-folds))
-
-  (diminish 'hs-minor-mode)
-  (add-hook 'c-mode-common-hook      'hs-minor-mode)
-  (add-hook 'emacs-lisp-mode-hook    'hs-minor-mode)
-  (add-hook 'java-mode-hook          'hs-minor-mode)
-  (add-hook 'lisp-mode-hook          'hs-minor-mode)
-  (add-hook 'clojure-mode-hook       'hs-clojure-mode-hook)
-  (add-hook 'clojurescript-mode-hook 'hs-clojure-mode-hook))
+  (diminish 'hs-minor-mode))
 
 (use-package dumb-jump :ensure t
   :config

@@ -10,9 +10,11 @@
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
-   (vector "#4d4d4c" "#c82829" "#718c00" "#eab700" "#4271ae" "#8959a8" "#3e999f" "#d6d6d6"))
+   (vector "#4d4d4c" "#c82829" "#718c00" "#eab700" "#4271ae" "#8959a8" "#3e999f"
+           "#d6d6d6"))
  '(ansi-term-color-vector
-   [unspecified "#001100" "#007700" "#00bb00" "#007700" "#009900" "#00bb00" "#009900" "#00bb00"] t)
+   [unspecified "#001100" "#007700" "#00bb00" "#007700" "#009900" "#00bb00"
+                "#009900" "#00bb00"] t)
  '(auto-revert-verbose nil)
  '(auto-save-file-name-transforms '((".*" "~/.cache/emacs-saves/" t)))
  '(backup-by-copying t)
@@ -31,19 +33,19 @@
      ("" 2 2 left "  ")
      ("File" 12 12 left bs--get-file-name)
      ("" 2 2 left "  ")))
+ '(bs-default-action-list
+   '((display-buffer-below-selected) (reusable-frames . nil)
+     (window-height . 20)))
  '(bs-default-sort-name "by filename")
  '(c-default-style
-   '((c++-mode . "cc-mode")
-     (java-mode . "java")
-     (awk-mode . "awk")
-     (other . "gnu")))
- '(cider-auto-jump-to-error nil)
+   '((c++-mode . "cc-mode") (java-mode . "java") (awk-mode . "awk") (other . "gnu")))
+ '(cider-auto-jump-to-error 'errors-only)
  '(cider-boot-parameters "repl -s wait")
  '(cider-cljs-lein-repl
    "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
  '(cider-clojure-cli-command "clojure")
  '(cider-clojure-cli-global-aliases ":dev:user:add-opens")
- '(cider-clojure-compilation-error-phases 'nil)
+ '(cider-download-java-sources t)
  '(cider-enlighten-mode nil)
  '(cider-enrich-classpath nil)
  '(cider-eval-result-duration 'command)
@@ -51,15 +53,18 @@
  '(cider-eval-spinner-type 'triangle)
  '(cider-font-lock-dynamically '(macro deprecated))
  '(cider-inject-dependencies-at-jack-in t)
+ '(cider-injected-middleware-version "99.99")
  '(cider-inspector-page-size 32)
  '(cider-lein-parameters "trampoline repl :headless")
  '(cider-preferred-build-tool 'clojure-cli)
+ '(cider-print-fn 'pr)
  '(cider-prompt-for-symbol nil)
  '(cider-repl-history-file "~/.emacs.d/.cider-history")
  '(cider-repl-history-size 10000)
- '(cider-repl-use-pretty-printing nil)
+ '(cider-reuse-dead-repls 'any)
+ '(cider-show-error-buffer t)
  '(cider-stacktrace-default-filters '(dup))
- '(cider-use-overlays nil)
+ '(cider-use-overlays 'both)
  '(cider-use-tooltips nil)
  '(clean-buffer-list-delay-general 3)
  '(clj-decompiler-inject-dependencies-at-jack-in nil)
@@ -82,9 +87,12 @@
  '(create-lockfiles nil)
  '(custom-enabled-themes '(sanityinc-tomorrow-day))
  '(custom-safe-themes
-   '("04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "6bdc4e5f585bb4a500ea38f563ecf126570b9ab3be0598bdf607034bb07a8875" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default))
+   '("04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f"
+     "6bdc4e5f585bb4a500ea38f563ecf126570b9ab3be0598bdf607034bb07a8875"
+     "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d"
+     "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" default))
  '(debug-on-error nil)
- '(default-frame-alist '((inhibit-double-buffering . t)))
+ '(default-frame-alist '((undecorated . t) (inhibit-double-buffering . t)))
  '(default-input-method "ukrainian-computer")
  '(deft-directory "/Users/alex/gdrive/Docs/Text/deft/")
  '(deft-extensions '("org" "txt" "md"))
@@ -93,7 +101,16 @@
  '(diff-switches "-u")
  '(dired-kill-when-opening-new-dired-buffer t)
  '(dired-omit-extensions
-   '(".cm/" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof" ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/" "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".dfsl" ".pfsl" ".d64fsl" ".p64fsl" ".lx64fsl" ".lx32fsl" ".dx64fsl" ".dx32fsl" ".fx64fsl" ".fx32fsl" ".sx64fsl" ".sx32fsl" ".wx64fsl" ".wx32fsl" ".fasl" ".ufsl" ".fsl" ".dxl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo" ".idx" ".lof" ".lot" ".glo" ".blg" ".bbl" ".cp" ".cps" ".fn" ".fns" ".ky" ".kys" ".pg" ".pgs" ".tp" ".tps" ".vr" ".vrs" ".bcf" ".out"))
+   '(".cm/" ".o" "~" ".bin" ".lbin" ".so" ".a" ".ln" ".blg" ".bbl" ".elc" ".lof"
+     ".glo" ".idx" ".lot" ".svn/" ".hg/" ".git/" ".bzr/" "CVS/" "_darcs/"
+     "_MTN/" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf"
+     ".dfsl" ".pfsl" ".d64fsl" ".p64fsl" ".lx64fsl" ".lx32fsl" ".dx64fsl"
+     ".dx32fsl" ".fx64fsl" ".fx32fsl" ".sx64fsl" ".sx32fsl" ".wx64fsl"
+     ".wx32fsl" ".fasl" ".ufsl" ".fsl" ".dxl" ".lo" ".la" ".gmo" ".mo" ".toc"
+     ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs"
+     ".tps" ".vrs" ".pyc" ".pyo" ".idx" ".lof" ".lot" ".glo" ".blg" ".bbl" ".cp"
+     ".cps" ".fn" ".fns" ".ky" ".kys" ".pg" ".pgs" ".tp" ".tps" ".vr" ".vrs"
+     ".bcf" ".out"))
  '(dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+")
  '(dired-omit-verbose nil)
  '(display-fill-column-indicator-character 183)
@@ -114,7 +131,9 @@
  '(global-whitespace-mode t)
  '(helm-ag-base-command "rg --no-heading --smart-case --hidden --glob=!.git/*")
  '(helm-boring-buffer-regexp-list
-   '("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*magit" "\\*buffer-selection" "\\*Compile-log\\*" "\\*Quail" "\\*Minibuf" "\\*Completions" "\\*Shell" "\\*Customize" "\\*Help\\*" ".+ (Sunrise)"))
+   '("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*magit"
+     "\\*buffer-selection" "\\*Compile-log\\*" "\\*Quail" "\\*Minibuf"
+     "\\*Completions" "\\*Shell" "\\*Customize" "\\*Help\\*" ".+ (Sunrise)"))
  '(highlight-parentheses-colors '("turquoise1" "khaki2" "firebrick2" "blue1" "magenta2"))
  '(highlight-parentheses-delay 0.5)
  '(idle-highlight-exceptions nil)
@@ -141,7 +160,6 @@
  '(magit-blame-goto-chunk-hook nil)
  '(magit-commit-arguments nil)
  '(magit-commit-show-diff nil)
- '(magit-completing-read-function 'magit-ido-completing-read)
  '(magit-diff-expansion-threshold 1)
  '(magit-diff-highlight-indentation '(("" . tabs)))
  '(magit-gh-pulls-arguments '("--use-pr-editor"))
@@ -156,20 +174,10 @@
  '(mouse-yank-at-point t)
  '(nrepl-log-messages nil)
  '(openwith-associations
-   '(("\\.pdf\\'" "evince"
-      (file))
-     ("\\.mp3\\'" "xmms"
-      (file))
-     ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer"
-      ("-idx" file))
-     ("\\.\\(?:jpe?g\\|png\\)\\'" "open"
-      (file))
-     ("\\.odt\\'" "lowriter"
-      (file))
-     ("\\.docx?\\'" "lowriter"
-      (file))
-     ("\\.xlsx?\\'" "localc"
-      (file))))
+   '(("\\.pdf\\'" "evince" (file)) ("\\.mp3\\'" "xmms" (file))
+     ("\\.\\(?:mpe?g\\|avi\\|wmv\\)\\'" "mplayer" ("-idx" file))
+     ("\\.\\(?:jpe?g\\|png\\)\\'" "open" (file)) ("\\.odt\\'" "lowriter" (file))
+     ("\\.docx?\\'" "lowriter" (file)) ("\\.xlsx?\\'" "localc" (file))))
  '(openwith-mode nil)
  '(org-directory "~/Documents/Notes/")
  '(org-reveal-root "../reveal-js")
@@ -178,7 +186,23 @@
      ("melpa" . "https://melpa.org/packages/")
      ("melpa-stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(clj-refactor difftastic typescript-mode anzu goto-chg git-modes eat adoc-mode logview deft diminish flycheck rustic inspector fireplace bm centered-window-mode cider clj-decompiler clojure-mode color-theme-sanityinc-tomorrow company company-flx company-quickhelp csv-mode docker-tramp dockerfile-mode dumb-jump ediff elisp-slime-nav fish-mode flyspell git-gutter git-timemachine gnu-elpa-keyring-update go-mode gradle-mode graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag helm-cider helm-swoop hideshow highlight highlight-parentheses highlight-symbol idle-highlight-mode ido-ubiquitous java-snippets javap-mode json-mode json-reformat lsp-mode lua-mode magit markdown-mode markdown-preview-mode multiple-cursors names nginx-mode nlinum openwith paredit paren-face pcre2el rainbow-mode rust-mode sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd terraform-mode toml-mode unicode-fonts use-package visual-regexp vlf vundo wakatime-mode web-mode yaml-mode zencoding-mode))
+   '(adoc-mode anzu bm centered-window-mode cider clj-decompiler clj-refactor
+               clojure-mode color-theme-sanityinc-tomorrow company company-flx
+               company-quickhelp csv-mode difftastic diminish docker-tramp
+               dockerfile-mode dumb-jump eat ediff elisp-slime-nav fireplace
+               fish-mode flycheck flyspell git-gutter git-modes git-timemachine
+               gnu-elpa-keyring-update go-mode goto-chg gradle-mode
+               graphviz-dot-mode groovy-mode haskell-mode hcl-mode helm-ag
+               helm-cider helm-swoop hideshow highlight highlight-parentheses
+               highlight-symbol idle-highlight-mode ido-ubiquitous inspector
+               java-snippets javap-mode json-mode json-reformat logview lua-mode
+               markdown-preview-mode multiple-cursors names nginx-mode nlinum
+               openwith paredit pcre2el quick-peek rainbow-mode rust-mode rustic
+               sass-mode smartparens smex string-edit sudo sunrise-x-checkpoints
+               sunrise-x-loop sunrise-x-mirror sunrise-x-tabs systemd
+               terraform-mode toml-mode typescript-mode unicode-fonts
+               use-package visual-regexp vlf vundo wakatime-mode yaml-mode
+               zencoding-mode))
  '(pixel-scroll-mode nil)
  '(pop-up-windows nil)
  '(recentf-auto-cleanup 'never)
@@ -186,59 +210,25 @@
  '(require-final-newline t)
  '(ring-bell-function 'ignore)
  '(safe-local-variable-values
-   '((eval define-clojure-indent
-           (p/defprotocol+
-            '(1
-              (:defn)))
-           (p/def-map-type
-            '(2 nil nil
-                (:defn)))
-           (p/deftype+
-            '(2 nil nil
-                (:defn))))
+   '((eval put 'api.macros/defendpoint 'clojure-doc-string-elt 3)
+     (eval define-clojure-indent (p/defprotocol+ '(1 (:defn)))
+           (p/def-map-type '(2 nil nil (:defn)))
+           (p/deftype+ '(2 nil nil (:defn))))
      (eval put 'p/def-map-type 'clojure-doc-string-elt 2)
      (eval put 'm/defmulti 'clojure-doc-string-elt 2)
      (eval put 'm/defmethod 'clojure-doc-string-elt 3)
      (column-enforce-column . 120)
      (eval put 'p/defprotocol+ 'clojure-doc-string-elt 2)
-     (cljr-print-right-margin . 118)
-     (cljr-insert-newline-after-require . t)
+     (cljr-print-right-margin . 118) (cljr-insert-newline-after-require . t)
      (cljr-favor-prefix-notation)
-     (eval define-clojure-indent
-           (l/matcha
-            '(1
-              (:defn)))
-           (l/matche
-            '(1
-              (:defn)))
-           (p.types/def-abstract-type
-            '(1
-              (:defn)))
-           (p.types/defprotocol+
-            '(1
-              (:defn)))
-           (p.types/defrecord+
-            '(2 nil nil
-                (:defn)))
-           (p.types/deftype+
-            '(2 nil nil
-                (:defn)))
-           (p/def-map-type
-            '(2 nil nil
-                (:defn)))
-           (p/defprotocol+
-            '(1
-              (:defn)))
-           (p/defrecord+
-            '(2 nil nil
-                (:defn)))
-           (p/deftype+
-            '(2 nil nil
-                (:defn)))
-           (tools.macro/macrolet
-            '(1
-              ((:defn))
-              :form)))
+     (eval define-clojure-indent (l/matcha '(1 (:defn))) (l/matche '(1 (:defn)))
+           (p.types/def-abstract-type '(1 (:defn)))
+           (p.types/defprotocol+ '(1 (:defn)))
+           (p.types/defrecord+ '(2 nil nil (:defn)))
+           (p.types/deftype+ '(2 nil nil (:defn)))
+           (p/def-map-type '(2 nil nil (:defn))) (p/defprotocol+ '(1 (:defn)))
+           (p/defrecord+ '(2 nil nil (:defn))) (p/deftype+ '(2 nil nil (:defn)))
+           (tools.macro/macrolet '(1 ((:defn)) :form)))
      (eval put 'mu/defn 'clojure-doc-string-elt 2)
      (eval put 'mr/def 'clojure-doc-string-elt 2)
      (eval put 'mi/define-batched-hydration-method 'clojure-doc-string-elt 3)
@@ -257,48 +247,29 @@
      (eval put 'defendpoint 'clojure-doc-string-elt 3)
      (eval put 'defendpoint-schema 'clojure-doc-string-elt 3)
      (ftf-project-finders ftf-get-top-git-dir)
-     (elisp-lint-indent-specs
-      (if-let* . 2)
-      (when-let* . 1)
-      (let* . defun)
-      (nrepl-dbind-response . 2)
-      (cider-save-marker . 1)
-      (cider-propertize-region . 1)
-      (cider-map-repls . 1)
-      (cider--jack-in . 1)
-      (cider--make-result-overlay . 1)
-      (insert-label . defun)
-      (insert-align-label . defun)
-      (insert-rect . defun)
-      (cl-defun . 2)
-      (with-parsed-tramp-file-name . 2)
-      (thread-first . 0)
-      (thread-last . 0)
-      (transient-define-prefix . defmacro)
-      (transient-define-suffix . defmacro))
-     (elisp-lint-indent-specs
-      (if-let* . 2)
-      (when-let* . 1)
-      (let* . defun)
-      (nrepl-dbind-response . 2)
-      (cider-save-marker . 1)
-      (cider-propertize-region . 1)
-      (cider-map-repls . 1)
-      (cider--jack-in . 1)
-      (cider--make-result-overlay . 1)
-      (multiline-comment-handler . defun)
-      (insert-label . defun)
-      (insert-align-label . defun)
-      (insert-rect . defun)
-      (cl-defun . 2)
-      (with-parsed-tramp-file-name . 2)
-      (thread-first . 1)
-      (thread-last . 1))
-     (checkdoc-package-keywords-flag)
-     (auto-fill-mode . -1)
-     (eval hs-hide-all)
-     (whitespace-line-column . 10000)
-     (lexical-binding . t)))
+     (elisp-lint-indent-specs (if-let* . 2) (when-let* . 1) (let* . defun)
+                              (nrepl-dbind-response . 2) (cider-save-marker . 1)
+                              (cider-propertize-region . 1)
+                              (cider-map-repls . 1) (cider--jack-in . 1)
+                              (cider--make-result-overlay . 1)
+                              (insert-label . defun)
+                              (insert-align-label . defun) (insert-rect . defun)
+                              (cl-defun . 2) (with-parsed-tramp-file-name . 2)
+                              (thread-first . 0) (thread-last . 0)
+                              (transient-define-prefix . defmacro)
+                              (transient-define-suffix . defmacro))
+     (elisp-lint-indent-specs (if-let* . 2) (when-let* . 1) (let* . defun)
+                              (nrepl-dbind-response . 2) (cider-save-marker . 1)
+                              (cider-propertize-region . 1)
+                              (cider-map-repls . 1) (cider--jack-in . 1)
+                              (cider--make-result-overlay . 1)
+                              (multiline-comment-handler . defun)
+                              (insert-label . defun)
+                              (insert-align-label . defun) (insert-rect . defun)
+                              (cl-defun . 2) (with-parsed-tramp-file-name . 2)
+                              (thread-first . 1) (thread-last . 1))
+     (checkdoc-package-keywords-flag) (auto-fill-mode . -1) (eval hs-hide-all)
+     (whitespace-line-column . 10000) (lexical-binding . t)))
  '(save-place-file "~/.emacs.d/var/places")
  '(sentence-end-double-space nil)
  '(shift-select-mode nil)
@@ -315,24 +286,11 @@
  '(use-short-answers t)
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
-   '((20 . "#c82829")
-     (40 . "#f5871f")
-     (60 . "#eab700")
-     (80 . "#718c00")
-     (100 . "#3e999f")
-     (120 . "#4271ae")
-     (140 . "#8959a8")
-     (160 . "#c82829")
-     (180 . "#f5871f")
-     (200 . "#eab700")
-     (220 . "#718c00")
-     (240 . "#3e999f")
-     (260 . "#4271ae")
-     (280 . "#8959a8")
-     (300 . "#c82829")
-     (320 . "#f5871f")
-     (340 . "#eab700")
-     (360 . "#718c00")))
+   '((20 . "#c82829") (40 . "#f5871f") (60 . "#eab700") (80 . "#718c00")
+     (100 . "#3e999f") (120 . "#4271ae") (140 . "#8959a8") (160 . "#c82829")
+     (180 . "#f5871f") (200 . "#eab700") (220 . "#718c00") (240 . "#3e999f")
+     (260 . "#4271ae") (280 . "#8959a8") (300 . "#c82829") (320 . "#f5871f")
+     (340 . "#eab700") (360 . "#718c00")))
  '(vc-annotate-very-old-color nil)
  '(version-control t)
  '(visible-bell nil)
@@ -346,18 +304,15 @@
  '(whitespace-global-modes '(not magit-log-mode magit-status-mode))
  '(whitespace-style '(face trailing tabs empty))
  '(world-clock-list
-   '(("Europe/Kyiv" "Kyiv")
-     ("Europe/London" "London")
-     ("Europe/Berlin" "Berlin")
-     ("America/New_York" "New York")
-     ("America/Los_Angeles" "San Francisco")))
+   '(("Europe/Kyiv" "Kyiv") ("Europe/London" "London") ("Europe/Berlin" "Berlin")
+     ("America/New_York" "New York") ("America/Los_Angeles" "San Francisco")))
  '(yas/trigger-key "C-o"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight medium :height 141 :width normal :foundry "nil" :family "Fira Code"))))
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 150 :width normal :foundry "nil" :family "Fira Code"))))
  '(fringe ((t (:background "white"))))
  '(git-gutter:modified ((t nil)))
  '(git-timemachine-minibuffer-detail-face ((t (:foreground "sea green"))))
